@@ -4,49 +4,72 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
 
-struct suma1
+#define CANT_PROCESSES 5
+
+
+typedef struct 
 {
     char * nameFile;
     int valorSuma;
-} ;
+}suma_t;
+void suma(suma_t * s);
+// Proceso padre
+// Crear hijos y sus respectivas tuberias
+int main(int argc, char * argv[]){
 
-void *thread(void *arg);
-typedef struct suma1 suma_t;
 
-void suma(suma_t *s);
+    int i=0;
 
-int main(int argc, char *argv[])
-{
-    suma_t s1,s2;
+    suma_t fileArray[argc-1];
 
-    s1.nameFile = argv[1];
-    s2.nameFile = argv[2];
-  
-
-    pthread_t th1,th2;
-    pthread_create(&th1, NULL, (void *)suma, (void *)&s1);
-    //sleep(1);
-    pthread_create(&th2, NULL, (void *)suma, (void *)&s2);
-    
-    int ret = 0;
-    ret =  pthread_join(th1,NULL);
-    if(ret!=0){
-        perror("ERROR PTHREAD_JOIN 1");
+    for (i=0;i<argc-1;i++){
+        fileArray[i].nameFile= argv[i+1];
     }
-    ret = pthread_join(th2,NULL);
-   if(ret!=0){
-          perror("ERROR PTHREAD_JOIN 2");
-      }
 
-printf("%d \n", s1.valorSuma);
-printf("%d \n", s2.valorSuma);
-return 0;
+    int fd[CANT_PROCESSES][2];
+
+
+
+    for(i=0;i<CANT_PROCESSES;i++){ //VER SI SE PUEDE MEJORAR
+        if(pipe(fd[i]) != 0){
+            perror("Pipe error: ");
+            abort();
+        }
+    }
+
+
+ 
+    int processes[CANT_PROCESSES];
+
+    for(i=0;i<CANT_PROCESSES;i++){ 
+        if( ( processes[i]=fork() ) == 0){
+            // codigo para el hijo i              
+            suma(&fileArray[i]);
+            sleep(i*i);
+            write(fd[i][1],&(fileArray[i].valorSuma),sizeof(fileArray[i].valorSuma));
+            return 1;
+         
+        }
+    }
+
+    for(i=0;i<CANT_PROCESSES;i++){
+         read(fd[i][0],&fileArray[i].valorSuma,sizeof(fileArray[i].valorSuma));
+         printf("Valor suma %d : %d \n",i,fileArray[i].valorSuma);
+    }
    
+    // codigo padre
+    // Padre finaliza a los hijos
+    for(i=0;i<CANT_PROCESSES;i++){
+        printf("Esperando proceso %d a que termine..... \n",processes[i]);
+        waitpid(processes[i],NULL,0);
+    }
+    return 0;
 }
 
 
@@ -63,8 +86,7 @@ void suma(suma_t * s){
 
     dup2(id,STDIN_FILENO);
     int c=0;
-    //int car1 = 0;
-    //int car2 = 0;
+    
     int flag = 0;
 
     while((c = getchar())!=EOF){
@@ -79,5 +101,5 @@ void suma(suma_t * s){
         flag++;
     }
     close(id);
-    //s->valorSuma = car1+car2;
+    // s->valorSuma = car1+car2;
 }
