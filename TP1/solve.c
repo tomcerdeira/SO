@@ -47,9 +47,11 @@ int main(int argc, char *argv[])
     }
 
     int processes[MAX_PROCESSES];
+    int cant_sol_process[MAX_PROCESSES];
     // Logica de los hijos
     for (i = 0; i < MAX_PROCESSES; i++)
     {
+        cant_sol_process[i]=0;
         if ((processes[i] = fork()) == 0)
         {
             int j = 0;
@@ -88,18 +90,14 @@ int main(int argc, char *argv[])
                 perror("Execv error");
                 abort();
             }
+        }else if(processes[i] < 0){
+            perror("Fork");
         }
     }
 
     // Logica del padre para leer y escribir tareas.
     fd_set fd_slaves;
-    struct timeval tv;
-    tv.tv_sec = 100;
-    tv.tv_usec = 0;
-
     int max_fd = 0;
-
-
 
     while (cantFiles > 0)
     {
@@ -130,9 +128,17 @@ int main(int argc, char *argv[])
             {
                 if (FD_ISSET(fd_sols[i][0], &fd_slaves))
                 {
+                    cant_sol_process[i]++;
                     read(fd_sols[i][0],buf,sizeof(buf)); 
+                    //printf("Hijo %d se libero \n", i);
+
+                    if(cant_sol_process[i]>=2){
+                        write(fd_work[i][1],argv[argc-1-cantFiles],sizeof(argv[argc-1-cantFiles])); // CAPAZ PONER MAS LINDO LA POS 
+                        // Logica de mandar 1 tarea mas
+                    }
+                    // logica memcompartida
                     write(STDOUT_FILENO,buf,sizeof(buf));       
-                    printf("Hijo %d se libero \n", i);
+               
                 }
             }
             printf("----------------------------------------------- \n");
@@ -143,5 +149,10 @@ int main(int argc, char *argv[])
         }
         cantFiles--;
     }
+
+    for (i=0;i<MAX_PROCESSES ; i++){
+        waitpid(processes[i],NULL,0); 
+    }
+
     return 0;
 }
