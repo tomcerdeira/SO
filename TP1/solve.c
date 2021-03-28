@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
             dup2(fd_work[i][0], STDIN_FILENO); // Redireccionamos la entrada del hijo al nuevo pipe
             //dup2(fd_sols[i][1], STDOUT_FILENO); // Redireccionamos la salida del hijo al padre
 
+            printf("\n");
             char *const params[] = {"slave", argv[i + 1], NULL};
             int res_execv = execv(params[0], params);
 
