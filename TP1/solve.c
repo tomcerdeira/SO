@@ -58,17 +58,17 @@ int main(int argc, char *argv[])
             close(fd_work[i][1]);              // --> El hijo no escribe aca
             close(fd_sols[i][0]);              // --> El hijo no lee aca
             dup2(fd_work[i][0], STDIN_FILENO); // Redireccionamos la entrada del hijo al nuevo pipe
-                                               //       dup2(fd_sols[i][1], STDOUT_FILENO); // Redireccionamos la salida del hijo al padre
+            //dup2(fd_sols[i][1], STDOUT_FILENO); // Redireccionamos la salida del hijo al padre
 
-            char **params = {NULL};
-            int res_execv = execv("slave ", params);
+            char *const params[] = {"slave", argv[i + 1], NULL};
+            int res_execv = execv(params[0], params);
 
             //int res_execv = execv("./slave ", &argv[i + 1]); //// --> Completar con args
             if (res_execv < 0)
             {
                 printf(argv[i + 1]);
                 printf("\n");
-                perror("Execv error con valor errno");
+                perror("Execv error");
                 abort();
             }
         }
