@@ -1,5 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
@@ -9,97 +7,100 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/select.h>
 
-#define CANT_PROCESSES 5
+#define MAX_PROCESSES 5
 
-
-typedef struct 
+int main(int argc, char *argv[])
 {
-    char * nameFile;
-    int valorSuma;
-}suma_t;
-void suma(suma_t * s);
-// Proceso padre
-// Crear hijos y sus respectivas tuberias
-int main(int argc, char * argv[]){
+    int cantFiles = argc - 1;
+    int i = 1;
+    // for (; i <= cantFiles; i++)
+    // { //chequear
+    //     if (!strcmp(argv[i], ".cnf"))
+    //     {
+    //         printf("Enviar solamente archivos .cnf \n "); // o perror?
+    //         abort();
+    //     }
+    // }
 
+    int fd_work[MAX_PROCESSES][2]; // par Master- slave --> Master escribe y slave lee
+    int fd_sols[MAX_PROCESSES][2]; // Master lee lo que los hijos escriben
 
-    int i=0;
-
-    suma_t fileArray[argc-1];
-
-    for (i=0;i<argc-1;i++){
-        fileArray[i].nameFile= argv[i+1];
-    }
-
-    int fd[CANT_PROCESSES][2];
-
-
-
-    for(i=0;i<CANT_PROCESSES;i++){ //VER SI SE PUEDE MEJORAR
-        if(pipe(fd[i]) != 0){
+    // Logica creacion de los pipes
+    for (i = 0; i < MAX_PROCESSES; i++) //VER SI SE PUEDE MEJORAR, Habria que cerrar los anteriores si falla?
+    {                                   // Habria que cerrar los fd que el padre no usa? Sea el de escritura o el de lectura?
+        if (pipe(fd_work[i]) != 0 && pipe(fd_sols[i]) != 0)
+        {
             perror("Pipe error: ");
             abort();
         }
     }
 
+    int processes[MAX_PROCESSES];
+    // Logica de los hijos
+    for (i = 0; i < MAX_PROCESSES; i++)
+    {
+        if ((processes[i] = fork()) == 0)
+        {
+            int j = 0;
+            for (; j < MAX_PROCESSES; j++)
+            { // Cerramos los pipes ajenos a este hijo.
+                if (j != i)
+                {
+                    close(fd_work[j][0]);
+                    close(fd_work[j][1]);
+                    close(fd_sols[j][0]);
+                    close(fd_sols[j][1]);
+                }
+            }
 
- 
-    int processes[CANT_PROCESSES];
+            close(fd_work[i][1]);              // --> El hijo no escribe aca
+            close(fd_sols[i][0]);              // --> El hijo no lee aca
+            dup2(fd_work[i][0], STDIN_FILENO); // Redireccionamos la entrada del hijo al nuevo pipe
+                                               //       dup2(fd_sols[i][1], STDOUT_FILENO); // Redireccionamos la salida del hijo al padre
 
-    for(i=0;i<CANT_PROCESSES;i++){ 
-        if( ( processes[i]=fork() ) == 0){
-            // codigo para el hijo i              
-            suma(&fileArray[i]);
-            sleep(i*i);
-            write(fd[i][1],&(fileArray[i].valorSuma),sizeof(fileArray[i].valorSuma));
-            return 1;
-         
+            char **params = {NULL};
+            int res_execv = execv("slave ", params);
+
+            //int res_execv = execv("./slave ", &argv[i + 1]); //// --> Completar con args
+            if (res_execv < 0)
+            {
+                printf(argv[i + 1]);
+                printf("\n");
+                perror("Execv error con valor errno");
+                abort();
+            }
         }
     }
 
-    for(i=0;i<CANT_PROCESSES;i++){
-         read(fd[i][0],&fileArray[i].valorSuma,sizeof(fileArray[i].valorSuma));
-         printf("Valor suma %d : %d \n",i,fileArray[i].valorSuma);
-    }
-   
-    // codigo padre
-    // Padre finaliza a los hijos
-    for(i=0;i<CANT_PROCESSES;i++){
-        printf("Esperando proceso %d a que termine..... \n",processes[i]);
-        waitpid(processes[i],NULL,0);
-    }
+    // Logica del padre para leer y escribir tareas.
+    // fd_set fd_slaves;
+    // for (i = 0; i < MAX_PROCESSES; i++)
+    // {
+    //     FD_SET(fd_sols[i][0], &fd_slaves); // Llenamos el set de fd en los que el padre va a recibir las resps.
+    // }
+
+    // while (cantFiles > 0)
+    // {
+    //     int res_select = select(1, &fd_slaves, NULL, NULL, NULL); // timeval????
+    //     if (res_select < 0)
+    //     {
+    //         perror("Select error: ");
+    //         abort();
+    //     }else if(res_select){
+    //         for (i = 0; i < MAX_PROCESSES; i++)
+    //         {
+    //             if (FD_ISSET(fd_sols[i][0], &fd_slaves))
+    //             {
+
+    //                 /* code */
+    //             }
+
+    //         }
+
+    //     }
+
+    // }
     return 0;
-}
-
-
-void suma(suma_t * s){
-    int id;
-    
-    id = open(s->nameFile,O_RDONLY);
-    if(id<0){
-        perror("ERROR EN OPEN: ");
-        abort();
-    }
-
-    s->valorSuma = 0;
-
-    dup2(id,STDIN_FILENO);
-    int c=0;
-    
-    int flag = 0;
-
-    while((c = getchar())!=EOF){
-     if(c != '+'){
-        if (flag == 0){
-             s->valorSuma += (c - 48);
-        }
-        if (flag == 2){
-            s->valorSuma += (c - 48);
-        }
-     }
-        flag++;
-    }
-    close(id);
-    // s->valorSuma = car1+car2;
 }
