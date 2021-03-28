@@ -8,12 +8,16 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/select.h>
+#include <limits.h>
 
 #define MAX_PROCESSES 5
 
 int main(int argc, char *argv[])
 {
-    int cantFiles = argc - 1;
+    // Disable buffering on stdout
+    setvbuf(stdout, NULL, _IONBF, 0);
+  //  setvbuf(stdin, 0, _IONBF, 0);
+    int cantFiles = argc - 1; // ver como hacer cuando recibamos una carpeta como parametro
     int i = 1;
     // for (; i <= cantFiles; i++)
     // { //chequear
@@ -95,10 +99,14 @@ int main(int argc, char *argv[])
 
     int max_fd = 0;
 
+
+
     while (cantFiles > 0)
     {
         FD_ZERO(&fd_slaves);
-
+        
+        char buf[265] = {'\0'};
+     
         for (i = 0; i < MAX_PROCESSES; i++)
         {
             FD_SET(fd_sols[i][0], &fd_slaves); // Llenamos el set de fd en los que el padre va a recibir las resps.
@@ -115,10 +123,15 @@ int main(int argc, char *argv[])
         }
         else if (res_select)
         {
+            printf("Leo %d bytes \n",res_select);
+            int j=0;
+
             for (i = 0; i < MAX_PROCESSES; i++)
             {
                 if (FD_ISSET(fd_sols[i][0], &fd_slaves))
                 {
+                    read(fd_sols[i][0],buf,sizeof(buf)); 
+                    write(STDOUT_FILENO,buf,sizeof(buf));       
                     printf("Hijo %d se libero \n", i);
                 }
             }
@@ -129,7 +142,6 @@ int main(int argc, char *argv[])
             printf("Select vale 0 \n");
         }
         cantFiles--;
-        // sleep(2);
     }
     return 0;
 }

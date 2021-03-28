@@ -13,12 +13,18 @@ int randInt(int a, int b);
 
 int main(int argc, char *argv[])
 {
-    srand(time(NULL));
+    //  setvbuf(stdout, NULL, _IONBF, 0);
+    // setvbuf(stdin, 0, _IONBF, 0);
+   // srand(time(NULL));
     int rand1 = randInt(1, 10);
-    int rand2 = randInt(1, 10);
-    sleep(rand1 * rand2 + 3);
-    printf("Hijo %d espera %d\n", getpid(), rand1);
-    printf("Hijo %d recibe archivo %s\n", getpid(), argv[1]);
+  
+    sleep((getpid() % 3)+2);
+    if (1)
+    {
+        // printf("Hijo %d espera %d\n", getpid(), rand1);
+        printf("Hijo %d recibe archivo %s\n", getpid(), argv[1]);
+    }
+    
     return 1;
 }
 
