@@ -30,7 +30,12 @@ int main(int argc, char *argv[])
     // Logica creacion de los pipes
     for (i = 0; i < MAX_PROCESSES; i++) //VER SI SE PUEDE MEJORAR, Habria que cerrar los anteriores si falla?
     {                                   // Habria que cerrar los fd que el padre no usa? Sea el de escritura o el de lectura?
-        if (pipe(fd_work[i]) != 0 && pipe(fd_sols[i]) != 0)
+        if (pipe(fd_work[i]) != 0)
+        {
+            perror("Pipe error: ");
+            abort();
+        }
+        if (pipe(fd_sols[i]) != 0)
         {
             perror("Pipe error: ");
             abort();
@@ -55,20 +60,27 @@ int main(int argc, char *argv[])
                 }
             }
 
-            close(fd_work[i][1]);              // --> El hijo no escribe aca
-            close(fd_sols[i][0]);              // --> El hijo no lee aca
-            dup2(fd_work[i][0], STDIN_FILENO); // Redireccionamos la entrada del hijo al nuevo pipe
-            //dup2(fd_sols[i][1], STDOUT_FILENO); // Redireccionamos la salida del hijo al padre
+            close(fd_work[i][1]); // --> El hijo no escribe aca
+            close(fd_sols[i][0]); // --> El hijo no lee aca
 
-            printf("\n");
+            if (dup2(fd_work[i][0], STDIN_FILENO) < 0)
+            { // Redireccionamos la entrada del hijo al nuevo pipe
+                perror("Dup 1");
+                abort();
+            }
+            if (dup2(fd_sols[i][1], STDOUT_FILENO) < 0)
+            { // Redireccionamos la salida del hijo al padre
+                perror("Dup 2");
+                printf("Hijo pid %d valor i %d  \n ", getpid(), i);
+                abort();
+            }
+
             char *const params[] = {"slave", argv[i + 1], NULL};
             int res_execv = execv(params[0], params);
 
             //int res_execv = execv("./slave ", &argv[i + 1]); //// --> Completar con args
             if (res_execv < 0)
             {
-                printf(argv[i + 1]);
-                printf("\n");
                 perror("Execv error");
                 abort();
             }
@@ -76,32 +88,48 @@ int main(int argc, char *argv[])
     }
 
     // Logica del padre para leer y escribir tareas.
-    // fd_set fd_slaves;
-    // for (i = 0; i < MAX_PROCESSES; i++)
-    // {
-    //     FD_SET(fd_sols[i][0], &fd_slaves); // Llenamos el set de fd en los que el padre va a recibir las resps.
-    // }
+    fd_set fd_slaves;
+    struct timeval tv;
+    tv.tv_sec = 100;
+    tv.tv_usec = 0;
 
-    // while (cantFiles > 0)
-    // {
-    //     int res_select = select(1, &fd_slaves, NULL, NULL, NULL); // timeval????
-    //     if (res_select < 0)
-    //     {
-    //         perror("Select error: ");
-    //         abort();
-    //     }else if(res_select){
-    //         for (i = 0; i < MAX_PROCESSES; i++)
-    //         {
-    //             if (FD_ISSET(fd_sols[i][0], &fd_slaves))
-    //             {
+    int max_fd = 0;
 
-    //                 /* code */
-    //             }
+    while (cantFiles > 0)
+    {
+        FD_ZERO(&fd_slaves);
 
-    //         }
-
-    //     }
-
-    // }
+        for (i = 0; i < MAX_PROCESSES; i++)
+        {
+            FD_SET(fd_sols[i][0], &fd_slaves); // Llenamos el set de fd en los que el padre va a recibir las resps.
+            if (fd_sols[i][0] > max_fd)
+            {
+                max_fd = fd_sols[i][0] + 1;
+            }
+        }
+        int res_select = select(max_fd, &fd_slaves, NULL, NULL, NULL);
+        if (res_select < 0)
+        {
+            perror("Select error: ");
+            abort();
+        }
+        else if (res_select)
+        {
+            for (i = 0; i < MAX_PROCESSES; i++)
+            {
+                if (FD_ISSET(fd_sols[i][0], &fd_slaves))
+                {
+                    printf("Hijo %d se libero \n", i);
+                }
+            }
+            printf("----------------------------------------------- \n");
+        }
+        else
+        {
+            printf("Select vale 0 \n");
+        }
+        cantFiles--;
+        // sleep(2);
+    }
     return 0;
 }
