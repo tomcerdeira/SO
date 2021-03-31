@@ -9,16 +9,18 @@
 #include <errno.h>
 #include <sys/select.h>
 #include <limits.h>
+#include <string.h>
 
-#define MAX_PROCESSES 5
+#define MAX_PROCESSES 2
 
 int main(int argc, char *argv[])
 {
     // Disable buffering on stdout
-    setvbuf(stdout, NULL, _IONBF, 0);
-  //  setvbuf(stdin, 0, _IONBF, 0);
+    // setvbuf(stdout, NULL, _IONBF, 0);
+    //  setvbuf(stdin, 0, _IONBF, 0);
     int cantFiles = argc - 1; // ver como hacer cuando recibamos una carpeta como parametro
     int i = 1;
+
     // for (; i <= cantFiles; i++)
     // { //chequear
     //     if (!strcmp(argv[i], ".cnf"))
@@ -51,7 +53,7 @@ int main(int argc, char *argv[])
     // Logica de los hijos
     for (i = 0; i < MAX_PROCESSES; i++)
     {
-        cant_sol_process[i]=0;
+        cant_sol_process[i] = 0;
         if ((processes[i] = fork()) == 0)
         {
             int j = 0;
@@ -81,20 +83,39 @@ int main(int argc, char *argv[])
                 abort();
             }
 
-            char *const params[] = {"slave", argv[i + 1], NULL};
-            int res_execv = execv(params[0], params);
+            //  printf("DESPUES DEL DUP\n");
 
-            //int res_execv = execv("./slave ", &argv[i + 1]); //// --> Completar con args
+            //char *const params[] = {"slave", argv[i + 1], NULL};
+            char *const params[] = {"slave", NULL};
+            int res_execv = execv(params[0], params);
             if (res_execv < 0)
             {
                 perror("Execv error");
                 abort();
             }
-        }else if(processes[i] < 0){
+        }
+        else if (processes[i] < 0)
+        {
             perror("Fork");
         }
     }
 
+    // Mandamos archivos a los hijos
+    for (i = 0; i < MAX_PROCESSES; i++)
+    {
+        //printf(argv[i + 1]);
+        // int j = 0;
+        // char buff[256] = {'\0'};
+        // // printf("%d", strlen(argv[i + 1]));
+        // while (argv[i + 1][j] != '\0')
+        // {
+        //     buff[j] = argv[i + 1][j];
+        //     j += 1;
+        // }
+        write(fd_work[i][1], argv[i + 1], strlen(argv[i + 1]) + 1);
+    }
+
+    sleep(1);
     // Logica del padre para leer y escribir tareas.
     fd_set fd_slaves;
     int max_fd = 0;
@@ -102,9 +123,9 @@ int main(int argc, char *argv[])
     while (cantFiles > 0)
     {
         FD_ZERO(&fd_slaves);
-        
+
         char buf[265] = {'\0'};
-     
+
         for (i = 0; i < MAX_PROCESSES; i++)
         {
             FD_SET(fd_sols[i][0], &fd_slaves); // Llenamos el set de fd en los que el padre va a recibir las resps.
@@ -113,7 +134,10 @@ int main(int argc, char *argv[])
                 max_fd = fd_sols[i][0] + 1;
             }
         }
+        FD_SET(8, &fd_slaves);
+        printf("Llego al select \n");
         int res_select = select(max_fd, &fd_slaves, NULL, NULL, NULL);
+        printf("Salgo del select \n");
         if (res_select < 0)
         {
             perror("Select error: ");
@@ -121,24 +145,29 @@ int main(int argc, char *argv[])
         }
         else if (res_select)
         {
-            printf("Leo %d bytes \n",res_select);
-            int j=0;
+            printf("Leo %d bytes \n", res_select);
 
             for (i = 0; i < MAX_PROCESSES; i++)
             {
                 if (FD_ISSET(fd_sols[i][0], &fd_slaves))
                 {
                     cant_sol_process[i]++;
-                    read(fd_sols[i][0],buf,sizeof(buf)); 
-                    //printf("Hijo %d se libero \n", i);
+                    int ret = 0;
+                    ret = read(fd_sols[i][0], buf, sizeof(buf));
+                    if (ret < 0)
+                    {
+                        printf("READ <0 \n \n");
+                        waitpid(processes[i], NULL, 0);
+                    }
+                    // printf(buf);
 
-                    if(cant_sol_process[i]>=2){
-                        write(fd_work[i][1],argv[argc-1-cantFiles],sizeof(argv[argc-1-cantFiles])); // CAPAZ PONER MAS LINDO LA POS 
+                    if (cant_sol_process[i] >= 2)
+                    {
+                        write(fd_work[i][1], argv[argc - 1 - cantFiles], sizeof(argv[argc - 1 - cantFiles])); // CAPAZ PONER MAS LINDO LA POS
                         // Logica de mandar 1 tarea mas
                     }
                     // logica memcompartida
-                    write(STDOUT_FILENO,buf,sizeof(buf));       
-               
+                    write(STDOUT_FILENO, buf, sizeof(buf));
                 }
             }
             printf("----------------------------------------------- \n");
@@ -150,8 +179,9 @@ int main(int argc, char *argv[])
         cantFiles--;
     }
 
-    for (i=0;i<MAX_PROCESSES ; i++){
-        waitpid(processes[i],NULL,0); 
+    for (i = 0; i < MAX_PROCESSES; i++)
+    {
+        waitpid(processes[i], NULL, 0);
     }
 
     return 0;

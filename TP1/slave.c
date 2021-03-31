@@ -9,92 +9,51 @@
 #include <errno.h>
 #include <sys/select.h>
 #include <limits.h>
+#include <string.h>
+
+#define MINISAT "minisat "
+#define GREP_AND_FLAGS " | grep -o -e 'Number of.*[0-9]\\+' -e 'CPU time.*' -e '.*SATISFIABLE' | grep -o -e '[0-9|.]*' -o -e '.*SATISFIABLE' | xargs | sed 's/ /\\t/g'"
+#define BUFFER_SIZE 256
 
 int main(int argc, char *argv[])
 {
-    int fd[2];
-    if (pipe(fd) != 0)
+    size_t res;
+    char buffer[BUFFER_SIZE] = {'\0'};
+    // printf("ESTOY EN EL HIJO\n");
+    // while ((res = read(STDIN_FILENO, buffer, sizeof(buffer))) != EOF) // NO SERIA EOF??
+    // {
+    res = read(STDIN_FILENO, buffer, sizeof(buffer));
+    if (res < 0)
     {
-        perror("Pipe error");
+        perror("Slave READ error");
         abort();
     }
 
-   //int res = 0;
- 
-    //char *const params[] = {"minisat", argv[1], "|", "grep","-o -e \"Number of.*[0-9]\\+\"-e CPU time.* -e .*SATISFIABLE", NULL};
-    char *const params[] = {"minisat ../CNF/hole8.cnf > grep -o -e \"Number of.*[0-9]\\+\"-e CPU time.* -e .*SATISFIABLE", NULL};
-    FILE * fp = popen(*params, "w");
+    char cmd[BUFFER_SIZE];
+    char par[BUFFER_SIZE] = {"\0"};
+    strcat(par, MINISAT);
+    //Sacamos el \n
+    buffer[res - 1] = '\0';
 
-    pclose(fp);
+    strcat(par, buffer);
+    strcat(par, GREP_AND_FLAGS);
 
-    // if ((res = fork()) == 0) // el hijo que ejecuta minisat
-    // {
-    //     close(fd[0]);
-    //     dup2(fd[1],STDOUT_FILENO);
-    //     char *const params[] = {"minisat",argv[1], NULL};
-    //     int res_execv = execvp(params[0], params);
-    //     if (res_execv < 0)
-    //     {
-    //         perror("Execv error");
-    //         abort();
-    //     }
+    char *const params[] = {par, NULL};
 
-    // }else if(res<0){
-        
-    //     perror("Fork error");
-    //     abort();
+    int len;
+    len = sprintf(cmd, "%d\t%s\t", getpid(), buffer);
 
-    // }else{ // el padre
-    //     int res2;
-    //     if ((res2 = fork()) == 0) // el hijo que ejecuta minisat
-    //     {
-    //         dup2(fd[0],STDIN_FILENO);
-    //         popen()
-    //         char *const params[] = {"grep","-o","-e","Number of.*[0-9]\\+","-e","CPU time.*" ,"-e", ".*SATISFIABLE",argv[1], NULL};
-    //         int res_execv = execvp(params[0], params);
-    //         if (res_execv < 0)
-    //         {
-    //             perror("Execv error");
-    //             abort();
-    //         }
+    FILE *stream = popen(*params, "r");
+    fgets(&cmd[len], BUFFER_SIZE, stream);
+    pclose(stream);
+    printf("%s\n", cmd); //this write is atomic
+    int i = 0;
+    while (buffer[i] != '\0')
+    {
+        buffer[i] = '\0';
+    }
 
-    //     }else if(res2<0){
-            
-    //         perror("Fork error");
-    //         abort();
-    //     }
-    // }
-    
+    close(STDOUT_FILENO);
+    //}
     return 0;
-    
 }
-
-/////////////////////////////////////////////////////////////////
-
-
-
-// int randInt(int a, int b);
-
-// int main(int argc, char *argv[])
-// {
-//     //  setvbuf(stdout, NULL, _IONBF, 0);
-//     // setvbuf(stdin, 0, _IONBF, 0);
-//    // srand(time(NULL));
-//     int rand1 = randInt(1, 10);
-  
-//     sleep((getpid() % 3)+2);
-//     if (1)
-//     {
-//         // printf("Hijo %d espera %d\n", getpid(), rand1);
-//         printf("Hijo %d recibe archivo %s\n", getpid(), argv[1]);
-//     }
-    
-//     return 1;
-// }
-
-// int randInt(int a, int b)
-// {
-//     int randValue;
-//     randValue = (rand() % (b - a + 1)) + a;
-//     return randValue;
-// }
