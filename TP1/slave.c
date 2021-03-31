@@ -10,6 +10,7 @@
 #include <sys/select.h>
 #include <limits.h>
 #include <string.h>
+#include <strings.h>
 
 #define MINISAT "minisat "
 #define GREP_AND_FLAGS " | grep -o -e 'Number of.*[0-9]\\+' -e 'CPU time.*' -e '.*SATISFIABLE' | grep -o -e '[0-9|.]*' -o -e '.*SATISFIABLE' | xargs | sed 's/ /\\t/g'"
@@ -18,42 +19,50 @@
 int main(int argc, char *argv[])
 {
     size_t res;
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stdin, 0, _IONBF, 0);
     char buffer[BUFFER_SIZE] = {'\0'};
-    // printf("ESTOY EN EL HIJO\n");
-    // while ((res = read(STDIN_FILENO, buffer, sizeof(buffer))) != EOF) // NO SERIA EOF??
-    // {
-    res = read(STDIN_FILENO, buffer, sizeof(buffer));
-    if (res < 0)
+    //printf("EL HIJO \n");
+
+    while ((res = read(STDIN_FILENO, buffer, sizeof(buffer))) != EOF)
     {
-        perror("Slave READ error");
-        abort();
+
+        printf(buffer);
+        printf("\n");
+        //res = read(STDIN_FILENO, buffer, sizeof(buffer));
+        if (res < 0)
+        {
+            perror("Slave READ error");
+            abort();
+        }
+
+        char cmd[BUFFER_SIZE];
+        char par[BUFFER_SIZE] = {"\0"};
+        strcat(par, MINISAT);
+        //Sacamos el \n
+        buffer[res - 1] = '\0';
+
+        strcat(par, buffer);
+        strcat(par, GREP_AND_FLAGS);
+
+        char *const params[] = {par, NULL};
+
+        int len;
+        len = sprintf(cmd, "%d\t%s\t", getpid(), buffer); //check error sprint?
+
+        FILE *stream = popen(*params, "r");
+        fgets(&cmd[len], BUFFER_SIZE, stream);
+        pclose(stream);
+        printf("%s\n", cmd); //this write is atomic
+
+        int i = 0;
+        while (i < BUFFER_SIZE) //CAMBIAR!!!!!!!!
+        {
+            cmd[i] = '\0';
+            par[i] = '\0';
+            buffer[i++] = '\0';
+        }
     }
 
-    char cmd[BUFFER_SIZE];
-    char par[BUFFER_SIZE] = {"\0"};
-    strcat(par, MINISAT);
-    //Sacamos el \n
-    buffer[res - 1] = '\0';
-
-    strcat(par, buffer);
-    strcat(par, GREP_AND_FLAGS);
-
-    char *const params[] = {par, NULL};
-
-    int len;
-    len = sprintf(cmd, "%d\t%s\t", getpid(), buffer);
-
-    FILE *stream = popen(*params, "r");
-    fgets(&cmd[len], BUFFER_SIZE, stream);
-    pclose(stream);
-    printf("%s\n", cmd); //this write is atomic
-    int i = 0;
-    while (buffer[i] != '\0')
-    {
-        buffer[i] = '\0';
-    }
-
-    close(STDOUT_FILENO);
-    //}
     return 0;
 }
