@@ -76,6 +76,12 @@ int main(int argc, char *argv[])
             }
             i++;
         }
+
+        int h = 0;
+        while (h < BUFFER_SIZE) //CAMBIAR!!!!!!!!
+        {
+            buffer[h++] = '\0';
+        }
     }
 
     return 0;

@@ -10,24 +10,32 @@
 #include <sys/select.h>
 #include <limits.h>
 #include <string.h>
+#include <poll.h>
+#include <stdbool.h>
 
-#define MAX_PROCESSES 4
+#define MAX_PROCESSES 2
 #define INITIAL_CANT_FILES 1
 #define BUFFER_SIZE 256
 
 int fd_work[MAX_PROCESSES][2]; // par Master- slave --> Master escribe y slave lee
 int fd_sols[MAX_PROCESSES][2]; // Master lee lo que los hijos escriben
 
+int offset_args =1;
+int cantFilesToSend = 0;
+int cantFilesResolved = 0;
+
 // void check_format(int cantFiles, char files[], char *format);
 void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1);
-void  concatNFiles(int cantFiles,char ** files, char concat[]);
-int main(int argc, char *argv[])
+void concatNFiles(int cantFiles,char ** files, char concat[]);
+bool is_pipe_closed(int fd);
+
+    int main(int argc, char *argv[])
 {
     // Disable buffering on stdout
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stdin, 0, _IONBF, 0);
 
-    int cantFiles = argc - 1;
+    int cantFilesToSend = argc - 1;
     int i = 1;
 
     // check_format(cantFiles, argv + 1, ".cnf");
@@ -101,8 +109,7 @@ int main(int argc, char *argv[])
     }
 
     char files_concat[256] = {'\0'};
-    int offset_args = 1;
-    // Mandamos archivos a los hijos
+   // Mandamos archivos a los hijos
     for (i = 0; i < MAX_PROCESSES; i++)
     {
 
@@ -114,6 +121,7 @@ int main(int argc, char *argv[])
         while(files_concat[j]!= '\0'){
             files_concat[j++]='\0';
         }
+        cantFilesToSend -= INITIAL_CANT_FILES;
     }
 
    
@@ -121,13 +129,14 @@ int main(int argc, char *argv[])
     fd_set fd_slaves;
     int max_fd = 0;
 
-    while (cantFiles > 0)
+    while ((argc - 1) >= cantFilesResolved)
     {
         char buf[265] = {'\0'};
 
         prepare_fd_set(&max_fd, &fd_slaves);
-
+        printf("Llego al select \n");
         int res_select = select(max_fd, &fd_slaves, NULL, NULL, NULL);
+        printf("Salgo del select \n");
 
         if (res_select < 0)
         {
@@ -142,21 +151,37 @@ int main(int argc, char *argv[])
                 {
                     cant_sol_process[i]++;
                     read(fd_sols[i][0], buf, sizeof(buf));
+                    // Mandarla al vista
+                    cantFilesResolved++;
                     printf(buf);
                     printf("\n");
+                    // Limpiamos buffer
                     int y = 0;
                     while (buf[y] != '\0')
                     {
                         buf[y++] = '\0';
                     }
-                      cantFiles--;
+                
 
-                    // if (cant_sol_process[i] >= 1 && cantFiles > 0)
-                    // {
-                    // Mandamos otra tarea
-                    //
-                  //  write(fd_work[i][1], argv[argc - cantFiles+1], strlen(argv[argc - cantFiles+1]));
-                    // }
+                    if (cant_sol_process[i] >= INITIAL_CANT_FILES && cantFilesToSend > 0)
+                    {
+                        char buffer_aux[BUFFER_SIZE] = {'\0'};
+                       
+                        strcpy(buffer_aux,argv[offset_args++]);
+                        //Mandamos otra tarea   
+                        strcat(buffer_aux, "\n");
+                        //printf("%d offset y su buffer auz es  %s\n",offset_args,buffer_aux);
+                        write(fd_work[i][1], buffer_aux, strlen(buffer_aux));
+                        cantFilesToSend--;
+                        int r = 0;
+                        while(buffer_aux[r]!= '\0'){
+                            buffer_aux[r++]='\0';
+                        }
+                     }else if(cantFilesToSend <= 0){
+                         close(fd_work[i][1]);
+                       //  close(fd_sols[i][0]);
+                     }
+                  
                   
                     // logica memcompartida
                 }
@@ -189,15 +214,32 @@ void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1)
     int i = 0;
     for (; i < MAX_PROCESSES; i++)
     {
-        FD_SET(fd_sols[i][0], &fd_slaves); // Llenamos el set de fd en los que el padre va a recibir las resps.
-        if (fd_sols[i][0] > max_fd)
+        if (!is_pipe_closed(fd_work[i][1]))
         {
-            max_fd = fd_sols[i][0] + 1;
+            FD_SET(fd_sols[i][0], &fd_slaves); // Llenamos el set de fd en los que el padre va a recibir las resps.
+            if (fd_sols[i][0] > max_fd)
+            {
+                max_fd = fd_sols[i][0] + 1;
+            }
         }
     }
 
     *max_fd1 = max_fd;
     *fd_slaves1 = fd_slaves;
+}
+
+//https://stackoverflow.com/questions/36663845/check-if-unix-pipe-closed-without-writing-anything
+bool is_pipe_closed(int fd) {
+    struct pollfd pfd = {
+        .fd = fd,
+        .events = POLLOUT,
+    };
+
+    if (poll(&pfd, 1, 1) < 0) {
+        return false;
+    }
+
+    return pfd.revents & POLLERR;
 }
 
 // // Validacion del tipo de archivo
