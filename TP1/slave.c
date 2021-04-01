@@ -27,6 +27,8 @@ int main(int argc, char *argv[])
     while ((res = read(STDIN_FILENO, buffer, sizeof(buffer))) != 0) //EOF del read
     {
         char buffer_aux[BUFFER_SIZE] = {'\0'};
+        // printf("Hijo %d recibe %s: ",getpid(),buffer);
+        // printf("%d ------------ \n",getpid());
         int flag = 1;
         int t = 0;
         int i = 0;

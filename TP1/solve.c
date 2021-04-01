@@ -11,14 +11,16 @@
 #include <limits.h>
 #include <string.h>
 
-#define MAX_PROCESSES 1
+#define MAX_PROCESSES 4
+#define INITIAL_CANT_FILES 1
+#define BUFFER_SIZE 256
 
 int fd_work[MAX_PROCESSES][2]; // par Master- slave --> Master escribe y slave lee
 int fd_sols[MAX_PROCESSES][2]; // Master lee lo que los hijos escriben
 
 // void check_format(int cantFiles, char files[], char *format);
 void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1);
-
+void  concatNFiles(int cantFiles,char ** files, char concat[]);
 int main(int argc, char *argv[])
 {
     // Disable buffering on stdout
@@ -99,18 +101,22 @@ int main(int argc, char *argv[])
     }
 
     char files_concat[256] = {'\0'};
+    int offset_args = 1;
     // Mandamos archivos a los hijos
     for (i = 0; i < MAX_PROCESSES; i++)
     {
-        strcpy(files_concat, argv[i + 1]);
-        strcat(files_concat, "\n");
-        strcat(files_concat, argv[i + 2]);
-        strcat(files_concat, "\n");
-        printf("Padre leyo: %s \n", files_concat);
+
+        // Funcion de mandar muchos archivos
+        concatNFiles(INITIAL_CANT_FILES,(argv + offset_args), files_concat);
+        offset_args += INITIAL_CANT_FILES;
         write(fd_work[i][1], files_concat, strlen(files_concat) + 1);
+        int j =0;
+        while(files_concat[j]!= '\0'){
+            files_concat[j++]='\0';
+        }
     }
 
-    sleep(1);
+   
     // Logica del padre para leer y escribir tareas.
     fd_set fd_slaves;
     int max_fd = 0;
@@ -130,10 +136,6 @@ int main(int argc, char *argv[])
         }
         else if (res_select)
         {
-            // printf("Leo %d bytes \n", res_select);
-            // printf(argv[argc - cantFiles]);
-            // printf("\n");
-
             for (i = 0; i < MAX_PROCESSES; i++)
             {
                 if (FD_ISSET(fd_sols[i][0], &fd_slaves))
@@ -142,13 +144,20 @@ int main(int argc, char *argv[])
                     read(fd_sols[i][0], buf, sizeof(buf));
                     printf(buf);
                     printf("\n");
+                    int y = 0;
+                    while (buf[y] != '\0')
+                    {
+                        buf[y++] = '\0';
+                    }
+                      cantFiles--;
 
                     // if (cant_sol_process[i] >= 1 && cantFiles > 0)
                     // {
                     // Mandamos otra tarea
-                    write(fd_work[i][1], argv[argc - cantFiles], strlen(argv[argc - cantFiles]));
+                    //
+                  //  write(fd_work[i][1], argv[argc - cantFiles+1], strlen(argv[argc - cantFiles+1]));
                     // }
-                    cantFiles--;
+                  
                     // logica memcompartida
                 }
             }
@@ -205,15 +214,16 @@ void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1)
 //     }
 // }
 
-// {
-//     printf("%s\n", argv[i + 1]);
-//     printf("%s\n", argv[i + 2]);
-//     char buf[20] = {'\0'};
-//     strcpy(buf, argv[i + 1]);
-//     strcat(buf, "\n");
-//     write(fd_work[i][1], buf, strlen(buf));
-//     // write(fd_work[i][1], "\n", strlen("\n" + 1));
-//     //sleep(1);
-//     write(fd_work[i][1], argv[i + 2], strlen(argv[i + 2]) + 1);
-//     write(fd_work[i][1], "\n", strlen("\n" + 1));
-//}
+void   concatNFiles(int cantFiles,char ** files, char concat[]){
+    
+    strcpy(concat, files[0]);
+    strcat(concat, "\n");
+    int i = 1;
+    for(;i<cantFiles;i++){
+        strcat(concat,files[i]);
+        strcat(concat, "\n");
+    }
+    printf(concat);
+    printf("\n");
+
+}
