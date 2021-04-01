@@ -13,8 +13,8 @@
 #include <poll.h>
 #include <stdbool.h>
 
-#define MAX_PROCESSES 2
-#define INITIAL_CANT_FILES 1
+#define MAX_PROCESSES 5
+#define INITIAL_CANT_FILES 2
 #define BUFFER_SIZE 256
 
 int fd_work[MAX_PROCESSES][2]; // par Master- slave --> Master escribe y slave lee
@@ -129,14 +129,15 @@ bool is_pipe_closed(int fd);
     fd_set fd_slaves;
     int max_fd = 0;
 
-    while ((argc - 1) >= cantFilesResolved)
+    while ((argc - 1) > cantFilesResolved)
     {
+        //printf("argc-1 = %d , cantFilesResolved = %d", (argc - 1), cantFilesResolved);
         char buf[265] = {'\0'};
 
         prepare_fd_set(&max_fd, &fd_slaves);
-        printf("Llego al select \n");
+        //printf("Llego al select \n");
         int res_select = select(max_fd, &fd_slaves, NULL, NULL, NULL);
-        printf("Salgo del select \n");
+        //printf("Salgo del select \n");
 
         if (res_select < 0)
         {
@@ -200,7 +201,7 @@ bool is_pipe_closed(int fd);
         close(fd_work[i][0]);
         waitpid(processes[i], NULL, 0);
     }
-
+    printf("RESOLVI: %d \n", cantFilesResolved);
     return 0;
 }
 
