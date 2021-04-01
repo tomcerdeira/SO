@@ -24,7 +24,7 @@ int offset_args =1;
 int cantFilesToSend = 0;
 int cantFilesResolved = 0;
 
-// void check_format(int cantFiles, char files[], char *format);
+void check_format(int cantFiles, char * files[], char *format);
 void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1);
 void concatNFiles(int cantFiles,char ** files, char concat[]);
 bool is_pipe_closed(int fd);
@@ -38,7 +38,7 @@ bool is_pipe_closed(int fd);
     int cantFilesToSend = argc - 1;
     int i = 1;
 
-    // check_format(cantFiles, argv + 1, ".cnf");
+    check_format(cantFilesToSend, (argv + 1), ".cnf");
 
     // Logica creacion de los pipes
     for (i = 0; i < MAX_PROCESSES; i++) //VER SI SE PUEDE MEJORAR, Habria que cerrar los anteriores si falla?
@@ -180,6 +180,9 @@ bool is_pipe_closed(int fd);
                         }
                      }else if(cantFilesToSend <= 0){
                          close(fd_work[i][1]);
+                         waitpid(processes[i],NULL,0);
+                         printf("Matando hijo %d\n\n",i);
+                        // sleep(2);
                        //  close(fd_sols[i][0]);
                      }
                   
@@ -195,12 +198,7 @@ bool is_pipe_closed(int fd);
         }
     }
 
-    //Aca cerrar los pipes
-    for (i = 0; i < MAX_PROCESSES; i++)
-    {
-        close(fd_work[i][0]);
-        waitpid(processes[i], NULL, 0);
-    }
+
     printf("RESOLVI: %d \n", cantFilesResolved);
     return 0;
 }
@@ -244,20 +242,21 @@ bool is_pipe_closed(int fd) {
 }
 
 // // Validacion del tipo de archivo
-// void check_format(int cantFiles, char files[], char *format)
-// {
-//     int i = 0;
-//     for (; i <= cantFiles; i++)
-//     {
-//         if (!strcmp(files[i], format))
-//         {
-//             printf("Enviar solamente archivos .cnf \n ");
-//             abort();
-//         }
-//     }
-// }
+void check_format(int cantFiles, char * files[], char *format)
+{
+    int i = 0;
+    for (; i < cantFiles; i++)
+    {
+        if (strstr(files[i], format)==NULL)
+        {
+    
+            printf("Enviar solamente archivos .cnf \n ");
+            abort();
+        }
+    }
+}
 
-void   concatNFiles(int cantFiles,char ** files, char concat[]){
+void concatNFiles(int cantFiles,char ** files, char concat[]){
     
     strcpy(concat, files[0]);
     strcat(concat, "\n");
