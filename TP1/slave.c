@@ -13,7 +13,7 @@
 #include <strings.h>
 
 #define MINISAT "minisat "
-#define GREP_AND_FLAGS " | grep -o -e 'Number of.*[0-9]\\+' -e 'CPU time.*' -e '.*SATISFIABLE' | grep -o -e '[0-9|.]*' -o -e '.*SATISFIABLE' | xargs | sed 's/ /\\t/g'"
+#define GREP_AND_FLAGS " | grep -o -e 'Number of.*[0-9]\\+' -e 'CPU time.*' -e '.*SATISFIABLE' | xargs | sed 's/ /\\t/g'"
 #define BUFFER_SIZE 256
 
 int main(int argc, char *argv[])
@@ -24,43 +24,61 @@ int main(int argc, char *argv[])
     char buffer[BUFFER_SIZE] = {'\0'};
     //printf("EL HIJO \n");
 
-    while ((res = read(STDIN_FILENO, buffer, sizeof(buffer))) != EOF)
+    while ((res = read(STDIN_FILENO, buffer, sizeof(buffer))) != 0) //EOF del read
     {
-
-        printf(buffer);
-        printf("\n");
-        //res = read(STDIN_FILENO, buffer, sizeof(buffer));
-        if (res < 0)
-        {
-            perror("Slave READ error");
-            abort();
-        }
-
-        char cmd[BUFFER_SIZE];
-        char par[BUFFER_SIZE] = {"\0"};
-        strcat(par, MINISAT);
-        //Sacamos el \n
-        buffer[res - 1] = '\0';
-
-        strcat(par, buffer);
-        strcat(par, GREP_AND_FLAGS);
-
-        char *const params[] = {par, NULL};
-
-        int len;
-        len = sprintf(cmd, "%d\t%s\t", getpid(), buffer); //check error sprint?
-
-        FILE *stream = popen(*params, "r");
-        fgets(&cmd[len], BUFFER_SIZE, stream);
-        pclose(stream);
-        printf("%s\n", cmd); //this write is atomic
-
+        // printf("Hijo 1\n");
+        // printf(buffer);
+        // printf("Hijo 1\n");
+        char buffer_aux[BUFFER_SIZE] = {'\0'};
+        int flag = 1;
+        int t = 0;
         int i = 0;
-        while (i < BUFFER_SIZE) //CAMBIAR!!!!!!!!
+        while (flag)
         {
-            cmd[i] = '\0';
-            par[i] = '\0';
-            buffer[i++] = '\0';
+            if (buffer[i] != '\n' && buffer[i] != '\0')
+            {
+                buffer_aux[t++] = buffer[i];
+            }
+            else if (buffer[i] == '\n')
+            {
+                buffer_aux[t] = '\0';
+
+                // printf("Buffer aux: %s \n ", buffer_aux);
+
+                char cmd[BUFFER_SIZE];
+                char par[BUFFER_SIZE] = {"\0"};
+                strcpy(par, MINISAT);
+                //Sacamos el \n
+                // buffer[res - 1] = '\0';
+
+                strcat(par, buffer_aux);
+                strcat(par, GREP_AND_FLAGS);
+
+                // printf("Al grep : %s \n", par);
+                char *const params[] = {par, NULL};
+
+                int len;
+                len = sprintf(cmd, "%d\t%s\t", getpid(), buffer_aux); //check error sprint?
+
+                FILE *stream = popen(*params, "r");
+                fgets(&cmd[len], BUFFER_SIZE, stream);
+                pclose(stream);
+                printf("%s\n", cmd); //this write is atomic
+
+                int h = 0;
+                while (h < BUFFER_SIZE) //CAMBIAR!!!!!!!!
+                {
+                    cmd[h] = '\0';
+                    par[h] = '\0';
+                    buffer_aux[h++] = '\0';
+                }
+                t = 0;
+            }
+            else if (buffer[i] == '\0')
+            {
+                flag = 0;
+            }
+            i++;
         }
     }
 

@@ -98,14 +98,16 @@ int main(int argc, char *argv[])
         }
     }
 
+    char files_concat[256] = {'\0'};
     // Mandamos archivos a los hijos
-    for (i = 0; i < MAX_PROCESSES; i++) //REVISAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    for (i = 0; i < MAX_PROCESSES; i++)
     {
-        printf("%s\n", argv[i + 1]);
-        printf("%s\n", argv[i + 2]);
-        write(fd_work[i][1], argv[i + 1], strlen(argv[i + 1]) + 1);
-        sleep(1);
-        write(fd_work[i][1], argv[i + 2], strlen(argv[i + 2]) + 1);
+        strcpy(files_concat, argv[i + 1]);
+        strcat(files_concat, "\n");
+        strcat(files_concat, argv[i + 2]);
+        strcat(files_concat, "\n");
+        printf("Padre leyo: %s \n", files_concat);
+        write(fd_work[i][1], files_concat, strlen(files_concat) + 1);
     }
 
     sleep(1);
@@ -144,7 +146,7 @@ int main(int argc, char *argv[])
                     // if (cant_sol_process[i] >= 1 && cantFiles > 0)
                     // {
                     // Mandamos otra tarea
-                    write(fd_work[i][1], argv[argc - cantFiles + 1], strlen(argv[argc - cantFiles + 1]));
+                    write(fd_work[i][1], argv[argc - cantFiles], strlen(argv[argc - cantFiles]));
                     // }
                     cantFiles--;
                     // logica memcompartida
@@ -202,3 +204,16 @@ void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1)
 //         }
 //     }
 // }
+
+// {
+//     printf("%s\n", argv[i + 1]);
+//     printf("%s\n", argv[i + 2]);
+//     char buf[20] = {'\0'};
+//     strcpy(buf, argv[i + 1]);
+//     strcat(buf, "\n");
+//     write(fd_work[i][1], buf, strlen(buf));
+//     // write(fd_work[i][1], "\n", strlen("\n" + 1));
+//     //sleep(1);
+//     write(fd_work[i][1], argv[i + 2], strlen(argv[i + 2]) + 1);
+//     write(fd_work[i][1], "\n", strlen("\n" + 1));
+//}
