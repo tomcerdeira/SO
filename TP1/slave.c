@@ -26,9 +26,6 @@ int main(int argc, char *argv[])
 
     while ((res = read(STDIN_FILENO, buffer, sizeof(buffer))) != 0) //EOF del read
     {
-        // printf("Hijo 1\n");
-        // printf(buffer);
-        // printf("Hijo 1\n");
         char buffer_aux[BUFFER_SIZE] = {'\0'};
         int flag = 1;
         int t = 0;
@@ -41,15 +38,12 @@ int main(int argc, char *argv[])
             }
             else if (buffer[i] == '\n')
             {
-                buffer_aux[t] = '\0';
-
-                // printf("Buffer aux: %s \n ", buffer_aux);
+                buffer_aux[t + 1 ] = '\0';
 
                 char cmd[BUFFER_SIZE];
                 char par[BUFFER_SIZE] = {"\0"};
                 strcpy(par, MINISAT);
-                //Sacamos el \n
-                // buffer[res - 1] = '\0';
+
 
                 strcat(par, buffer_aux);
                 strcat(par, GREP_AND_FLAGS);
