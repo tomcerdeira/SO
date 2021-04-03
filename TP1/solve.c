@@ -20,16 +20,16 @@
 int fd_work[MAX_PROCESSES][2]; // par Master- slave --> Master escribe y slave lee
 int fd_sols[MAX_PROCESSES][2]; // Master lee lo que los hijos escriben
 
-int offset_args =1;
+int offset_args = 1;
 int cantFilesToSend = 0;
 int cantFilesResolved = 0;
 
-void check_format(int cantFiles, char * files[], char *format);
+void check_format(int cantFiles, char *files[], char *format);
 void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1);
-void concatNFiles(int cantFiles,char ** files, char concat[]);
+void concatNFiles(int cantFiles, char **files, char concat[]);
 bool is_pipe_closed(int fd);
 
-    int main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     // Disable buffering on stdout
     setvbuf(stdout, NULL, _IONBF, 0);
@@ -109,22 +109,22 @@ bool is_pipe_closed(int fd);
     }
 
     char files_concat[256] = {'\0'};
-   // Mandamos archivos a los hijos
+    // Mandamos archivos a los hijos
     for (i = 0; i < MAX_PROCESSES; i++)
     {
 
         // Funcion de mandar muchos archivos
-        concatNFiles(INITIAL_CANT_FILES,(argv + offset_args), files_concat);
+        concatNFiles(INITIAL_CANT_FILES, (argv + offset_args), files_concat);
         offset_args += INITIAL_CANT_FILES;
         write(fd_work[i][1], files_concat, strlen(files_concat) + 1);
-        int j =0;
-        while(files_concat[j]!= '\0'){
-            files_concat[j++]='\0';
+        int j = 0;
+        while (files_concat[j] != '\0')
+        {
+            files_concat[j++] = '\0';
         }
         cantFilesToSend -= INITIAL_CANT_FILES;
     }
 
-   
     // Logica del padre para leer y escribir tareas.
     fd_set fd_slaves;
     int max_fd = 0;
@@ -162,31 +162,33 @@ bool is_pipe_closed(int fd);
                     {
                         buf[y++] = '\0';
                     }
-                
 
                     if (cant_sol_process[i] >= INITIAL_CANT_FILES && cantFilesToSend > 0)
                     {
                         char buffer_aux[BUFFER_SIZE] = {'\0'};
-                       
-                        strcpy(buffer_aux,argv[offset_args++]);
-                        //Mandamos otra tarea   
+
+                        strcpy(buffer_aux, argv[offset_args++]);
+                        //Mandamos otra tarea
                         strcat(buffer_aux, "\n");
                         //printf("%d offset y su buffer auz es  %s\n",offset_args,buffer_aux);
                         write(fd_work[i][1], buffer_aux, strlen(buffer_aux));
                         cantFilesToSend--;
                         int r = 0;
-                        while(buffer_aux[r]!= '\0'){
-                            buffer_aux[r++]='\0';
+                        while (buffer_aux[r] != '\0')
+                        {
+                            buffer_aux[r++] = '\0';
                         }
-                     }else if(cantFilesToSend <= 0){
-                         close(fd_work[i][1]);
-                         waitpid(processes[i],NULL,0);
-                         printf("Matando hijo %d\n\n",i);
+                    }
+                    else if (cantFilesToSend <= 0)
+                    {
+                        close(fd_work[i][1]);
+                        int pid_hijo;
+                        pid_hijo = waitpid(processes[i], NULL, 0);
+                        printf("Matando hijo %d, con PID: %d\n", i, pid_hijo);
                         // sleep(2);
-                       //  close(fd_sols[i][0]);
-                     }
-                  
-                  
+                        //  close(fd_sols[i][0]);
+                    }
+
                     // logica memcompartida
                 }
             }
@@ -197,7 +199,6 @@ bool is_pipe_closed(int fd);
             printf("Select vale 0 \n");
         }
     }
-
 
     printf("RESOLVI: %d \n", cantFilesResolved);
     return 0;
@@ -228,13 +229,15 @@ void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1)
 }
 
 //https://stackoverflow.com/questions/36663845/check-if-unix-pipe-closed-without-writing-anything
-bool is_pipe_closed(int fd) {
+bool is_pipe_closed(int fd)
+{
     struct pollfd pfd = {
         .fd = fd,
         .events = POLLOUT,
     };
 
-    if (poll(&pfd, 1, 1) < 0) {
+    if (poll(&pfd, 1, 1) < 0)
+    {
         return false;
     }
 
@@ -242,30 +245,31 @@ bool is_pipe_closed(int fd) {
 }
 
 // // Validacion del tipo de archivo
-void check_format(int cantFiles, char * files[], char *format)
+void check_format(int cantFiles, char *files[], char *format)
 {
     int i = 0;
     for (; i < cantFiles; i++)
     {
-        if (strstr(files[i], format)==NULL)
+        if (strstr(files[i], format) == NULL)
         {
-    
+
             printf("Enviar solamente archivos .cnf \n ");
             abort();
         }
     }
 }
 
-void concatNFiles(int cantFiles,char ** files, char concat[]){
-    
+void concatNFiles(int cantFiles, char **files, char concat[])
+{
+
     strcpy(concat, files[0]);
     strcat(concat, "\n");
     int i = 1;
-    for(;i<cantFiles;i++){
-        strcat(concat,files[i]);
+    for (; i < cantFiles; i++)
+    {
+        strcat(concat, files[i]);
         strcat(concat, "\n");
     }
     printf(concat);
     printf("\n");
-
 }
