@@ -1,0 +1,370 @@
+../CNF2/aim-100-1_6-no-1.cnf
+../CNF2/aim-100-1_6-no-2.cnf
+../CNF2/aim-100-1_6-no-3.cnf
+../CNF2/aim-100-1_6-no-4.cnf
+../CNF2/aim-100-1_6-yes1-1.cnf
+
+../CNF2/aim-100-1_6-yes1-2.cnf
+../CNF2/aim-100-1_6-yes1-3.cnf
+../CNF2/aim-100-1_6-yes1-4.cnf
+../CNF2/aim-100-2_0-no-1.cnf
+../CNF2/aim-100-2_0-no-2.cnf
+
+../CNF2/aim-100-2_0-no-3.cnf
+../CNF2/aim-100-2_0-no-4.cnf
+../CNF2/aim-100-2_0-yes1-1.cnf
+../CNF2/aim-100-2_0-yes1-2.cnf
+../CNF2/aim-100-2_0-yes1-3.cnf
+
+../CNF2/aim-100-2_0-yes1-4.cnf
+../CNF2/aim-100-3_4-yes1-1.cnf
+../CNF2/aim-100-3_4-yes1-2.cnf
+../CNF2/aim-100-3_4-yes1-3.cnf
+../CNF2/aim-100-3_4-yes1-4.cnf
+
+../CNF2/aim-100-6_0-yes1-1.cnf
+../CNF2/aim-100-6_0-yes1-2.cnf
+../CNF2/aim-100-6_0-yes1-3.cnf
+../CNF2/aim-100-6_0-yes1-4.cnf
+../CNF2/aim-200-1_6-no-1.cnf
+
+../CNF2/aim-200-1_6-no-2.cnf
+../CNF2/aim-200-1_6-no-3.cnf
+../CNF2/aim-200-1_6-no-4.cnf
+../CNF2/aim-200-1_6-yes1-1.cnf
+../CNF2/aim-200-1_6-yes1-2.cnf
+
+../CNF2/aim-200-1_6-yes1-3.cnf
+../CNF2/aim-200-1_6-yes1-4.cnf
+../CNF2/aim-200-2_0-no-1.cnf
+../CNF2/aim-200-2_0-no-2.cnf
+../CNF2/aim-200-2_0-no-3.cnf
+
+../CNF2/aim-200-2_0-no-4.cnf
+../CNF2/aim-200-2_0-yes1-1.cnf
+../CNF2/aim-200-2_0-yes1-2.cnf
+../CNF2/aim-200-2_0-yes1-3.cnf
+../CNF2/aim-200-2_0-yes1-4.cnf
+
+../CNF2/aim-200-3_4-yes1-1.cnf
+../CNF2/aim-200-3_4-yes1-2.cnf
+../CNF2/aim-200-3_4-yes1-3.cnf
+../CNF2/aim-200-3_4-yes1-4.cnf
+../CNF2/aim-200-6_0-yes1-1.cnf
+
+../CNF2/aim-200-6_0-yes1-2.cnf
+../CNF2/aim-200-6_0-yes1-3.cnf
+../CNF2/aim-200-6_0-yes1-4.cnf
+../CNF2/aim-50-1_6-no-1.cnf
+../CNF2/aim-50-1_6-no-2.cnf
+
+19914	../CNF2/aim-200-3_4-yes1-1.cnf	Number	of	variables:	200	Number	of	clauses:	680	CPU	time	:	0.005409	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19906	../CNF2/aim-100-1_6-no-1.cnf	Number	of	variables:	100	Number	of	clauses:	160	CPU	time	:	0.006023	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19915	../CNF2/aim-200-6_0-yes1-2.cnf	Number	of	variables:	200	Number	of	clauses:	1193	CPU	time	:	0.003555	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19907	../CNF2/aim-100-1_6-yes1-2.cnf	Number	of	variables:	100	Number	of	clauses:	160	CPU	time	:	0	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19910	../CNF2/aim-100-6_0-yes1-1.cnf	Number	of	variables:	100	Number	of	clauses:	599	CPU	time	:	0.004074	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19912	../CNF2/aim-200-1_6-yes1-3.cnf	Number	of	variables:	200	Number	of	clauses:	319	CPU	time	:	0.002584	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19908	../CNF2/aim-100-2_0-no-3.cnf	Number	of	variables:	100	Number	of	clauses:	198	CPU	time	:	0.002987	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19911	../CNF2/aim-200-1_6-no-2.cnf	Number	of	variables:	200	Number	of	clauses:	317	CPU	time	:	0.001276	s	UNSATISFIABLE
+
+----------------------------------------------- 
+
+
+----------------------------------------------- 
+19913	../CNF2/aim-200-2_0-no-4.cnf	Number	of	variables:	200	Number	of	clauses:	400	CPU	time	:	0.003339	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19910	../CNF2/aim-100-6_0-yes1-2.cnf	Number	of	variables:	100	Number	of	clauses:	600	CPU	time	:	0	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19909	../CNF2/aim-100-2_0-yes1-4.cnf	Number	of	variables:	100	Number	of	clauses:	199	CPU	time	:	0.002841	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19914	../CNF2/aim-200-3_4-yes1-2.cnf	Number	of	variables:	200	Number	of	clauses:	679	CPU	time	:	0.002734	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19912	../CNF2/aim-200-1_6-yes1-4.cnf	Number	of	variables:	200	Number	of	clauses:	320	CPU	time	:	0.002788	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19907	../CNF2/aim-100-1_6-yes1-3.cnf	Number	of	variables:	100	Number	of	clauses:	160	CPU	time	:	0.001938	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19908	../CNF2/aim-100-2_0-no-4.cnf	Number	of	variables:	100	Number	of	clauses:	200	CPU	time	:	0.001755	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19909	../CNF2/aim-100-3_4-yes1-1.cnf	Number	of	variables:	100	Number	of	clauses:	340	CPU	time	:	0.001764	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19910	../CNF2/aim-100-6_0-yes1-3.cnf	Number	of	variables:	100	Number	of	clauses:	600	CPU	time	:	0.002127	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19911	../CNF2/aim-200-1_6-no-3.cnf	Number	of	variables:	200	Number	of	clauses:	320	CPU	time	:	0	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19906	../CNF2/aim-100-1_6-no-2.cnf	Number	of	variables:	100	Number	of	clauses:	160	CPU	time	:	0.00143	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19907	../CNF2/aim-100-1_6-yes1-4.cnf	Number	of	variables:	100	Number	of	clauses:	160	CPU	time	:	0.001627	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19913	../CNF2/aim-200-2_0-yes1-1.cnf	Number	of	variables:	200	Number	of	clauses:	397	CPU	time	:	0.002218	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19915	../CNF2/aim-200-6_0-yes1-3.cnf	Number	of	variables:	200	Number	of	clauses:	1191	CPU	time	:	0.001267	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19914	../CNF2/aim-200-3_4-yes1-3.cnf	Number	of	variables:	200	Number	of	clauses:	679	CPU	time	:	0.002322	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19908	../CNF2/aim-100-2_0-yes1-1.cnf	Number	of	variables:	100	Number	of	clauses:	198	CPU	time	:	0.00156	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19909	../CNF2/aim-100-3_4-yes1-2.cnf	Number	of	variables:	100	Number	of	clauses:	340	CPU	time	:	0.001694	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19911	../CNF2/aim-200-1_6-no-4.cnf	Number	of	variables:	200	Number	of	clauses:	320	CPU	time	:	0	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19910	../CNF2/aim-100-6_0-yes1-4.cnf	Number	of	variables:	100	Number	of	clauses:	598	CPU	time	:	0.001792	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19907	../CNF2/aim-100-2_0-no-1.cnf	Number	of	variables:	100	Number	of	clauses:	200	CPU	time	:	0.001394	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19912	../CNF2/aim-200-2_0-no-1.cnf	Number	of	variables:	200	Number	of	clauses:	399	CPU	time	:	0.001794	s	UNSATISFIABLE
+
+
+19913	../CNF2/aim-200-2_0-yes1-2.cnf	Number	of	variables:	200	Number	of	clauses:	399	CPU	time	:	0.001813	s	SATISFIABLE
+
+
+19915	../CNF2/aim-200-6_0-yes1-4.cnf	Number	of	variables:	200	Number	of	clauses:	1197	CPU	time	:	0.002357	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19909	../CNF2/aim-100-3_4-yes1-3.cnf	Number	of	variables:	100	Number	of	clauses:	339	CPU	time	:	0	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19908	../CNF2/aim-100-2_0-yes1-2.cnf	Number	of	variables:	100	Number	of	clauses:	200	CPU	time	:	0	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19907	../CNF2/aim-100-2_0-no-2.cnf	Number	of	variables:	100	Number	of	clauses:	199	CPU	time	:	0.001298	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19906	../CNF2/aim-100-1_6-no-3.cnf	Number	of	variables:	100	Number	of	clauses:	157	CPU	time	:	0.001568	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19911	../CNF2/aim-200-1_6-yes1-1.cnf	Number	of	variables:	200	Number	of	clauses:	320	CPU	time	:	0	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19910	../CNF2/aim-200-1_6-no-1.cnf	Number	of	variables:	200	Number	of	clauses:	320	CPU	time	:	0.001861	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19914	../CNF2/aim-200-3_4-yes1-4.cnf	Number	of	variables:	200	Number	of	clauses:	677	CPU	time	:	0.002081	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19912	../CNF2/aim-200-2_0-no-2.cnf	Number	of	variables:	200	Number	of	clauses:	399	CPU	time	:	0.001777	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19915	../CNF2/aim-50-1_6-no-1.cnf	Number	of	variables:	50	Number	of	clauses:	76	CPU	time	:	0.001369	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19908	../CNF2/aim-100-2_0-yes1-3.cnf	Number	of	variables:	100	Number	of	clauses:	200	CPU	time	:	0	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19911	../CNF2/aim-200-1_6-yes1-2.cnf	Number	of	variables:	200	Number	of	clauses:	320	CPU	time	:	0.001113	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19906	../CNF2/aim-100-1_6-no-4.cnf	Number	of	variables:	100	Number	of	clauses:	160	CPU	time	:	0.001445	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19907	../CNF2/aim-50-1_6-no-3.cnf	Number	of	variables:	50	Number	of	clauses:	80	CPU	time	:	0.001224	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19909	../CNF2/aim-100-3_4-yes1-4.cnf	Number	of	variables:	100	Number	of	clauses:	339	CPU	time	:	0.001569	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19910	../CNF2/aim-50-1_6-yes1-1.cnf	Number	of	variables:	50	Number	of	clauses:	80	CPU	time	:	0.001156	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19914	../CNF2/aim-200-6_0-yes1-1.cnf	Number	of	variables:	200	Number	of	clauses:	1186	CPU	time	:	0.002527	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19912	../CNF2/aim-200-2_0-no-3.cnf	Number	of	variables:	200	Number	of	clauses:	399	CPU	time	:	0	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19909	../CNF2/aim-50-2_0-no-1.cnf	Number	of	variables:	50	Number	of	clauses:	100	CPU	time	:	0	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19906	../CNF2/aim-100-1_6-yes1-1.cnf	Number	of	variables:	100	Number	of	clauses:	160	CPU	time	:	0.001366	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19915	../CNF2/aim-50-1_6-no-2.cnf	Number	of	variables:	50	Number	of	clauses:	80	CPU	time	:	0.001208	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19908	../CNF2/aim-50-1_6-yes1-2.cnf	Number	of	variables:	50	Number	of	clauses:	79	CPU	time	:	0.001004	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19914	../CNF2/aim-50-2_0-no-3.cnf	Number	of	variables:	50	Number	of	clauses:	100	CPU	time	:	0.001243	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19910	../CNF2/aim-50-2_0-no-2.cnf	Number	of	variables:	50	Number	of	clauses:	100	CPU	time	:	0.001433	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19907	../CNF2/aim-50-1_6-yes1-4.cnf	Number	of	variables:	50	Number	of	clauses:	80	CPU	time	:	0.001097	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19911	../CNF2/aim-50-1_6-no-4.cnf	Number	of	variables:	50	Number	of	clauses:	80	CPU	time	:	0.001086	s	UNSATISFIABLE
+
+
+----------------------------------------------- 
+19906	../CNF2/aim-50-2_0-yes1-2.cnf	Number	of	variables:	50	Number	of	clauses:	100	CPU	time	:	0.001386	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19909	../CNF2/aim-50-2_0-yes1-1.cnf	Number	of	variables:	50	Number	of	clauses:	99	CPU	time	:	0.001149	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19913	../CNF2/aim-200-2_0-yes1-3.cnf	Number	of	variables:	200	Number	of	clauses:	399	CPU	time	:	0.001554	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19910	../CNF2/aim-50-3_4-yes1-2.cnf	Number	of	variables:	50	Number	of	clauses:	170	CPU	time	:	0.001193	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19915	../CNF2/aim-50-2_0-yes1-3.cnf	Number	of	variables:	50	Number	of	clauses:	100	CPU	time	:	0.001185	s	SATISFIABLE
+
+
+----------------------------------------------- 
+19908	../CNF2/aim-50-2_0-yes1-4.cnf	Number	of	variables:	50	Number	of	clauses:	100	CPU	time	:	0.001414	s	SATISFIABLE
+
+
+Matando hijo 2
+
+----------------------------------------------- 
+19909	../CNF2/aim-50-6_0-yes1-2.cnf	Number	of	variables:	50	Number	of	clauses:	300	CPU	time	:	0.001455	s	SATISFIABLE
+
+
+Matando hijo 3
+
+----------------------------------------------- 
+19906	../CNF2/aim-50-6_0-yes1-1.cnf	Number	of	variables:	50	Number	of	clauses:	300	CPU	time	:	0.001671	s	SATISFIABLE
+
+
+Matando hijo 0
+
+----------------------------------------------- 
+19912	../CNF2/aim-50-2_0-no-4.cnf	Number	of	variables:	50	Number	of	clauses:	98	CPU	time	:	0.00137	s	UNSATISFIABLE
+
+
+Matando hijo 6
+
+----------------------------------------------- 
+19910	../CNF2/aim-50-6_0-yes1-3.cnf	Number	of	variables:	50	Number	of	clauses:	297	CPU	time	:	0	s	SATISFIABLE
+
+
+Matando hijo 4
+
+----------------------------------------------- 
+19907	../CNF2/aim-50-3_4-yes1-3.cnf	Number	of	variables:	50	Number	of	clauses:	170	CPU	time	:	0.00132	s	SATISFIABLE
+
+
+Matando hijo 1
+
+----------------------------------------------- 
+19914	../CNF2/aim-50-3_4-yes1-1.cnf	Number	of	variables:	50	Number	of	clauses:	169	CPU	time	:	0.001393	s	SATISFIABLE
+
+
+Matando hijo 8
+
+----------------------------------------------- 
+19915	../CNF2/aim-50-6_0-yes1-4.cnf	Number	of	variables:	50	Number	of	clauses:	299	CPU	time	:	0.001503	s	SATISFIABLE
+
+
+Matando hijo 9
+
+----------------------------------------------- 
+19911	../CNF2/aim-50-1_6-yes1-3.cnf	Number	of	variables:	50	Number	of	clauses:	80	CPU	time	:	0.001304	s	SATISFIABLE
+
+
+Matando hijo 5
+
+----------------------------------------------- 
+19911	../CNF2/aim-50-3_4-yes1-4.cnf	Number	of	variables:	50	Number	of	clauses:	170	CPU	time	:	0.001061	s	SATISFIABLE
+
+
+Matando hijo 5
+
+19913	../CNF2/aim-200-2_0-yes1-4.cnf	Number	of	variables:	200	Number	of	clauses:	399	CPU	time	:	0.001403	s	SATISFIABLE
+
+
+Matando hijo 7
+
+----------------------------------------------- 
+RESOLVI: 73 
