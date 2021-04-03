@@ -10,19 +10,30 @@ int flags_fd_work_open[MAX_PROCESSES];
 int offset_args = 1;
 int cantFilesToSend = 0;
 int cantFilesResolved = 0;
+int processes[MAX_PROCESSES];
+int cant_sol_process[MAX_PROCESSES];
 
 int createSHM(size_t size);
 void check_format(int cantFiles, char *files[], char *format);
 void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1);
 void concatNFiles(int cantFiles, char **files, char concat[]);
+void create_slaves();
+void cleanBuffer(char * buffer);
+void create_pipes();
 
 int main(int argc, char *argv[])
 {
+    // Disable buffering on stdout
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stdin, 0, _IONBF, 0);
 
-    //sem_init(&sem_rw_shm, 1, 0); //
+    check_format(cantFilesToSend, (argv + 1), ".cnf");
+    create_pipes();
+    create_slaves();
+
+      //sem_init(&sem_rw_shm, 1, 0); //
     sem_t *sem_w_shm = sem_open(SEMAPHORE_NAME, O_CREAT, 0644, 0);
-    int resolved_fd = open("resueltos", O_CREAT, 00700);
-
+ 
     int cantFilesToSend = argc - 1;
     int i = 1;
 
@@ -39,100 +50,27 @@ int main(int argc, char *argv[])
         abort();
     }
 
-    //
-    // printf("%d \n", (int)sizeof(buffer));
-    //
-    // //
 
-    // Disable buffering on stdout
-    setvbuf(stdout, NULL, _IONBF, 0);
-    setvbuf(stdin, 0, _IONBF, 0);
-
-    check_format(cantFilesToSend, (argv + 1), ".cnf");
-
-    // Logica creacion de los pipes
-    for (i = 0; i < MAX_PROCESSES; i++) //VER SI SE PUEDE MEJORAR, Habria que cerrar los anteriores si falla?
-    {                                   // Habria que cerrar los fd que el padre no usa? Sea el de escritura o el de lectura?
-        if (pipe(fd_work[i]) != 0)
-        {
-            perror("Aplicacion: Pipe error: ");
-            abort();
-        }
-        flags_fd_work_open[i] = 1;
-        if (pipe(fd_sols[i]) != 0)
-        {
-            perror("Aplicacion: Pipe error: ");
-            abort();
-        }
+   
+   int resolved_fd;
+    if((resolved_fd = open("./resueltos", O_CREAT|O_WRONLY)) < 0){
+        perror("Error open ");
+        abort();
     }
 
-    int processes[MAX_PROCESSES];
-    int cant_sol_process[MAX_PROCESSES];
 
-    // Logica de los hijos
-    for (i = 0; i < MAX_PROCESSES; i++)
-    {
-        cant_sol_process[i] = 0;
-        if ((processes[i] = fork()) == 0)
-        {
-            int j = 0;
-            for (; j < MAX_PROCESSES; j++)
-            { // Cerramos los pipes ajenos a este hijo.
-                if (j != i)
-                {
-                    close(fd_work[j][0]);
-                    close(fd_work[j][1]);
-                    close(fd_sols[j][0]);
-                    close(fd_sols[j][1]);
-                }
-            }
-
-            close(fd_work[i][1]); // --> El hijo no escribe aca
-            close(fd_sols[i][0]); // --> El hijo no lee aca
-
-            if (dup2(fd_work[i][0], STDIN_FILENO) < 0)
-            { // Redireccionamos la entrada del hijo al nuevo pipe
-                perror("Aplicacion: Dup 1");
-                abort();
-            }
-            if (dup2(fd_sols[i][1], STDOUT_FILENO) < 0)
-            { // Redireccionamos la salida del hijo al padre
-                perror("Aplicacion: Dup 2");
-                // printf("Hijo pid %d valor i %d  \n ", getpid(), i);
-                abort();
-            }
-
-            //  printf("DESPUES DEL DUP\n");
-
-            //char *const params[] = {"slave", argv[i + 1], NULL};
-            char *const params[] = {"slave", NULL};
-            int res_execv = execv(params[0], params);
-            if (res_execv < 0)
-            {
-                perror("Aplicacion: Execv error");
-                abort();
-            }
-        }
-        else if (processes[i] < 0)
-        {
-            perror("Aplicacion: Fork");
-        }
-    }
 
     char files_concat[256] = {'\0'};
     // Mandamos archivos a los hijos
     for (i = 0; i < MAX_PROCESSES; i++)
     {
 
-        // Funcion de mandar muchos archivos
+        // Funcion de concatenar archivos
         concatNFiles(INITIAL_CANT_FILES, (argv + offset_args), files_concat);
         offset_args += INITIAL_CANT_FILES;
         write(fd_work[i][1], files_concat, strlen(files_concat) + 1);
-        int j = 0;
-        while (files_concat[j] != '\0')
-        {
-            files_concat[j++] = '\0';
-        }
+        
+        cleanBuffer(files_concat);
         cantFilesToSend -= INITIAL_CANT_FILES;
     }
 
@@ -142,14 +80,12 @@ int main(int argc, char *argv[])
 
     while ((argc - 1) > cantFilesResolved)
     {
-        //printf("argc-1 = %d , cantFilesResolved = %d", (argc - 1), cantFilesResolved);
+       
         char buf[265] = {'\0'};
 
         prepare_fd_set(&max_fd, &fd_slaves);
-        //printf("Llego al select \n");
+      
         int res_select = select(max_fd, &fd_slaves, NULL, NULL, NULL);
-        //printf("Salgo del select \n");
-
         if (res_select < 0)
         {
             perror("Aplicacion: Select error: ");
@@ -167,11 +103,14 @@ int main(int argc, char *argv[])
                     cantFilesResolved++;
 
                     // Mandarlo al archivo resueltos
-                    write(resolved_fd, buf, sizeof(buf));
+                    if(write(resolved_fd, buf, sizeof(buf)) < 0){
+                        perror("Aplicacion: Error write archivo \n");
+                        abort();
+                    }
 
                     // Mandarla al vista
                     //////////////////////////
-
+                    
                     memcpy(ptr_shared_memory, buf, sizeof(buf));
                     //sleep(1);
                     int ret_sem;
@@ -186,40 +125,30 @@ int main(int argc, char *argv[])
                     ptr_shared_memory += SIZEOF_RESPONSE;
 
                     // Limpiamos buffer
-                    int y = 0;
-                    while (buf[y] != '\0')
-                    {
-                        buf[y++] = '\0';
-                    }
+                   cleanBuffer(buf);
 
                     if (cant_sol_process[i] >= INITIAL_CANT_FILES && cantFilesToSend > 0)
                     {
                         char buffer_aux[BUFFER_SIZE] = {'\0'};
 
                         strcpy(buffer_aux, argv[offset_args++]);
-                        //Mandamos otra tarea
                         strcat(buffer_aux, "\n");
+                        //Mandamos otra tarea
+                       
                         write(fd_work[i][1], buffer_aux, strlen(buffer_aux));
                         cantFilesToSend--;
-                        int r = 0;
-                        while (buffer_aux[r] != '\0')
-                        {
-                            buffer_aux[r++] = '\0';
-                        }
+                        cleanBuffer(buffer_aux);
                     }
                     else if (cantFilesToSend == 0)
                     {
                         close(fd_work[i][1]);
                         close(fd_sols[i][0]);
                         flags_fd_work_open[i] = 0;
-                        int pid_hijo;
-                        pid_hijo = waitpid(processes[i], NULL, 0);
-                        // printf("Matando hijo %d, con PID: %d\n", i, pid_hijo);
-                        // printf("cantFilesToSend: %d, cantFilesResolved: %d \n", cantFilesToSend, cantFilesResolved);
+                         waitpid(processes[i], NULL, 0);
                     }
                 }
             }
-            // printf("----------------------------------------------- \n");
+          
         }
         else
         {
@@ -254,6 +183,8 @@ int main(int argc, char *argv[])
 }
 
 //////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 
 //Idea de: https://github.com/WhileTrueThenDream/ExamplesCLinuxUserSpace
 int createSHM(size_t size)
@@ -272,6 +203,7 @@ int createSHM(size_t size)
     }
     return fdSharedMemory;
 }
+///////////////////////////////////////////////////////////////////////
 
 void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1)
 {
@@ -296,6 +228,7 @@ void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1)
     *max_fd1 = max_fd;
     *fd_slaves1 = fd_slaves;
 }
+///////////////////////////////////////////////////////////////////////
 
 // // Validacion del tipo de archivo
 void check_format(int cantFiles, char *files[], char *format)
@@ -311,6 +244,7 @@ void check_format(int cantFiles, char *files[], char *format)
         }
     }
 }
+///////////////////////////////////////////////////////////////////////
 
 void concatNFiles(int cantFiles, char **files, char concat[])
 {
@@ -322,5 +256,82 @@ void concatNFiles(int cantFiles, char **files, char concat[])
     {
         strcat(concat, files[i]);
         strcat(concat, "\n");
+    }
+}
+
+///////////////////////////////////////////////////////////////////////
+// Logica creacion de los pipes
+void create_pipes(){
+     int i;
+    for (i = 0; i < MAX_PROCESSES; i++)   { 
+        if (pipe(fd_work[i]) != 0)
+        {
+            perror("Aplicacion: Pipe error: ");
+            abort();
+        }
+        flags_fd_work_open[i] = 1;
+        if (pipe(fd_sols[i]) != 0)
+        {
+            perror("Aplicacion: Pipe error: ");
+            abort();
+        }
+    }
+}
+
+/////////////////////////////
+void create_slaves(){
+    int i;
+    // Logica de los hijos
+    for (i = 0; i < MAX_PROCESSES; i++)
+    {
+        cant_sol_process[i] = 0;
+        if ((processes[i] = fork()) == 0)
+        {
+            int j = 0;
+            for (; j < MAX_PROCESSES; j++)
+            { // Cerramos los pipes ajenos a este hijo.
+                if (j != i)
+                {
+                    close(fd_work[j][0]);
+                    close(fd_work[j][1]);
+                    close(fd_sols[j][0]);
+                    close(fd_sols[j][1]);
+                }
+            }
+
+            close(fd_work[i][1]); // --> El hijo no escribe aca
+            close(fd_sols[i][0]); // --> El hijo no lee aca
+
+            if (dup2(fd_work[i][0], STDIN_FILENO) < 0)
+            { // Redireccionamos la entrada del hijo al nuevo pipe
+                perror("Aplicacion: Dup 1");
+                abort();
+            }
+            if (dup2(fd_sols[i][1], STDOUT_FILENO) < 0)
+            { // Redireccionamos la salida del hijo al padre
+                perror("Aplicacion: Dup 2");
+                abort();
+            }
+
+            char *const params[] = {"slave", NULL};
+            int res_execv = execv(params[0], params);
+            if (res_execv < 0)
+            {
+                perror("Aplicacion: Execv error");
+                abort();
+            }
+        }
+        else if (processes[i] < 0)
+        {
+            perror("Aplicacion: Fork");
+        }
+    }
+}
+
+/////////////////
+void cleanBuffer(char * buffer){
+    int j=0;
+    while(buffer[j] != '\0'){
+        buffer[j++] = '\0';
     }
 }

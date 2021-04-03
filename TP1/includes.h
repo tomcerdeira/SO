@@ -23,4 +23,6 @@
 #define SIZEOF_RESPONSE 150
 #define SEMAPHORE_NAME "semaphore1" // El valor del semaforo indica la cantidad de resltados que hay para leer
 
+
+
 #endif

@@ -3,6 +3,7 @@
 #define MINISAT "minisat "
 #define GREP_AND_FLAGS " | grep -o -e 'Number of.*[0-9]\\+' -e 'CPU time.*' -e '.*SATISFIABLE' | xargs | sed 's/ /\\t/g'"
 #define BUFFER_SIZE 256
+void cleanBuffer(char * buffer);
 
 int main(int argc, char *argv[])
 {
@@ -10,7 +11,7 @@ int main(int argc, char *argv[])
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stdin, 0, _IONBF, 0);
     char buffer[BUFFER_SIZE] = {'\0'};
-    //printf("EL HIJO \n");
+ 
 
     while ((res = read(STDIN_FILENO, buffer, sizeof(buffer))) != 0) //EOF del read
     {
@@ -38,20 +39,15 @@ int main(int argc, char *argv[])
                         char *const params[] = {par, NULL};
 
                 int len;
-                len = sprintf(cmd, "%d\t%s\t", getpid(), buffer_aux); //check error sprint?
+                len = sprintf(cmd, "%d\t%s\t\n", getpid(), buffer_aux); //check error sprint?
 
                 FILE *stream = popen(*params, "r");
                 fgets(&cmd[len], BUFFER_SIZE, stream);
                 pclose(stream);
-                printf("%s \n", cmd); //this write is atomic
-
-                int h = 0;
-                while (h < BUFFER_SIZE) //CAMBIAR!!!!!!!!
-                {
-                    cmd[h] = '\0';
-                    par[h] = '\0';
-                    buffer_aux[h++] = '\0';
-                }
+                printf("%s", cmd); //this write is atomic
+                cleanBuffer(cmd);
+                cleanBuffer(par);
+                cleanBuffer(buffer_aux);
                 t = 0;
             }
             else if (buffer[i] == '\0')
@@ -60,13 +56,17 @@ int main(int argc, char *argv[])
             }
             i++;
         }
-
-        int h = 0;
-        while (h < BUFFER_SIZE) //CAMBIAR!!!!!!!!
-        {
-            buffer[h++] = '\0';
-        }
+        cleanBuffer(buffer);
     }
 
     return 0;
+}
+
+
+///////////////////////////////
+void cleanBuffer(char * buffer){
+    int i=0;
+    while(buffer[i] != '\0'){
+        buffer[i++] = '\0';
+    }
 }
