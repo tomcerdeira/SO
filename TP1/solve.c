@@ -10,8 +10,12 @@
 #include <sys/select.h>
 #include <limits.h>
 #include <string.h>
-#include <poll.h>
-#include <stdbool.h>
+//Includes y defines de la Shared Memory
+#include <sys/mman.h>
+
+#define SIZEOF_SMOBJ 200
+#define SMOBJ_NAME "/myMemoryObj"
+//
 
 #define MAX_PROCESSES 5
 #define INITIAL_CANT_FILES 2
@@ -19,7 +23,7 @@
 
 int fd_work[MAX_PROCESSES][2]; // par Master- slave --> Master escribe y slave lee
 int fd_sols[MAX_PROCESSES][2]; // Master lee lo que los hijos escriben
-
+int flags_fd_work_open[MAX_PROCESSES];
 int offset_args = 1;
 int cantFilesToSend = 0;
 int cantFilesResolved = 0;
@@ -27,10 +31,50 @@ int cantFilesResolved = 0;
 void check_format(int cantFiles, char *files[], char *format);
 void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1);
 void concatNFiles(int cantFiles, char **files, char concat[]);
-bool is_pipe_closed(int fd);
 
 int main(int argc, char *argv[])
 {
+    // //Creo Shared Memory, idea de: https://github.com/WhileTrueThenDream/ExamplesCLinuxUserSpace
+    // int fdSharedMemory;
+    // fdSharedMemory = shm_open(SMOBJ_NAME, O_CREAT | O_RDWR, 00700); /* create s.m object*/
+    // if (fdSharedMemory == -1)
+    // {
+    //     printf("Error file descriptor \n");
+    //     exit(1);
+    // }
+    // if (-1 == ftruncate(fdSharedMemory, SIZEOF_SMOBJ))
+    // {
+    //     printf("Error shared memory cannot be resized \n");
+    //     exit(1);
+    // }
+
+    // close(fdSharedMemory);
+    // //Fin creación Shared Memory
+
+    // //Escribo en Shared Memory, idea de: https://github.com/WhileTrueThenDream/ExamplesCLinuxUserSpace
+    // int fdSH;
+    // char buffer[] = "Hello,this is writting process";
+    // char *ptr;
+
+    // fdSH = shm_open(SMOBJ_NAME, O_RDWR, 00200); /* open s.m object*/
+    // if (fdSH == -1)
+    // {
+    //     printf("Error file descriptor %s\n", strerror(errno));
+    //     exit(1);
+    // }
+
+    // ptr = mmap(NULL, sizeof(buffer), PROT_WRITE, MAP_SHARED, fdSH, 0);
+    // if (ptr == MAP_FAILED)
+    // {
+    //     printf("Map failed in write process: %s\n", strerror(errno));
+    //     exit(1);
+    // }
+
+    // memcpy(ptr, buffer, sizeof(buffer));
+    // printf("%d \n", (int)sizeof(buffer));
+    // close(fdSH);
+    // //
+
     // Disable buffering on stdout
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stdin, 0, _IONBF, 0);
@@ -48,6 +92,7 @@ int main(int argc, char *argv[])
             perror("Pipe error: ");
             abort();
         }
+        flags_fd_work_open[i] = 1;
         if (pipe(fd_sols[i]) != 0)
         {
             perror("Pipe error: ");
@@ -179,14 +224,16 @@ int main(int argc, char *argv[])
                             buffer_aux[r++] = '\0';
                         }
                     }
-                    else if (cantFilesToSend <= 0)
+                    else if (cantFilesToSend == 0)
                     {
                         close(fd_work[i][1]);
+                        close(fd_sols[i][0]);
+                        flags_fd_work_open[i] = 0;
                         int pid_hijo;
                         pid_hijo = waitpid(processes[i], NULL, 0);
                         printf("Matando hijo %d, con PID: %d\n", i, pid_hijo);
+                        printf("cantFilesToSend: %d, cantFilesResolved: %d \n", cantFilesToSend, cantFilesResolved);
                         // sleep(2);
-                        //  close(fd_sols[i][0]);
                     }
 
                     // logica memcompartida
@@ -214,7 +261,7 @@ void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1)
     int i = 0;
     for (; i < MAX_PROCESSES; i++)
     {
-        if (!is_pipe_closed(fd_work[i][1]))
+        if (flags_fd_work_open[i] != 0) // Si es 0 quiere decir que lo cerramos
         {
             FD_SET(fd_sols[i][0], &fd_slaves); // Llenamos el set de fd en los que el padre va a recibir las resps.
             if (fd_sols[i][0] > max_fd)
@@ -226,22 +273,6 @@ void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1)
 
     *max_fd1 = max_fd;
     *fd_slaves1 = fd_slaves;
-}
-
-//https://stackoverflow.com/questions/36663845/check-if-unix-pipe-closed-without-writing-anything
-bool is_pipe_closed(int fd)
-{
-    struct pollfd pfd = {
-        .fd = fd,
-        .events = POLLOUT,
-    };
-
-    if (poll(&pfd, 1, 1) < 0)
-    {
-        return false;
-    }
-
-    return pfd.revents & POLLERR;
 }
 
 // // Validacion del tipo de archivo
@@ -270,6 +301,4 @@ void concatNFiles(int cantFiles, char **files, char concat[])
         strcat(concat, files[i]);
         strcat(concat, "\n");
     }
-    printf(concat);
-    printf("\n");
 }

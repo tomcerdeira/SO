@@ -11,13 +11,42 @@
 #include <limits.h>
 #include <string.h>
 #include <strings.h>
+//Includes y defines SM
+#include <sys/mman.h>
+#include <sys/stat.h>
 
+#define SMOBJ_NAME "/myMemoryObj"
+//
 #define MINISAT "minisat "
 #define GREP_AND_FLAGS " | grep -o -e 'Number of.*[0-9]\\+' -e 'CPU time.*' -e '.*SATISFIABLE' | xargs | sed 's/ /\\t/g'"
 #define BUFFER_SIZE 256
 
 int main(int argc, char *argv[])
 {
+    //    //Escribe en la SM
+    //    int fdSM;
+    //    char buf[] = "Hello,this is writting process";
+    //    char *ptr;
+    //
+    //    fdSM = shm_open(SMOBJ_NAME, O_RDWR, 00200); /* open s.m object*/
+    //    if (fdSM == -1)
+    //    {
+    //        printf("Error file descriptor %s\n", strerror(errno));
+    //        exit(1);
+    //    }
+    //
+    //    ptr = mmap(NULL, sizeof(buf), PROT_WRITE, MAP_SHARED, fdSM, 0);
+    //    if (ptr == MAP_FAILED)
+    //    {
+    //        printf("Map failed in write process: %s\n", strerror(errno));
+    //        exit(1);
+    //    }
+    //
+    //   memcpy(ptr, buf, sizeof(buf));
+    //   printf("%d \n", (int)sizeof(buf));
+    //   close(fdSM);
+    //    //
+
     size_t res;
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stdin, 0, _IONBF, 0);
@@ -40,12 +69,11 @@ int main(int argc, char *argv[])
             }
             else if (buffer[i] == '\n')
             {
-                buffer_aux[t + 1 ] = '\0';
+                buffer_aux[t + 1] = '\0';
 
                 char cmd[BUFFER_SIZE];
                 char par[BUFFER_SIZE] = {"\0"};
                 strcpy(par, MINISAT);
-
 
                 strcat(par, buffer_aux);
                 strcat(par, GREP_AND_FLAGS);
