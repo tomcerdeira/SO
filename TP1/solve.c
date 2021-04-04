@@ -278,7 +278,7 @@ void create_pipes(){
     }
 }
 
-/////////////////////////////
+////////////////////////////
 void create_slaves(){
     int i;
     // Logica de los hijos
