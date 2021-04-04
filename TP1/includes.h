@@ -16,6 +16,7 @@
 //Includes y defines de la Shared Memory
 #include <sys/mman.h>
 #include <semaphore.h>
+#include <math.h>
 
 #define SIZEOF_SMOBJ 200
 #define SMOBJ_NAME "/myMemoryObj"

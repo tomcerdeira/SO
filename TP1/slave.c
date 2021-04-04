@@ -29,17 +29,17 @@ int main(int argc, char *argv[])
             {
                 buffer_aux[t + 1] = '\0';
 
-                char cmd[BUFFER_SIZE];
+                char cmd[BUFFER_SIZE]={'\0'};
                 char par[BUFFER_SIZE] = {"\0"};
                 strcpy(par, MINISAT);
 
                 strcat(par, buffer_aux);
                 strcat(par, GREP_AND_FLAGS);
 
-                        char *const params[] = {par, NULL};
+                char *const params[] = {par, NULL};
 
                 int len;
-                len = sprintf(cmd, "%d\t%s\t\n", getpid(), buffer_aux); //check error sprint?
+                len = sprintf(cmd, "%d %s \n", getpid(), buffer_aux); //check error sprint?
 
                 FILE *stream = popen(*params, "r");
                 fgets(&cmd[len], BUFFER_SIZE, stream);
@@ -62,8 +62,10 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////FUNCIONES////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////
 void cleanBuffer(char * buffer){
     int i=0;
     while(buffer[i] != '\0'){

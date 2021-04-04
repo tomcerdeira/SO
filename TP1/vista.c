@@ -1,59 +1,77 @@
 #include "includes.h"
 
+int strToInt(char * buffer);
+void cleanBuffer(char *buffer);
+
 int main(void) //idea de: https://github.com/WhileTrueThenDream/ExamplesCLinuxUserSpace
 {
-    sleep(2);
     int fdSM;
     char *ptr;
     struct stat shmobj_st;
-    sem_t *sem_r_shm = sem_open(SEMAPHORE_NAME, O_CREAT);
+    
 
-    fdSM = shm_open(SMOBJ_NAME, O_RDONLY, 00400); /* open s.m object*/
-    if (fdSM == -1)
-    {
-        perror("Vista: Error file descriptor");
-        abort();
-    }
+    
+   while( (fdSM = shm_open(SMOBJ_NAME, O_RDONLY, 00400)) == -1); /* open s.m object*/
+
+    sem_t *sem_r_shm = sem_open(SEMAPHORE_NAME, O_CREAT);
 
     if (fstat(fdSM, &shmobj_st) == -1)
     {
-        perror("Vista: Error fstat");
+        perror("ERROR en Vista - fstat");
         abort();
     }
     ptr = mmap(NULL, shmobj_st.st_size, PROT_READ, MAP_SHARED, fdSM, 0);
     if (ptr == MAP_FAILED)
     {
-        perror("Vista: Map failed in read process");
+        perror("ERROR en Vista - Map failed in read process");
         abort();
     }
-
+   
+    
+    int cantFiles = (int )  atoi(ptr);
+    ptr += 1;
+    printf("Proceso VISTA: %d archivos para imprimir \n",cantFiles);
     int res = 0;
-    //////////////////////////////
-    while (1 && res != -1)
+
+    while (cantFiles > 0)
     {
         char buffer[SIZEOF_RESPONSE] = {'\0'};
-
-        //printf("ANTES DEL WAIT \n");
         res = sem_wait(sem_r_shm);
-        //printf("DESPUES DE SEMAFORO\n");
-        //res = read(fdSM, buffer, SIZEOF_RESPONSE);
-        int i;
-        for (i = 0; i < SIZEOF_RESPONSE; i++)
-        {
-            buffer[i] = ptr[i];
+        if(res < 0){
+            perror("ERROR en Vista - sem_wait ");
+            abort();
         }
+       
+        cantFiles --;
+        memcpy(buffer,ptr,SIZEOF_RESPONSE);
         ptr += SIZEOF_RESPONSE;
-        sleep(1);
+        
+        //sleep(1);
         write(STDOUT_FILENO, buffer, SIZEOF_RESPONSE);
-        int r = 0;
-        while (buffer[r] != '\0')
-        {
-            buffer[r++] = '\0';
-        }
+        cleanBuffer(buffer);
     }
-    //wait();
-    // printf("%s \n", ptr);
+printf("\n --------------------------------------------------------------------------------------------------------------------- \n");
+      printf("Proceso VISTA: todas las soluciones fueron impresas correctamente\n\n\n");
+    
     close(fdSM);
+     if (munmap(ptr,shmobj_st.st_size) < 0)
+    {
+        perror("ERROR en Vista - munmap shm");
+       // abort();
+    }
 
     return 0;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////FUNCIONES////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void cleanBuffer(char *buffer)
+{
+    int j = 0;
+    while (buffer[j] != '\0')
+    {
+        buffer[j++] = '\0';
+    }
 }
