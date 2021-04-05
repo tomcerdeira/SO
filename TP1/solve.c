@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "includes.h"
 
 #define CANT_PROCESSES 5
@@ -12,17 +15,19 @@ int cantFilesResolved = 0;
 int processes[CANT_PROCESSES];
 int cant_sol_process[CANT_PROCESSES];
 char *ptr_shared_memory;
+char *aux_ptr_shared_memory;
 
 int createSHM(size_t size);
 void check_format(int cantFiles, char *files[], char *format);
 void prepare_fd_set(int *max_fd1, fd_set *fd_slaves1);
 void concatNFiles(int cantFiles, char **files, char concat[]);
 void create_slaves();
-void cleanBuffer(char * buffer);
+void cleanBuffer(char *buffer);
 void create_pipes();
 
 int main(int argc, char *argv[])
 {
+
     // Deshabilitamos buffering en stdout
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stdin, 0, _IONBF, 0);
@@ -32,34 +37,44 @@ int main(int argc, char *argv[])
     create_slaves();
 
     sem_t *sem_w_shm = sem_open(SEMAPHORE_NAME, O_CREAT, 0644, 0);
- 
+
     int cantFilesToSend = argc - 1;
     int i = 1;
 
-    // Mandamos al vista la cantidad de archivos a procesar
-    printf("%d \n",cantFilesToSend);
-
-    int fd_shared_memory = createSHM(SIZEOF_RESPONSE * cantFilesToSend);     
+    int fd_shared_memory = createSHM(SIZEOF_RESPONSE * cantFilesToSend);
 
     ptr_shared_memory = mmap(NULL, SIZEOF_RESPONSE * cantFilesToSend, PROT_WRITE, MAP_SHARED, fd_shared_memory, 0);
-    if (ptr_shared_memory == MAP_FAILED)
+    aux_ptr_shared_memory = mmap(NULL, SIZEOF_RESPONSE * cantFilesToSend, PROT_WRITE, MAP_SHARED, fd_shared_memory, 0);
+    if (ptr_shared_memory == MAP_FAILED || aux_ptr_shared_memory == MAP_FAILED)
     {
         perror("ERROR en Aplicacion - Map failed in write process");
         abort();
     }
+
+    sleep(2); // Espera al proceso vista (consigna)
+
     char num[10];
-    sprintf(num,"%d",cantFilesToSend);
-    strcpy(ptr_shared_memory,num);
-    ptr_shared_memory += strlen(num) + 1;
-   
+    sprintf(num, "%d", cantFilesToSend);
+    strcpy(aux_ptr_shared_memory, num);
+    aux_ptr_shared_memory += sizeof(num);
+
+    int ret_sem;
+    ret_sem = sem_post(sem_w_shm);
+    if (ret_sem < 0)
+    {
+        perror("ERROR en Aplicacion - SEM_POST");
+        abort();
+    }
+
     int resolved_fd;
-    if((resolved_fd = open("./output_solve", O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR)) < 0){
+    if ((resolved_fd = open(FILE_OUTPUT, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR)) < 0)
+    {
         perror("ERROR en Aplicacion - Open");
         abort();
     }
 
-
     char files_concat[256] = {'\0'};
+
     // Mandamos archivos a los hijos
     for (i = 0; i < CANT_PROCESSES; i++)
     {
@@ -73,15 +88,14 @@ int main(int argc, char *argv[])
     // Logica del padre para leer y mandar tareas.
     fd_set fd_slaves;
     int max_fd = 0;
-   
 
     while ((argc - 1) > cantFilesResolved)
     {
-       
+
         char buf[265] = {'\0'};
 
         prepare_fd_set(&max_fd, &fd_slaves);
-      
+
         int res_select = select(max_fd, &fd_slaves, NULL, NULL, NULL);
         if (res_select < 0)
         {
@@ -100,13 +114,14 @@ int main(int argc, char *argv[])
                     cantFilesResolved++;
 
                     // Mandarlo al archivo resueltos
-                    if(write(resolved_fd, buf, sizeof(buf)) < 0){
+                    if (write(resolved_fd, buf, sizeof(buf)) < 0)
+                    {
                         perror("ERROR en Aplicacion - Write archivo");
                         abort();
                     }
 
                     // Escribimos en memoria compartida
-                    memcpy(ptr_shared_memory, buf, sizeof(buf));
+                    memcpy(aux_ptr_shared_memory, buf, sizeof(buf));
 
                     int ret_sem;
                     ret_sem = sem_post(sem_w_shm);
@@ -116,8 +131,8 @@ int main(int argc, char *argv[])
                         abort();
                     }
 
-                    ptr_shared_memory += SIZEOF_RESPONSE;
-                   cleanBuffer(buf);
+                    aux_ptr_shared_memory += SIZEOF_RESPONSE;
+                    cleanBuffer(buf);
 
                     if (cant_sol_process[i] >= INITIAL_CANT_FILES && cantFilesToSend > 0)
                     {
@@ -125,7 +140,7 @@ int main(int argc, char *argv[])
 
                         strcpy(buffer_aux, argv[offset_args++]);
                         strcat(buffer_aux, "\n");
-                        
+
                         //Mandamos otra tarea
                         write(fd_work[i][1], buffer_aux, strlen(buffer_aux));
                         cantFilesToSend--;
@@ -136,11 +151,10 @@ int main(int argc, char *argv[])
                         close(fd_work[i][1]);
                         close(fd_sols[i][0]);
                         flags_fd_work_open[i] = 0;
-                         waitpid(processes[i], NULL, 0);
+                        waitpid(processes[i], NULL, 0);
                     }
                 }
             }
-          
         }
         else
         {
@@ -150,31 +164,31 @@ int main(int argc, char *argv[])
     char buffer[BUFFER_SIZE];
 
     sprintf(buffer, "Archivos hechos %d \n", cantFilesResolved);
-    memcpy(ptr_shared_memory, buffer, sizeof(buffer));
+    memcpy(aux_ptr_shared_memory, buffer, sizeof(buffer));
 
-      if (sem_close(sem_w_shm) < 0 || sem_unlink(SEMAPHORE_NAME) < 0)
+    if (sem_close(sem_w_shm) < 0 || sem_unlink(SEMAPHORE_NAME) < 0)
     {
         perror("ERROR en Aplicacion - Sem close/unlink error");
         abort();
     }
-   
-   
-   
-    if (munmap(ptr_shared_memory,(SIZEOF_RESPONSE * cantFilesToSend )) < 0)
+
+    if (munmap(ptr_shared_memory, (SIZEOF_RESPONSE * cantFilesResolved)) < 0)
     {
         perror("ERROR en Aplicacion - Munmap");
-        //abort();
+        abort();
     }
- if (shm_unlink(SMOBJ_NAME) < 0)
+    if (shm_unlink(SMOBJ_NAME) < 0)
     {
         perror("ERROR en Aplicacion - Unlink shm");
         abort();
     }
 
-     
     close(fd_shared_memory);
 
-    
+    // Para que el historial de los outputs quede mas legible
+    write(resolved_fd, FOOTER_OUTPUT, sizeof(FOOTER_OUTPUT));
+    close(resolved_fd);
+
     return 0;
 }
 
@@ -197,8 +211,7 @@ int createSHM(size_t size)
         perror("ERROR en Aplicacion - Shared memory cannot be resized");
         abort();
     }
-    
-   
+
     return fdSharedMemory;
 }
 
@@ -255,9 +268,11 @@ void concatNFiles(int cantFiles, char **files, char concat[])
 }
 
 // Logica creacion de los pipes
-void create_pipes(){
-     int i;
-    for (i = 0; i < CANT_PROCESSES; i++)   { 
+void create_pipes()
+{
+    int i;
+    for (i = 0; i < CANT_PROCESSES; i++)
+    {
         if (pipe(fd_work[i]) != 0)
         {
             perror("ERROR en Aplicacion - PIPE Work");
@@ -273,7 +288,8 @@ void create_pipes(){
 }
 
 // Logica creacion de los slaves
-void create_slaves(){
+void create_slaves()
+{
 
     int i;
     for (i = 0; i < CANT_PROCESSES; i++)
@@ -301,14 +317,14 @@ void create_slaves(){
 
             // Redireccionamos la entrada del hijo al nuevo pipe
             if (dup2(fd_work[i][0], STDIN_FILENO) < 0)
-            { 
+            {
                 perror("ERROR en Aplicacion - Dup 1");
                 abort();
             }
 
             // Redireccionamos la salida del hijo al padre
             if (dup2(fd_sols[i][1], STDOUT_FILENO) < 0)
-            { 
+            {
                 perror("ERROR en Aplicacion - Dup 2");
                 abort();
             }
@@ -328,9 +344,11 @@ void create_slaves(){
     }
 }
 
-void cleanBuffer(char * buffer){
-    int j=0;
-    while(buffer[j] != '\0'){
+void cleanBuffer(char *buffer)
+{
+    int j = 0;
+    while (buffer[j] != '\0')
+    {
         buffer[j++] = '\0';
     }
 }
