@@ -13,17 +13,16 @@
 #include <sys/select.h>
 #include <limits.h>
 #include <string.h>
-//Includes y defines de la Shared Memory
 #include <sys/mman.h>
 #include <semaphore.h>
 #include <math.h>
 
 #define SIZEOF_SMOBJ 200
+#define FILE_OUTPUT "./output_solve"
 #define SMOBJ_NAME "/myMemoryObj"
 #define BUFFER_SIZE 256
 #define SIZEOF_RESPONSE 150
+#define FOOTER_OUTPUT " -------------------------- \n "
 #define SEMAPHORE_NAME "semaphore1" // El valor del semaforo indica la cantidad de resltados que hay para leer
-
-
 
 #endif

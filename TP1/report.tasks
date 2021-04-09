@@ -1,0 +1,6 @@
+www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is available here: https://www.viva64.com/en/w/.
+/root/TP1/slave.c	44	note	V512 A call of the 'sprintf' function will lead to overflow of the buffer 'cmd'.
+/root/TP1/slave.c	73	note	V547 Expression 'buffer[i] == '\\0'' is always true.
+/root/TP1/solve.c	51	warn	V1051 Consider checking for misprints. It's possible that the 'aux_ptr_shared_memory' should be checked here.
+/root/TP1/solve.c	143	warn	V755 A copy from unsafe data source to a buffer of fixed size. Buffer overflow is possible.
+/root/TP1/vista.c	41	warn	V1051 Consider checking for misprints. It's possible that the 'ptr_aux' should be checked here.

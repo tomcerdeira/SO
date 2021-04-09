@@ -1,19 +1,21 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "includes.h"
-//
+
 #define MINISAT "minisat "
-#define GREP_AND_FLAGS " | grep -o -e 'Number of.*[0-9]\\+' -e 'CPU time.*' -e '.*SATISFIABLE' | xargs | sed 's/ /\\t/g'"
+#define GREP_AND_FLAGS " | grep -o -e 'Number of.*[0-9]\\+' -e 'CPU time.*' -e '.*SATISFIABLE' | xargs | tr -s [:space:]"
 #define BUFFER_SIZE 256
-void cleanBuffer(char * buffer);
+void cleanBuffer(char *buffer);
 
 int main(int argc, char *argv[])
 {
-    size_t res;
+    //size_t res;
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stdin, 0, _IONBF, 0);
     char buffer[BUFFER_SIZE] = {'\0'};
- 
 
-    while ((res = read(STDIN_FILENO, buffer, sizeof(buffer))) != 0) //EOF del read
+    while (read(STDIN_FILENO, buffer, sizeof(buffer)) != 0) //EOF del read
     {
         char buffer_aux[BUFFER_SIZE] = {'\0'};
         int flag = 1;
@@ -29,7 +31,7 @@ int main(int argc, char *argv[])
             {
                 buffer_aux[t + 1] = '\0';
 
-                char cmd[BUFFER_SIZE]={'\0'};
+                char cmd[BUFFER_SIZE] = {'\0'};
                 char par[BUFFER_SIZE] = {"\0"};
                 strcpy(par, MINISAT);
 
@@ -39,12 +41,30 @@ int main(int argc, char *argv[])
                 char *const params[] = {par, NULL};
 
                 int len;
-                len = sprintf(cmd, "%d %s \n", getpid(), buffer_aux); //check error sprint?
+                len = sprintf(cmd, "PID: %d | Solucion de: %s | ", getpid(), buffer_aux);
+                if (len < 0)
+                {
+                    printf("PID: %d | ", getpid());
+                    printf("ERROR en Slave - sprintf\n");
+                    abort();
+                }
 
                 FILE *stream = popen(*params, "r");
+                if (stream == NULL)
+                {
+                    printf("PID: %d | ", getpid());
+                    perror("ERROR en Slave - popen");
+                    abort();
+                }
                 fgets(&cmd[len], BUFFER_SIZE, stream);
-                pclose(stream);
-                printf("%s", cmd); //this write is atomic
+                int retValue = pclose(stream);
+                if (retValue < 0)
+                {
+                    printf("PID: %d | ", getpid());
+                    perror("ERROR en Slave - pclose");
+                    abort();
+                }
+                printf("%s \n", cmd); //this write is atomic
                 cleanBuffer(cmd);
                 cleanBuffer(par);
                 cleanBuffer(buffer_aux);
@@ -66,9 +86,11 @@ int main(int argc, char *argv[])
 //////////////////////////////////////////////////FUNCIONES////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void cleanBuffer(char * buffer){
-    int i=0;
-    while(buffer[i] != '\0'){
-        buffer[i++] = '\0';
+void cleanBuffer(char *buffer)
+{
+    int j = 0;
+    while (buffer[j] != '\0')
+    {
+        buffer[j++] = '\0';
     }
 }
