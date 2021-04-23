@@ -17,9 +17,22 @@
 #include <semaphore.h>
 #include <math.h>
 
+#include "linkedList.h"
+
 void *dummy_malloc(int size);
 void *dummy_malloc_with_blocks(int requestedCantOfBlocks);
 void freeMemory(char *ptr);
 int indexOfMemoryBlock(char *ptr);
+int searchFreeBlocks(int requestedBlocks);
+void initialize();
+void * malloc(int size);
+
+typedef struct 
+{
+    char *start;
+    int cantOfBlocks;
+    int isFree; // 0 OCUPADA - 1 LIBRE
+    int id_request;
+}memoryBlock;
 
 #endif
