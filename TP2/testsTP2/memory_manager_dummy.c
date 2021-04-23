@@ -12,79 +12,79 @@ char start[MEMORY_SIZE] = {'\0'};
 
 char *next = start; //next siempre apunta a la última posición de memoria que se puede usar
 
-int main(int argc, char *argv[])
-{
-    initialize();
-    char *ptr;
-    int i;
-    // int j = 0;
-    ptr = dummy_malloc_with_blocks(15);
-    if (ptr == NULL)
-    {
-        printf("No pude asignar memoria primer caso!\n");
-    }
+// int main(int argc, char *argv[])
+// {
+//     initialize();
+//     char *ptr;
+//     int i;
+//     // int j = 0;
+//     ptr = dummy_malloc_with_blocks(15);
+//     if (ptr == NULL)
+//     {
+//         printf("No pude asignar memoria primer caso!\n");
+//     }
 
-    char *ptr2;
-    ptr2 = dummy_malloc_with_blocks(5);
-    if (ptr2 == NULL)
-    {
-        printf("No pude asignar memoria segundo caso!\n");
-    }
-    char *ptr3;
-    ptr3 = dummy_malloc_with_blocks(5);
-    if (ptr3 == NULL)
-    {
-        printf("No pude asignar memoria tercer caso!\n");
-    }
-    char *ptr4;
-    ptr4 = dummy_malloc_with_blocks(5);
-    if (ptr4 == NULL)
-    {
-        printf("No pude asignar memoria cuarta caso!\n");
-    }
-    char *ptr5;
-    ptr5 = dummy_malloc_with_blocks(5);
-    if (ptr5 == NULL)
-    {
-        printf("No pude asignar memoria quinto caso!\n");
-    }
-    char *ptr6;
-    ptr6 = dummy_malloc_with_blocks(5);
-    if (ptr6 == NULL)
-    {
-        printf("No pude asignar memoria sexto caso!\n");
-    }
+//     char *ptr2;
+//     ptr2 = dummy_malloc_with_blocks(5);
+//     if (ptr2 == NULL)
+//     {
+//         printf("No pude asignar memoria segundo caso!\n");
+//     }
+//     char *ptr3;
+//     ptr3 = dummy_malloc_with_blocks(5);
+//     if (ptr3 == NULL)
+//     {
+//         printf("No pude asignar memoria tercer caso!\n");
+//     }
+//     char *ptr4;
+//     ptr4 = dummy_malloc_with_blocks(5);
+//     if (ptr4 == NULL)
+//     {
+//         printf("No pude asignar memoria cuarta caso!\n");
+//     }
+//     char *ptr5;
+//     ptr5 = dummy_malloc_with_blocks(5);
+//     if (ptr5 == NULL)
+//     {
+//         printf("No pude asignar memoria quinto caso!\n");
+//     }
+//     char *ptr6;
+//     ptr6 = dummy_malloc_with_blocks(5);
+//     if (ptr6 == NULL)
+//     {
+//         printf("No pude asignar memoria sexto caso!\n");
+//     }
 
-    printf("Ya DI toda la memoria \n");
-    printf("Voy a liberar la memoria \n");
-    printf("%d valor del ptr sin mover \n", ptr);
+//     printf("Ya DI toda la memoria \n");
+//     printf("Voy a liberar la memoria \n");
+//     printf("%d valor del ptr sin mover \n", ptr);
 
-    freeMemory(ptr);
-    printf("Libero 1 \n ");
+//     freeMemory(ptr);
+//     printf("Libero 1 \n ");
 
-    freeMemory(ptr2);
-    printf("Libero 2 \n");
-    freeMemory(ptr3);
-    printf("Libero 3 \n");
-    freeMemory(ptr3);
-    ptr3 = dummy_malloc_with_blocks(10); // NO SE LIBERAN
-    printf("Libero 3 DEVUELTA\n");
-    freeMemory(ptr4);
-    printf("Libero 4 \n");
-    freeMemory(ptr5);
-    printf("Libero 5 \n");
-    printf("%d valor del ptr 6 sin mover \n", ptr6);
-    freeMemory(ptr6);
-    printf("LIBERO TODO MENOS 10 bloques que me pidio el ptr3\n");
-    // //
-    for (i = 0; i < CANTBLOCKS; i++)
-    {
-        printf("Is FREE= %d con ID: %d con start: %d \n", bitMapMemory[i].isFree, bitMapMemory[i].id_request, bitMapMemory[i].start);
-    }
-    // //
-    // printf("Ya LIBERE toda la memoria \n");
-    return 0;
-}
+//     freeMemory(ptr2);
+//     printf("Libero 2 \n");
+//     freeMemory(ptr3);
+//     printf("Libero 3 \n");
+//     freeMemory(ptr3);
+//     ptr3 = dummy_malloc_with_blocks(10); // NO SE LIBERAN
+//     printf("Libero 3 DEVUELTA\n");
+//     freeMemory(ptr4);
+//     printf("Libero 4 \n");
+//     freeMemory(ptr5);
+//     printf("Libero 5 \n");
+//     printf("%d valor del ptr 6 sin mover \n", ptr6);
+//     freeMemory(ptr6);
+//     printf("LIBERO TODO MENOS 10 bloques que me pidio el ptr3\n");
+//     // //
+//     for (i = 0; i < CANTBLOCKS; i++)
+//     {
+//         printf("Is FREE= %d con ID: %d con start: %d \n", bitMapMemory[i].isFree, bitMapMemory[i].id_request, bitMapMemory[i].start);
+//     }
+//     // //
+//     // printf("Ya LIBERE toda la memoria \n");
+//     return 0;
+// }
 
 // Inicializamos el bitMap
 void initialize()
@@ -109,6 +109,8 @@ void *dummy_malloc_with_blocks(int requestedCantOfBlocks)
 
     int index = searchFreeBlocks(requestedCantOfBlocks);
 
+    printf("Requested cant of blocks: %d - Index: %d\n", requestedCantOfBlocks, index);
+
     if (index >= 0)
     {
         i = index;
@@ -132,16 +134,16 @@ int searchFreeBlocks(int requestedBlocks)
     int flag = 1;
     for (; i < CANTBLOCKS; i++)
     {
+        //printf("ENTRO 1\n");
         if (bitMapMemory[i].isFree == 1)
         {
-
+            //printf("ENTRO 2\n");
             int j = i + 1;
             for (; j < CANTBLOCKS && flag && j < i + requestedBlocks; j++)
             {
-
+                //printf("ENTRO 3\n");
                 if (!bitMapMemory[j].isFree)
                 {
-
                     flag = 0;
                 }
             }
@@ -217,10 +219,13 @@ void *memsetNUESTRO(char *ptr, int toWrite, int size)
     {
         for (; j < BLOCK && size != 0; j++)
         {
+            // printf("ENTROOOOOO. id_request: %d - size: %d\n", id_found, size);
             bitMapMemory[i].start[j] = toWrite;
             size--;
         }
+        // printf("UN BLOQUE COMPLETO. id_request (i): %d - id_request (i+1): %d\n", bitMapMemory[i].id_request, bitMapMemory[i + 1].id_request);
         i++;
+        j = 0;
     }
 
     if (size == 0)

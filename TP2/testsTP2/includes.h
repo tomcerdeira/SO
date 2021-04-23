@@ -17,8 +17,6 @@
 #include <semaphore.h>
 #include <math.h>
 
-#include "linkedList.h"
-
 void *dummy_malloc(int size);
 void *dummy_malloc_with_blocks(int requestedCantOfBlocks);
 void freeMemory(char *ptr);
