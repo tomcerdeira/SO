@@ -64,7 +64,7 @@ void test_mm()
           exit(1);
         }
       }
-        }
+    }
     //Check
     for (i = 0; i < rq; i++)
     {
