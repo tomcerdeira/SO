@@ -15,7 +15,7 @@ void putChar(char str)
 {
     // char buff[2] = {0};
     // buff[0] = str;
-    printf("%c", str); 
+    printf("%c", str);
 }
 
 char getChar()
@@ -24,9 +24,9 @@ char getChar()
     char res = 0;
     while (res == 0)
     {
-        readKeyBuff(&res, 1); 
+        readKeyBuff(&res, 1);
     }
-   
+
     return res;
 }
 
@@ -332,7 +332,7 @@ void printmem(int memoryPos)
 {
 
     unsigned char memory[33] = {0};
-   
+
     getMemoryState(memory, memoryPos);
     if (memoryPos >= 0)
     {
@@ -382,7 +382,6 @@ void parseHexa(char *buff, int dim)
     }
 }
 
-
 void error(char *str1, char *str2)
 {
     setFontColor(0xFF0000);
@@ -396,7 +395,7 @@ void printTime()
     uint8_t minutes;
     uint8_t seconds;
     getTime(&hour, 0);
-   
+
     getTime(&minutes, 1);
     getTime(&seconds, 2);
     if (hour < 10)
@@ -423,8 +422,6 @@ void printTime()
     {
         printf(" %d secs\n", seconds);
     }
-
-
 }
 
 void printBase(uint64_t value, uint_least32_t base)
@@ -443,24 +440,23 @@ int getDistance(int to, int from)
     return from - to;
 }
 
-//https://www.techiedelight.com/implement-strcpy-function-c/ 
+//https://www.techiedelight.com/implement-strcpy-function-c/
 char *strcpy(char *destination, const char *source)
 {
-	char *ptr = destination;
-	while (*source != 0)
-	{
-		*destination = *source;
-		destination++;
-		source++;
-	}
-	*destination = 0;
-	return ptr;
+    char *ptr = destination;
+    while (*source != 0)
+    {
+        *destination = *source;
+        destination++;
+        source++;
+    }
+    *destination = 0;
+    return ptr;
 }
 
-
-
-long getMillis(){
-     uint8_t hour;
+long getMillis()
+{
+    uint8_t hour;
     uint8_t minutes;
     uint8_t seconds;
     getTime(&hour, 0);
@@ -469,4 +465,10 @@ long getMillis(){
     getTime(&seconds, 2);
 
     long millis = 3600000 * hour + 60000 * minutes + seconds * 1000;
+}
+
+//////////////////////////////// REV (si corresponde que este definida aca) y su funcionamiento
+int createProcess(char *name, void *func, int argc, char *argv[])
+{
+    return createP(name, func, argc, argv);
 }

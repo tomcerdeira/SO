@@ -96,17 +96,14 @@ _picSlaveMask:
 	mov rbp,rsp
 
 	mov rdi, %1 ; pasaje de parametro
-	;mov rsi, rsp 
+	mov rsi, rsp ;pasaje del Stack Frame
 	
 	call irqDispatcher
-	
+	mov rsp, rax
+
 	; signal pic EOI (End of Interrupt)
 	mov al, 20h
 	out 20h, al
-
-	
-	mov rsp,rbp
-	pop rbp
 
 	popState
 	iretq

@@ -11,6 +11,7 @@ GLOBAL setCronometro
 GLOBAL disableCursor
 GLOBAL setCursorUser
 GLOBAL printRectangle
+GLOBAL createP
 
 
 ;  par1 --> buffer donde esta lo que quiero escribir
@@ -230,6 +231,28 @@ disableCursor:
 
     pop r9
     pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret
+
+; REVISARRR!!!!!!!!!!!!!!!!!!!!!!!!!!
+createP:
+    push rbp
+    mov rbp,rsp
+
+    push rcx
+    push r9
+    push r10
+    mov r9,rdx
+    mov r10, rcx
+
+    mov rcx,14
+    int 80h
+
+    pop r10
+    pop r9
+    pop rcx
+
     mov rsp,rbp
     pop rbp
     ret

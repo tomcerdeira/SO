@@ -10,6 +10,8 @@ GLOBAL getMemory
 GLOBAL getSP
 GLOBAL snapShotRegister
 
+GLOBAL timerTickInterrupt
+
 EXTERN saveSnapShotRegister
 section .text
 %macro pushState 0
@@ -217,5 +219,10 @@ getMemory:
 	mov rax,rsi
 	ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+timerTickInterrupt:
+	int 0x20
+	ret
 
 

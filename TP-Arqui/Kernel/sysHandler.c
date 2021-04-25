@@ -112,6 +112,11 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
         drawRectangle(par1[0], par1[1], par2, par5[0], par5[1]);
         break;
     }
+    case (14):
+    {
+        startProcess(par1, par5, par3, par6); //REVISAR!!!!!!!!!!!!!!!!!!!!! //(nombre, funcion, argc, argv)
+        break;
+    }
     default:
         break;
     }
@@ -134,15 +139,15 @@ void read(uint64_t *buffer, uint64_t lengthBuffer)
 {
 
     char *keyboardBuffer = getKeyboardBuffer();
-        
+
     for (int i = 0; i < lengthBuffer && keyboardBuffer[i] != 0; i++)
     {
         if (keyboardBuffer[i] == ESPACE)
         {
-           // print(keyboardBuffer,0xFF0000,0x000000);
+            // print(keyboardBuffer,0xFF0000,0x000000);
             ((char *)buffer)[i] = ' ';
         }
-        else if ( L_SHIFT == keyboardBuffer[i] || R_SHIFT_RELEASED == keyboardBuffer[i] || L_SHIFT_RELEASED == keyboardBuffer[i])
+        else if (L_SHIFT == keyboardBuffer[i] || R_SHIFT_RELEASED == keyboardBuffer[i] || L_SHIFT_RELEASED == keyboardBuffer[i])
         {
             continue;
         }

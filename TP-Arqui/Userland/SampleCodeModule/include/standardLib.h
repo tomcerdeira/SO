@@ -37,4 +37,7 @@ void printBase(uint64_t value, uint_least32_t base);
 void printmem();
 void printTime();
 long getMillis();
+
+// SysCall que es la encargada de crear los procesos
+int createP(char *name, void *func, int argc, char *argv[]);
 #endif
