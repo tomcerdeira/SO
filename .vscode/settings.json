@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "fcntl.h": "c"
+        "fcntl.h": "c",
+        "libc.h": "c",
+        "syshandler.h": "c"
     }
 }

@@ -17,6 +17,10 @@
 #include <semaphore.h>
 #include <math.h>
 
+#define MEMORY_SIZE 1256
+#define BLOCK 8
+#define CANTBLOCKS (int)MEMORY_SIZE / BLOCK
+
 void *dummy_malloc(int size);
 void *dummy_malloc_with_blocks(int requestedCantOfBlocks);
 void freeMemory(char *ptr);
@@ -25,6 +29,9 @@ int searchFreeBlocks(int requestedBlocks);
 void initialize();
 void *mallocNUESTRO(int size);
 void *memsetNUESTRO(char *ptr, int toWrite, int size);
+int getMemoryAvailable();
+int getMemoryUsed();
+int getTotalMemorySize();
 
 typedef struct
 {

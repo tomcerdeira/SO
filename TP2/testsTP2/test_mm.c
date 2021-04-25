@@ -26,6 +26,9 @@ void test_mm()
     rq = 0;
     total = 0;
 
+    printf("Total memory USED: %d - Total memory AVAILABLE: %d\n", getMemoryUsed(), getMemoryAvailable());
+    printf("------------------------------------------------\n");
+
     // Request as many blocks as we can
     while (rq < MAX_BLOCKS && total < MAX_MEMORY)
     {
@@ -41,6 +44,9 @@ void test_mm()
         printf("ERROR EN MALLOC \n");
         exit(1);
       }
+
+      printf("Total memory USED: %d - Total memory AVAILABLE: %d\n", getMemoryUsed(), getMemoryAvailable());
+      printf("------------------------------------------------\n");
 
       //////////////////////////////
 
@@ -86,7 +92,6 @@ void test_mm()
         }
       }
     }
-
     // Free
     for (i = 0; i < rq; i++)
     {
@@ -99,6 +104,9 @@ void test_mm()
         //exit(1);
       }
     }
+
+    printf("Total memory USED: %d - Total memory AVAILABLE: %d\n", getMemoryUsed(), getMemoryAvailable());
+    printf("------------------------------------------------\n");
 
     //free(mm_rqs[i].address); // TODO: Port this call as required
     ////////// USAR free DESPUES!!!

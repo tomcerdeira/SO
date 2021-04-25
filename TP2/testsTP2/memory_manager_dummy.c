@@ -1,16 +1,185 @@
 #include "includes.h"
 
-#define MEMORY_SIZE 1256
-#define BLOCK 8
-#define CANTBLOCKS (int)MEMORY_SIZE / BLOCK
-
 int indexMemoryAsigned = 0;
 memoryBlock bitMapMemory[CANTBLOCKS];
 int id = 0;
 
+int cantOfMemoryUsed = 0;
+
 char start[MEMORY_SIZE] = {'\0'};
 
 char *next = start; //next siempre apunta a la última posición de memoria que se puede usar
+
+// Inicializamos el bitMap
+void initialize()
+{
+    int i = 0;
+    for (; i < CANTBLOCKS; i++)
+    {
+        memoryBlock newMemoryblock;
+        newMemoryblock.cantOfBlocks = 1;
+        newMemoryblock.isFree = 1;
+        newMemoryblock.start = (start + i * BLOCK);
+        newMemoryblock.id_request = id;
+        bitMapMemory[i] = newMemoryblock;
+    }
+
+    printf("%d cantt \n", CANTBLOCKS);
+    printf("Ya inicialice \n\n");
+}
+
+void *dummy_malloc_with_blocks(int requestedCantOfBlocks)
+{
+    int i = 0;
+
+    int index = searchFreeBlocks(requestedCantOfBlocks);
+
+    printf("ANTES: Requested cant of blocks: %d - Index: %d - cantBlocksUsed: %d\n", requestedCantOfBlocks, index, cantOfMemoryUsed);
+
+    if (index >= 0)
+    {
+        i = index;
+        id += 1;
+        for (; i < index + requestedCantOfBlocks; i++)
+        {
+            bitMapMemory[i].isFree = 0;
+            bitMapMemory[i].id_request = id;
+            cantOfMemoryUsed++;
+        }
+        return bitMapMemory[index].start;
+    }
+
+    printf("No hay memoria \n");
+    // Si llega aca es por que no hay memoria contigua libre para dar
+    return NULL;
+}
+
+int searchFreeBlocks(int requestedBlocks)
+{
+    int i = 0;
+    int flag = 1;
+    for (; i < CANTBLOCKS; i++)
+    {
+        //printf("ENTRO 1\n");
+        if (bitMapMemory[i].isFree == 1)
+        {
+            //printf("ENTRO 2\n");
+            int j = i + 1;
+            for (; j < CANTBLOCKS && flag && j < i + requestedBlocks; j++)
+            {
+                //printf("ENTRO 3\n");
+                if (!bitMapMemory[j].isFree)
+                {
+                    flag = 0;
+                }
+            }
+            if (flag)
+            {
+                return i;
+            }
+            else
+            {
+                flag = 1;
+                i = j;
+            }
+        }
+    }
+    return -1;
+}
+
+int searchIndexBitMap(char *ptr)
+{
+    int i = 0;
+
+    for (; i < CANTBLOCKS; i++)
+    {
+        if (ptr >= bitMapMemory[i].start && ptr < (bitMapMemory[i].start + BLOCK))
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void freeMemory(char *ptr)
+{
+    int index_block = searchIndexBitMap(ptr);
+    if (index_block < 0)
+    {
+        printf("No hay memoria para liberar");
+        return;
+    }
+    int id_find = bitMapMemory[index_block].id_request;
+
+    int t = index_block;
+
+    while (bitMapMemory[t].id_request == id_find && t >= 0)
+    {
+        bitMapMemory[t].isFree = 1;
+        t--;
+        cantOfMemoryUsed--;
+    }
+
+    t = index_block + 1;
+    while (bitMapMemory[t].id_request == id_find && t <= CANTBLOCKS)
+    {
+        bitMapMemory[t].isFree = 1;
+        t++;
+        cantOfMemoryUsed--;
+    }
+}
+
+void *mallocNUESTRO(int size)
+{
+    int cantBlocks = size / BLOCK + 1;
+    return dummy_malloc_with_blocks(cantBlocks);
+}
+
+void *memsetNUESTRO(char *ptr, int toWrite, int size)
+{
+
+    int index = searchIndexBitMap(ptr);
+    int id_found = bitMapMemory[index].id_request;
+    int i = index;
+    int j = 0;
+
+    while (bitMapMemory[i].id_request == id_found && size != 0)
+    {
+        for (; j < BLOCK && size != 0; j++)
+        {
+            // printf("ENTROOOOOO. id_request: %d - size: %d\n", id_found, size);
+            bitMapMemory[i].start[j] = toWrite;
+            size--;
+        }
+        // printf("UN BLOQUE COMPLETO. id_request (i): %d - id_request (i+1): %d\n", bitMapMemory[i].id_request, bitMapMemory[i + 1].id_request);
+        i++;
+        j = 0;
+    }
+
+    if (size == 0)
+    {
+        return bitMapMemory[index].start;
+    }
+
+    return NULL;
+}
+
+int getTotalMemorySize()
+{
+    return MEMORY_SIZE;
+}
+
+int getMemoryAvailable()
+{
+    return MEMORY_SIZE - (cantOfMemoryUsed * BLOCK);
+}
+
+int getMemoryUsed()
+{
+    return (cantOfMemoryUsed * BLOCK);
+}
+
+/////////////////////////////// HASTA ACA
 
 // int main(int argc, char *argv[])
 // {
@@ -85,158 +254,6 @@ char *next = start; //next siempre apunta a la última posición de memoria que 
 //     // printf("Ya LIBERE toda la memoria \n");
 //     return 0;
 // }
-
-// Inicializamos el bitMap
-void initialize()
-{
-    int i = 0;
-    for (; i < CANTBLOCKS; i++)
-    {
-        memoryBlock newMemoryblock;
-        newMemoryblock.cantOfBlocks = 1;
-        newMemoryblock.isFree = 1;
-        newMemoryblock.start = (start + i * BLOCK);
-        newMemoryblock.id_request = id;
-        bitMapMemory[i] = newMemoryblock;
-    }
-    printf("%d cantt \n", CANTBLOCKS);
-    printf("Ya inicialice \n\n");
-}
-
-void *dummy_malloc_with_blocks(int requestedCantOfBlocks)
-{
-    int i = 0;
-
-    int index = searchFreeBlocks(requestedCantOfBlocks);
-
-    printf("Requested cant of blocks: %d - Index: %d\n", requestedCantOfBlocks, index);
-
-    if (index >= 0)
-    {
-        i = index;
-        id += 1;
-        for (; i < index + requestedCantOfBlocks; i++)
-        {
-            bitMapMemory[i].isFree = 0;
-            bitMapMemory[i].id_request = id;
-        }
-        return bitMapMemory[index].start;
-    }
-
-    printf("No hay memoria \n");
-    // Si llega aca es por que no hay memoria contigua libre para dar
-    return NULL;
-}
-
-int searchFreeBlocks(int requestedBlocks)
-{
-    int i = 0;
-    int flag = 1;
-    for (; i < CANTBLOCKS; i++)
-    {
-        //printf("ENTRO 1\n");
-        if (bitMapMemory[i].isFree == 1)
-        {
-            //printf("ENTRO 2\n");
-            int j = i + 1;
-            for (; j < CANTBLOCKS && flag && j < i + requestedBlocks; j++)
-            {
-                //printf("ENTRO 3\n");
-                if (!bitMapMemory[j].isFree)
-                {
-                    flag = 0;
-                }
-            }
-            if (flag)
-            {
-                return i;
-            }
-            else
-            {
-                flag = 1;
-                i = j;
-            }
-        }
-    }
-    return -1;
-}
-
-int searchIndexBitMap(char *ptr)
-{
-    int i = 0;
-
-    for (; i < CANTBLOCKS; i++)
-    {
-        if (ptr >= bitMapMemory[i].start && ptr < (bitMapMemory[i].start + BLOCK))
-        {
-            return i;
-        }
-    }
-    return -1;
-}
-
-void freeMemory(char *ptr)
-{
-    int index_block = searchIndexBitMap(ptr);
-    if (index_block < 0)
-    {
-        printf("No hay memoria para liberar");
-        return;
-    }
-    int id_find = bitMapMemory[index_block].id_request;
-
-    int t = index_block;
-
-    while (bitMapMemory[t].id_request == id_find && t >= 0)
-    {
-        bitMapMemory[t].isFree = 1;
-        t--;
-    }
-
-    t = index_block;
-    while (bitMapMemory[t].id_request == id_find && t <= CANTBLOCKS)
-    {
-        bitMapMemory[t].isFree = 1;
-        t++;
-    }
-}
-
-void *mallocNUESTRO(int size)
-{
-    int cantBlocks = size / BLOCK + 1;
-    return dummy_malloc_with_blocks(cantBlocks);
-}
-
-void *memsetNUESTRO(char *ptr, int toWrite, int size)
-{
-
-    int index = searchIndexBitMap(ptr);
-    int id_found = bitMapMemory[index].id_request;
-    int i = index;
-    int j = 0;
-
-    while (bitMapMemory[i].id_request == id_found && size != 0)
-    {
-        for (; j < BLOCK && size != 0; j++)
-        {
-            // printf("ENTROOOOOO. id_request: %d - size: %d\n", id_found, size);
-            bitMapMemory[i].start[j] = toWrite;
-            size--;
-        }
-        // printf("UN BLOQUE COMPLETO. id_request (i): %d - id_request (i+1): %d\n", bitMapMemory[i].id_request, bitMapMemory[i + 1].id_request);
-        i++;
-        j = 0;
-    }
-
-    if (size == 0)
-    {
-        return bitMapMemory[index].start;
-    }
-
-    return NULL;
-}
-
-/////////////////////////////// HASTA ACA
 
 // void *dummy_malloc_with_blocks(int requestedCantOfBlocks)
 // {
