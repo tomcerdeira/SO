@@ -1,6 +1,6 @@
 #include <irqDispatcher.h>
 
-void irqDispatcher(uint64_t irq, uint64_t *sp)
+uint64_t *irqDispatcher(uint64_t irq, uint64_t *sp)
 {
     //print("LLEGO", 0x32, 0xFF);
     switch (irq)

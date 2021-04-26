@@ -6,5 +6,5 @@
 #include <keyboardDriver.h>
 #include <time.h> // ????????????????
 #include <timer.h>
-void irqDispatcher(uint64_t irq, uint64_t *sp);
+uint64_t *irqDispatcher(uint64_t irq, uint64_t *sp);
 #endif
