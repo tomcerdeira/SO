@@ -8,6 +8,9 @@
 // #include <naiveConsole.h>
 #include <idt.h>
 
+/////// SACAR
+#include <scheduler.h>
+
 ////////////////////////////
 
 //#include "text_driver.h"
@@ -24,6 +27,9 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 extern uint64_t *getSP();
+
+/////////// SACAR
+void funcion();
 
 static const uint64_t PageSize = 0x1000;
 
@@ -60,15 +66,32 @@ void *initializeKernelBinary()
 int main()
 {
 	initScreen();
+	//////
+	print("LLEGO 1", 0x32, 0xFF);
+	createprocesses();
+	print("LLEGO 2", 0x32, 0xFF);
+	//////
 	configureIDT();
 	setReturns(sampleCodeModuleAddress, getSP()); //Seteado de IP y SP
 	// print("por dividir",0x555555,0x118822);
 	//int i = 1 / 0;
 	// print("listo dividir",0x22,0x22);
 
+	startProcess("prueba", &funcion, NULL, NULL);
+
+	print("LLEGO 3", 0x32, 0xFF);
+
 	((EntryPoint)sampleCodeModuleAddress)();
 
 	//////////////////////
 
 	return 0;
+}
+
+void funcion()
+{
+	while (1)
+	{
+		print("FUNCION", 0x32, 0xFF);
+	}
 }

@@ -2,6 +2,8 @@
 #define SCHEDULER_H
 
 #include <stdint.h>
+#include <lib.h>
+#include <initStack.h>
 
 typedef struct
 {
@@ -14,10 +16,13 @@ typedef struct
     int state;
 } process;
 
-void createprocesses(process *processes);
+extern uint64_t *initStack(uint64_t *rsp, void *wrapper, void *func, int argc, char *argv[], int pid);
+void createprocesses();
 int getAvailableProcess(process *processes);
 void startProcess(char *name, void *func, int argc, char *argv[]);
 uint64_t *activeProcess(uint64_t *rsp);
-extern void timerTickInterrupt();
+void wrapper(void *func(int, char **), int argc, char *argv[], int pid);
+void exit(int status);
+void kill(int pid);
 
 #endif

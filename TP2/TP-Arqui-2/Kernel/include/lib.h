@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include <registers.h>
 
-
-
 char *cpuVendor(char *result);
 
 uint8_t getDay();
@@ -15,10 +13,9 @@ uint8_t getHour();
 uint8_t getMins();
 uint8_t getSeconds();
 char readKeyboard();
-uint64_t * getMemory(uint64_t init);
-uint64_t * getSP();
+uint64_t *getMemory(uint64_t init);
+uint64_t *getSP();
 void snapShotRegister();
-
-
+void timerTickInterrupt();
 
 #endif

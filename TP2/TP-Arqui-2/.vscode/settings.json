@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "irqdispatcher.h": "c",
+        "shell.h": "c",
+        "standardlib.h": "c"
+    }
+}

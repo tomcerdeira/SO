@@ -13,7 +13,7 @@ void init()
   // }
   isInitialized = 1;
   setFontColor(MODULE_COLOR);
-  printf("TP-ARQUI 2020\n");
+  printf("TP-SO 2021 V1\n");
   setFontColor(DEFAULT_FONT_COLOR);
   printf("Por favor, ingrese un nombre de usuario: ");
   scanf("%s", user);
@@ -175,7 +175,6 @@ void shellHandler()
 
       exit = 1;
     }
-
     //TODO agregar:
     // - MEM --> imprime el estado de la memoria
     // - PS --> imprime la lista de proceso con sus propiedades (nombre, id, etc...)
@@ -189,7 +188,6 @@ void shellHandler()
     // - Filter (input) --> Filtra las vocales del input
     // - Pipe --> Imprime la lista de todos los pipes con sus propiedades
     // - Phylo --> Implementar el problema de los filosofos
-
     else
     {
       printf("\n");

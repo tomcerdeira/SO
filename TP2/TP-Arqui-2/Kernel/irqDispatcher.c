@@ -2,7 +2,7 @@
 
 uint64_t *irqDispatcher(uint64_t irq, uint64_t *sp)
 {
-    //print("LLEGO", 0x32, 0xFF);
+    print("DISPATCHER", 0x32, 0xFF);
     switch (irq)
     {
     case 0:

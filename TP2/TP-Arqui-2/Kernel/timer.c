@@ -8,8 +8,6 @@ static int cron = 0;
 void timerHandler()
 {
     ticks++;
-
-    /// Para el ajedrez (creo)
     ticksCronometro++;
     if (cron)
     {
@@ -18,7 +16,6 @@ void timerHandler()
         printBase(ticksCronometro / 18, 10);
         disableCursor();
     }
-    ///
 }
 
 int getTicks()
@@ -44,7 +41,6 @@ void setCronometro(int activate)
     }
 }
 
-int getSecondsCronometro()
-{
-    return ticksCronometro / 18;
+int getSecondsCronometro(){
+    return ticksCronometro /18;
 }
