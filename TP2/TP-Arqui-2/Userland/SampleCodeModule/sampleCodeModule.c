@@ -3,7 +3,10 @@
 int main()
 {
 	//shellManager();
-	printf("LLEGO SHELL\n");
 	createProcess("shell", &shellManager, 0, 0);
+	while (1)
+	{
+	};
+
 	return 0;
 }

@@ -91,23 +91,24 @@ _picSlaveMask:
 
 
 %macro irqHandlerMaster 1
+
 	pushState
-	push rbp
-	mov rbp,rsp
+	; push rbp
+	; mov rbp,rsp
 
 	mov rdi, %1 ; pasaje de parametro
 	mov rsi, rsp 
 	
 	call irqDispatcher
-	mov rbp, rax
+	mov rsp, rax
 	
 	; signal pic EOI (End of Interrupt)
 	mov al, 20h
 	out 20h, al
 
 	
-	mov rsp,rbp
-	pop rbp
+	; mov rsp,rbp
+	; pop rbp
 
 	popState
 	iretq
