@@ -65,21 +65,26 @@ void *initializeKernelBinary()
 
 int main()
 {
+	//_cli();
 	initScreen();
 	//////
-	print("LLEGO 1", 0x32, 0xFF);
+	//print("LLEGO 1", 0x32, 0xFF);
 	createprocesses();
-	print("LLEGO 2", 0x32, 0xFF);
+	//print("LLEGO 2", 0x32, 0xFF);
 	//////
 	configureIDT();
 	setReturns(sampleCodeModuleAddress, getSP()); //Seteado de IP y SP
-	// print("por dividir",0x555555,0x118822);
-	//int i = 1 / 0;
-	// print("listo dividir",0x22,0x22);
 
-	startProcess("prueba", &funcion, NULL, NULL);
+	//startProcess("prueba", &funcion, NULL, NULL);
 
-	print("LLEGO 3", 0x32, 0xFF);
+	// while (1)
+	// {
+	// 	/* code */
+	// }
+
+	//print("LLEGO 3", 0x32, 0xFF);
+
+	//_sti();
 
 	((EntryPoint)sampleCodeModuleAddress)();
 
