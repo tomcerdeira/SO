@@ -13,6 +13,7 @@ uint64_t processMemory[CANT_PROCESS][STACK_SIZE] = {{0}};
 int current_process_index = 0;
 int cant_of_active_processes = 0;
 int first_time_entering = 1;
+int rsp_kernel = 0;
 
 // Creo y lleno el arreglo processes con todos los proceso que puedo tener
 // Version 1.0 de manejo de procesos
@@ -63,8 +64,7 @@ void startProcess(char *name, void *func(int, char **), int argc, char *argv[])
     processes[availableProcess].stackPointer = initStack(processes[availableProcess].memory + STACK_SIZE,
                                                          wrapper, processes[availableProcess].function, argc, argv, processes[availableProcess].pid);
     cant_of_active_processes++;
-    // print("EMPECE UN PROCESO", 0x32, 0xFF);
-    // print(name, 0x32, 0xFF);
+    
 }
 
 void wrapper(void *func(int, char **), int argc, char *argv[], int pid)
@@ -79,13 +79,14 @@ uint64_t *activeProcess(uint64_t *rsp)
 {
     if (cant_of_active_processes == 0)
     {
-
-        return rsp;
+        if (first_time_entering){
+            rsp_kernel = rsp;
+        }
+        return rsp_kernel;
     }
-    // RSP_K -->  1   RSP_F --> 22
     else
     {
-        if (!first_time_entering)
+        if (!first_time_entering) // Esto es para que un proceso se actualice el SP.
         {
             processes[current_process_index].stackPointer = rsp;
         }
@@ -95,8 +96,6 @@ uint64_t *activeProcess(uint64_t *rsp)
             if (processes[i].state == ACTIVO)
             {
                 first_time_entering = 0;
-                // print("CAMBIO PROCESO", 0x44, 0xFE);
-                // print(processes[i].name, 0x44, 0xFE);
                 current_process_index = i;
                 return processes[i].stackPointer; //TODO devolver el más prioritario
             }
@@ -119,8 +118,14 @@ void kill(int pid)
     }
 }
 
+void kill_current(){
+    processes[current_process_index].state = MATADO;
+    cant_of_active_processes--;
+}
+
 void exit(int status)
 {
-    kill(processes[current_process_index].pid);
+
+    kill_current();
     timerTickInterrupt();
 }

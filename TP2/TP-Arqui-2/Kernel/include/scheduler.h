@@ -11,7 +11,7 @@ typedef struct
     char *name;
     int pid;
     void *function;
-    //TODO prioridad
+    //TODO int prioridad;
     uint64_t *stackPointer;
     uint64_t *memory;
     int state;
@@ -25,5 +25,6 @@ uint64_t *activeProcess(uint64_t *rsp);
 void wrapper(void *func(int, char **), int argc, char *argv[], int pid);
 void exit(int status);
 void kill(int pid);
+void kill_current();
 
 #endif

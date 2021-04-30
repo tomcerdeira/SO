@@ -30,6 +30,7 @@ extern uint64_t *getSP();
 
 /////////// SACAR
 void funcion();
+void funcion1();
 
 static const uint64_t PageSize = 0x1000;
 
@@ -75,7 +76,12 @@ int main()
 	configureIDT();
 	setReturns(sampleCodeModuleAddress, getSP()); //Seteado de IP y SP
 
-	//startProcess("prueba", &funcion, NULL, NULL);
+	/////////////////////////////
+
+	startProcess("prueba", &funcion, NULL, NULL);
+	startProcess("prueba", &funcion1, NULL, NULL);
+	startProcess("prueba", &funcion, NULL, NULL);
+
 
 	// while (1)
 	// {
@@ -95,8 +101,19 @@ int main()
 
 void funcion()
 {
-	while (1)
+	int i =0;
+	while (i<10)
 	{
 		print("FUNCION", 0x32, 0xFF);
+		i++;
+	}
+}
+void funcion1()
+{
+	int i =0;
+	while (i<10)
+	{
+		print("FUNCION 1 ", 0x32, 0xFF);
+		i++;
 	}
 }
