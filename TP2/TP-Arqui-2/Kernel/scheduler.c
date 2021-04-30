@@ -1,8 +1,6 @@
 #include "scheduler.h"
 
-#define MATADO 0
-#define ACTIVO 1
-#define BLOQUEADO 2
+s
 
 #define CANT_PROCESS 10
 #define STACK_SIZE 4096

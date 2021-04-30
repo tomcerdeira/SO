@@ -1,4 +1,4 @@
-#include "includes.h"
+#include <memory_manager.h>
 
 int indexMemoryAsigned = 0;
 memoryBlock bitMapMemory[CANTBLOCKS];

@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "syshandler.h": "c",
-        "scheduler.h": "c"
+        "scheduler.h": "c",
+        "scheduler2.h": "c"
     }
 }
