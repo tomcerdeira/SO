@@ -471,4 +471,5 @@ long getMillis()
 int createProcess(char *name, void *func, int argc, char *argv[])
 {
     return createP(name, func, argc, argv);
+    /////////////// rdi, rsi, rdx, rcx
 }

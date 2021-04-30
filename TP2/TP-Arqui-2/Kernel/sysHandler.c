@@ -114,7 +114,7 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (14):
     {
-        startProcess(par1, par5, par3, par6); //REVISAR!!!!!!!!!!!!!!!!!!!!! //(nombre, funcion, argc, argv)
+        startProcess(par1, par6, par2, par5); //REVISAR!!!!!!!!!!!!!!!!!!!!! //(nombre, funcion, argc, argv)
         break;
     }
 

@@ -238,19 +238,19 @@ disableCursor:
 createP:
    push rbp
    mov rbp,rsp
- 
-   push rcx
+
+   push r8
    push r9
-   push r10
-   mov r9,rdx
-   mov r10, rcx
  
-   mov rcx,14
+   mov r8, rsi
+   mov r9, rcx
+   mov rsi, rdx
+
+   mov rcx, 14
    int 80h
- 
-   pop r10
+
    pop r9
-   pop rcx
+   pop r8
  
    mov rsp,rbp
    pop rbp
