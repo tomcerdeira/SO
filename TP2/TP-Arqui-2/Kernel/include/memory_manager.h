@@ -1,21 +1,22 @@
 #ifndef MEMORY_MANAGER
 #define MEMORY_MANAGER
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <pthread.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/select.h>
-#include <limits.h>
-#include <string.h>
-#include <sys/mman.h>
-#include <semaphore.h>
-#include <math.h>
+// #include <stdlib.h>
+// #include <stdio.h>
+// #include <pthread.h>
+// #include <sys/types.h>
+// #include <sys/wait.h>
+// #include <sys/stat.h>
+// #include <fcntl.h>
+// #include <unistd.h>
+// // #include <errno.h>
+// #include <sys/select.h>
+// #include <limits.h>
+// #include <sys/mman.h>
+// #include <semaphore.h>
+// #include <math.h>
+#include <stdint.h>
+#define NULL 0
 
 #define MEMORY_SIZE 4096*20
 #define BLOCK 8

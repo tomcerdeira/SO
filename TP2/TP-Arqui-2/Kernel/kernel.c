@@ -9,7 +9,7 @@
 #include <idt.h>
 
 /////// SACAR
-#include <scheduler.h>
+#include <scheduler2.h>
 
 ////////////////////////////
 
@@ -36,6 +36,8 @@ static const uint64_t PageSize = 0x1000;
 
 static void *const sampleCodeModuleAddress = (void *)0x400000;
 static void *const sampleDataModuleAddress = (void *)0x500000;
+static void *const sampleMememoryModuleAddress = (void *)0x600000;
+
 
 typedef int (*EntryPoint)();
 
@@ -69,18 +71,23 @@ int main()
 	//_cli();
 	initScreen();
 	//////
-	//print("LLEGO 1", 0x32, 0xFF);
-	createprocesses();
-	//print("LLEGO 2", 0x32, 0xFF);
+	
+	initScheduler();
+	//createprocesses();
+
+	
+	print("LLEGO 2", 0x32, 0xFF);
 	//////
 	configureIDT();
 	setReturns(sampleCodeModuleAddress, getSP()); //Seteado de IP y SP
 
 	/////////////////////////////
-
-	startProcess("prueba", &funcion, NULL, NULL);
-	startProcess("prueba", &funcion1, NULL, NULL);
-	startProcess("prueba", &funcion, NULL, NULL);
+	//_cli();
+	print("AAAAAAAAAAAAAAAAAAAAAAAAA", 0xFF, 0x32);
+	 startProcess("prueba", &funcion, NULL, NULL);
+	 //_sti();
+	// startProcess("prueba", &funcion1, NULL, NULL);
+	// startProcess("prueba", &funcion, NULL, NULL);
 
 
 	// while (1)
@@ -92,7 +99,11 @@ int main()
 
 	//_sti();
 
-	((EntryPoint)sampleCodeModuleAddress)();
+	 ((EntryPoint)sampleCodeModuleAddress)();
+	 print("LLEGO000000000 2", 0xFF, 0x32);
+	 while(1){
+		 print("WHILE", 0x32, 0xFF);
+	 }
 
 	//////////////////////
 

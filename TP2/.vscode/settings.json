@@ -2,6 +2,14 @@
     "files.associations": {
         "syshandler.h": "c",
         "scheduler.h": "c",
-        "scheduler2.h": "c"
+        "scheduler2.h": "c",
+        "libc.h": "c",
+        "memory_manager.h": "c",
+        "time.h": "c",
+        "videodriver.h": "c",
+        "irqdispatcher.h": "c",
+        "stdint.h": "c",
+        "unistd.h": "c",
+        "test_util.h": "c"
     }
 }

@@ -179,3 +179,22 @@ void printRegisters(uint64_t *stackFrame)
 		print("\n", 0xFFFFFF, 0x000000);
 	}
 }
+
+int strcompare(char *s1, char *s2)
+{
+	int cmp = 1;
+	int i;
+	for (i = 0; s1[i] != 0 && s2[i] != 0 && cmp; i++)
+	{
+		if (s1[i] != s2[i])
+		{
+			cmp = 0;
+		}
+	}
+
+	if ((s1[i] == 0 && s2[i] != 0) || (s1[i] != 0 && s2[i] == 0))
+	{
+		cmp = 0;
+	}
+	return cmp;
+}

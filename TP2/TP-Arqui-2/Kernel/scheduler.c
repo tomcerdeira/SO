@@ -1,7 +1,9 @@
-#include "scheduler.h"
+#include <scheduler.h>
 
-s
 
+#define MATADO 0
+#define ACTIVO   1
+#define BLOQUEADO 2
 #define CANT_PROCESS 10
 #define STACK_SIZE 4096
 
@@ -47,6 +49,8 @@ int getAvailableProcess(process *processes)
 void startProcess(char *name, void *func(int, char **), int argc, char *argv[])
 //se fija entre todos los procesos, agarra uno que esté muerto/disponible, le asigna la tarea, lo activa,
 {
+    // print("Creo proceso",0x00,0xFF);
+    // print(name,0x00,0xFF);
     int availableProcess = getAvailableProcess(processes);
 
     while ((availableProcess = getAvailableProcess(processes)) < 0)
@@ -70,6 +74,7 @@ void wrapper(void *func(int, char **), int argc, char *argv[], int pid)
     int retValue;
     retValue = (int)(*func)(argc, argv); // --> return --> wrapper -->  kill (libere todo) --> return a shell
                                          // exit -->kill (libere todo) --> return a padre
+    // print("Salgo del proceso",0xFF,0x32);
     exit(retValue);
 }
 
@@ -93,6 +98,7 @@ uint64_t *activeProcess(uint64_t *rsp)
         {
             if (processes[i].state == ACTIVO)
             {
+                 
                 first_time_entering = 0;
                 current_process_index = i;
                 return processes[i].stackPointer; //TODO devolver el más prioritario

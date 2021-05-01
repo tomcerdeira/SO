@@ -37,15 +37,6 @@ void init()
   shellHandler();
 }
 
-// void shell()
-// {
-//   setFontColor(USER_COLOR);
-//   printf("%s", userShell);
-//   setFontColor(DEFAULT_FONT_COLOR);
-//   char buff[100] = {0};
-//   scanf("%s", buff);
-//   loadModule(buff);
-// }
 
 void shellHandler()
 {
@@ -115,7 +106,8 @@ void shellHandler()
     else if (strcmp(buff, "printmem"))
     {
       printf("\n");
-      printmem(strToInt(param1));
+      createProcess("printMem",&printmem,strToInt(param1),0);
+     // printmem(strToInt(param1));
       printf("\n");
     }
     else if (strcmp(buff, "inforeg"))
@@ -147,7 +139,8 @@ void shellHandler()
     else if (strcmp(buff, "time"))
     {
       printf("\n");
-      printTime();
+      createProcess("time",&printTime,0,0);
+      
       printf("\n");
     }
     else if (strcmp(buff, "chess"))
