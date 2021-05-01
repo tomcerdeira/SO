@@ -72,8 +72,8 @@ int main()
 	initScreen();
 	//////
 	
-	initScheduler();
-	//createprocesses();
+	//initScheduler();
+	createprocesses();
 
 	
 	print("LLEGO 2", 0x32, 0xFF);

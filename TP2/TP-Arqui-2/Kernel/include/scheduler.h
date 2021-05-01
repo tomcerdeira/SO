@@ -11,10 +11,11 @@ typedef struct
     char *name;
     int pid;
     void *function;
-    //TODO int prioridad;
     uint64_t *stackPointer;
     uint64_t *memory;
     int state;
+    int priority;
+    int innerPriority;
 } process;
 
 extern uint64_t *initStack(uint64_t *rsp, void *wrapper, void *func, int argc, char *argv[], int pid);

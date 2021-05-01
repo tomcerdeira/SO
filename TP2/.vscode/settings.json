@@ -10,6 +10,7 @@
         "irqdispatcher.h": "c",
         "stdint.h": "c",
         "unistd.h": "c",
-        "test_util.h": "c"
+        "test_util.h": "c",
+        "typeinfo": "c"
     }
 }
