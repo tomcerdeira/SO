@@ -5,6 +5,7 @@
 #include <lib.h>
 #include <initStack.h>
 #include <interrupts.h>
+#include <memory_manager.h>
 
 typedef struct
 {

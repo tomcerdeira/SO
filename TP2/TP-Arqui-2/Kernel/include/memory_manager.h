@@ -18,7 +18,7 @@
 #include <stdint.h>
 #define NULL 0
 
-#define MEMORY_SIZE 4096*20
+#define MEMORY_SIZE 4096 * 20
 #define BLOCK 8
 #define CANTBLOCKS (int)MEMORY_SIZE / BLOCK
 
@@ -27,7 +27,7 @@ void *dummy_malloc_with_blocks(int requestedCantOfBlocks);
 void freeMemory(char *ptr);
 int indexOfMemoryBlock(char *ptr);
 int searchFreeBlocks(int requestedBlocks);
-void initialize();
+void initializeMemory();
 void *mallocNUESTRO(int size);
 void *memsetNUESTRO(char *ptr, int toWrite, int size);
 int getMemoryAvailable();

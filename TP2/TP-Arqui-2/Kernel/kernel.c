@@ -72,17 +72,18 @@ int main()
 	//////
 
 	//initScheduler();
+	initializeMemory();
 	createprocesses();
 
-	print("LLEGO 2", 0x32, 0xFF);
+	// print("LLEGO 2", 0x32, 0xFF);
 	//////
 	configureIDT();
 	setReturns(sampleCodeModuleAddress, getSP()); //Seteado de IP y SP
 
 	//_cli();
-	print("AAAAAAAAAAAAAAAAAAAAAAAAA", 0xFF, 0x32);
-	//startProcess("prueba", &funcion, NULL, NULL);
-	print("EEEEEEEEEEEEEEEEEEEEEEEEEE", 0xFF, 0x32);
+	// print("AAAAAAAAAAAAAAAAAAAAAAAAA", 0xFF, 0x32);
+	// startProcess("prueba", &funcion, NULL, NULL);
+	// print("EEEEEEEEEEEEEEEEEEEEEEEEEE", 0xFF, 0x32);
 	//_sti();
 	// startProcess("prueba", &funcion1, NULL, NULL);
 	// startProcess("prueba", &funcion, NULL, NULL);

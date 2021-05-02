@@ -6,12 +6,12 @@ int id = 0;
 
 int cantOfMemoryUsed = 0;
 
-static char *const start = (void *) 0x600000;
+static char *const start = (void *)0x600000; //
 
-char * next = &start; //next siempre apunta a la última posición de memoria que se puede usar
-                // ??????????? Es por el &
+char *next = &start; //next siempre apunta a la última posición de memoria que se puede usar
+                     // ??????????? Es por el &
 // Inicializamos el bitMap
-void initialize()
+void initializeMemory()
 {
     int i = 0;
     for (; i < CANTBLOCKS; i++)
@@ -34,7 +34,7 @@ void *dummy_malloc_with_blocks(int requestedCantOfBlocks)
 
     int index = searchFreeBlocks(requestedCantOfBlocks);
 
-   // printf("ANTES: Requested cant of blocks: %d - Index: %d - cantBlocksUsed: %d\n", requestedCantOfBlocks, index, cantOfMemoryUsed);
+    // printf("ANTES: Requested cant of blocks: %d - Index: %d - cantBlocksUsed: %d\n", requestedCantOfBlocks, index, cantOfMemoryUsed);
 
     if (index >= 0)
     {
@@ -49,7 +49,7 @@ void *dummy_malloc_with_blocks(int requestedCantOfBlocks)
         return bitMapMemory[index].start;
     }
 
-   // printf("No hay memoria \n");
+    // printf("No hay memoria \n");
     // Si llega aca es por que no hay memoria contigua libre para dar
     return NULL;
 }
@@ -106,7 +106,7 @@ void freeMemory(char *ptr)
     int index_block = searchIndexBitMap(ptr);
     if (index_block < 0)
     {
-      // printf("No hay memoria para liberar");
+        // printf("No hay memoria para liberar");
         return;
     }
     int id_find = bitMapMemory[index_block].id_request;

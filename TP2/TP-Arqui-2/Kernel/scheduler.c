@@ -12,7 +12,7 @@
 //process processes[CANT_PROCESS] = {{0}};
 process processes[CANT_PRIO][CANT_PROCESS] = {{0}};
 
-uint64_t processMemory[CANT_PRIO][CANT_PROCESS][STACK_SIZE] = {{0}};
+// uint64_t processMemory[CANT_PRIO][CANT_PROCESS][STACK_SIZE] = {{0}};
 
 char *priorityProcessesNames[] = {"shell", "time", "printmem"};
 int priorityProcessesValue[] = {2, 1, 2};
@@ -39,7 +39,8 @@ void createprocesses()
         {
             process proc;
             proc.pid = 0;
-            proc.memory = processMemory[prio][p];
+            //proc.memory = processMemory[prio][p];
+            proc.memory = 0;
             proc.state = MATADO;
             proc.priority = prio;
             proc.innerPriority = DEATH_INNER_P;
@@ -90,7 +91,9 @@ void startProcess(char *name, void *func(int, char **), int argc, char *argv[])
     processes[prio_name][availableProcess].state = ACTIVO;
     processes[prio_name][availableProcess].name = name;
     processes[prio_name][availableProcess].pid = last_pid++;
-    processes[prio_name][availableProcess].memory = processMemory[prio_name][availableProcess]; // Habria que liberarla una vez matado el proceso
+    //processes[prio_name][availableProcess].memory = processMemory[prio_name][availableProcess]; // Habria que liberarla una vez matado el proceso
+    processes[prio_name][availableProcess].memory = mallocNUESTRO(STACK_SIZE);
+
     processes[prio_name][availableProcess].stackPointer = initStack(processes[prio_name][availableProcess].memory + STACK_SIZE,
                                                                     wrapper, processes[prio_name][availableProcess].function, argc, argv, processes[prio_name][availableProcess].pid);
     // setProcessPriority(&processes[availableProcess]); //?/
@@ -163,30 +166,25 @@ uint64_t *activeProcess(uint64_t *rsp)
 
 void kill(int pid)
 {
-    int pos = 0;
     int prio = 0;
     for (; prio < CANT_PRIO; prio++)
     {
+        int pos = 0;
         for (; pos < CANT_PROCESS; pos++)
         {
             if (processes[prio][pos].pid == pid)
             {
                 processes[prio][pos].state = MATADO;
                 processes[prio][pos].innerPriority = DEATH_INNER_P;
+                freeMemory(processes[prio][pos].memory);
                 cant_of_active_processes--;
             }
         }
     }
 }
 
-void kill_current()
-{
-    processes[current_prio_index][current_process_index].state = MATADO;
-    cant_of_active_processes--;
-}
-
 void exit(int status)
 {
-    kill_current();
+    kill(processes[current_prio_index][current_process_index].pid);
     timerTickInterrupt();
 }
