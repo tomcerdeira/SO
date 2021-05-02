@@ -162,6 +162,10 @@ void shellHandler()
       printf("\n");
       _opCodeException();
     }
+    else if (strcmp(buff, "loop"))
+    {
+      endless_loop();
+    }
     else if (strcmp(buff, "exit"))
     {
       exit = 1;
@@ -197,4 +201,12 @@ void shellManager()
   setFontColor(DEFAULT_FONT_COLOR);
   setBackGroundColor(DEFAULT_BACKGROUND_COLOR);
   init();
+}
+
+void endless_loop()
+{
+  while (1)
+  {
+    printf("Hola re molesto! %d \n\n", getPid());
+  }
 }

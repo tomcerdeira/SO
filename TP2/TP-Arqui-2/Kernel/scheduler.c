@@ -14,15 +14,15 @@ process processes[CANT_PRIO][CANT_PROCESS] = {{0}};
 
 // uint64_t processMemory[CANT_PRIO][CANT_PROCESS][STACK_SIZE] = {{0}};
 
-char *priorityProcessesNames[] = {"shell", "time", "printmem"};
-int priorityProcessesValue[] = {2, 1, 2};
+char *priorityProcessesNames[] = {"shell", "time", "printmem", "loop"};
+int priorityProcessesValue[] = {2, 1, 2, 1};
 
 int current_process_index = 0;
 int current_prio_index = 0;
 int cant_of_active_processes = 0;
 int first_time_entering = 1;
 int rsp_kernel = 0;
-int last_pid = 1;
+int last_pid = 5;
 
 // Creo y lleno el arreglo processes con todos los proceso que puedo tener
 // Version 1.0 de manejo de procesos
@@ -75,7 +75,7 @@ int getPriority(char *name)
     return CANT_PRIO - 1; //si no está definido, le da la menor prioridad
 }
 
-void startProcess(char *name, void *func(int, char **), int argc, char *argv[])
+int startProcess(char *name, void *func(int, char **), int argc, char *argv[])
 //se fija entre todos los procesos, agarra uno que esté muerto/disponible, le asigna la tarea, lo activa,
 {
     int prio_name = getPriority(name);                           //2
@@ -99,6 +99,10 @@ void startProcess(char *name, void *func(int, char **), int argc, char *argv[])
     // setProcessPriority(&processes[availableProcess]); //?/
     processes[prio_name][availableProcess].innerPriority = 0;
     cant_of_active_processes++;
+    char buf[12] = {0};
+    numToStr(buf, processes[prio_name][availableProcess].pid);
+    print(buf, 0xFF, 0x32);
+    return processes[prio_name][availableProcess].pid;
 }
 
 void wrapper(void *func(int, char **), int argc, char *argv[], int pid)
@@ -187,4 +191,9 @@ void exit(int status)
 {
     kill(processes[current_prio_index][current_process_index].pid);
     timerTickInterrupt();
+}
+
+int getPid()
+{
+    return processes[current_prio_index][current_process_index].pid;
 }

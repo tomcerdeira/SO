@@ -12,6 +12,7 @@ GLOBAL disableCursor
 GLOBAL setCursorUser
 GLOBAL printRectangle
 GLOBAL createP
+GLOBAL getProcessPid
 
 ;  par1 --> buffer donde esta lo que quiero escribir
 ;  par2 --> fileDescrpitor
@@ -255,3 +256,19 @@ createP:
    mov rsp,rbp
    pop rbp
    ret
+
+
+getProcessPid:
+    push rbp
+    mov rbp,rsp
+
+    push rcx
+
+    mov rcx,15
+    int 80h
+    
+    pop rcx
+
+    mov rsp,rbp
+    pop rbp
+    ret

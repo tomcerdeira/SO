@@ -82,7 +82,7 @@ int main()
 
 	//_cli();
 	// print("AAAAAAAAAAAAAAAAAAAAAAAAA", 0xFF, 0x32);
-	// startProcess("prueba", &funcion, NULL, NULL);
+	//startProcess("prueba", &funcion, NULL, NULL);
 	// print("EEEEEEEEEEEEEEEEEEEEEEEEEE", 0xFF, 0x32);
 	//_sti();
 	// startProcess("prueba", &funcion1, NULL, NULL);

@@ -1,9 +1,13 @@
 #include <shell.h>
 
+void funcion();
+
 int main()
 {
 	//shellManager();
-	//createProcess("funcion", &funcion, 0, 0);
+	printf("Empiezo la funcion \n");
+	createProcess("funcion", &funcion, 0, 0);
+	printf("Termino la funcion \n");
 	createProcess("shell", &shellManager, 0, 0);
 	//createProcess("shell2", &shellManager, 0, 0);
 
@@ -18,4 +22,9 @@ int main()
 	// };
 
 	return 0;
+}
+
+void funcion()
+{
+	printf("HOLAAAAAAAA\n");
 }

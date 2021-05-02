@@ -118,6 +118,11 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
         timerTickInterrupt();
         break;
     }
+    case (15):
+    {
+        *par1 = getPid();
+        break;
+    }
 
     default:
         break;

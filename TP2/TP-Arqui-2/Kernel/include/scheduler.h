@@ -23,11 +23,11 @@ extern uint64_t *initStack(uint64_t *rsp, void *wrapper, void *func, int argc, c
 void createprocesses();
 int getAvailableProcess(process *processes);
 int getPriority(char *name);
-void startProcess(char *name, void *func(int, char **), int argc, char *argv[]);
+int startProcess(char *name, void *func(int, char **), int argc, char *argv[]);
 uint64_t *activeProcess(uint64_t *rsp);
 void wrapper(void *func(int, char **), int argc, char *argv[], int pid);
 void exit(int status);
 void kill(int pid);
-void kill_current();
+int getPid();
 
 #endif

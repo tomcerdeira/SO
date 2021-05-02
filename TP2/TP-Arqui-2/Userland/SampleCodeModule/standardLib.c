@@ -473,3 +473,10 @@ int createProcess(char *name, void *func, int argc, char *argv[])
     return createP(name, func, argc, argv);
     /////////////// rdi, rsi, rdx, rcx
 }
+
+int getPid()
+{
+    int pid = 0;
+    getProcessPid(&pid);
+    return pid;
+}
