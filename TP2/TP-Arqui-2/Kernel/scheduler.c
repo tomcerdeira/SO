@@ -1,24 +1,28 @@
 #include <scheduler.h>
 
-
 #define MATADO 0
-#define ACTIVO   1
+#define ACTIVO 1
 #define BLOQUEADO 2
 #define CANT_PROCESS 10
 #define STACK_SIZE 4096
 #define MAX_PROCESSES_PER_PRIO 10
 #define CANT_PRIO 3
+#define DEATH_INNER_P -1
 
-process processes[CANT_PROCESS] = {{0}};
-uint64_t processMemory[CANT_PROCESS][STACK_SIZE] = {{0}};
+//process processes[CANT_PROCESS] = {{0}};
+process processes[CANT_PRIO][CANT_PROCESS] = {{0}};
+
+uint64_t processMemory[CANT_PRIO][CANT_PROCESS][STACK_SIZE] = {{0}};
 
 char *priorityProcessesNames[] = {"shell", "time", "printmem"};
-int priorityProcessesValue[] = {1,2,2};
+int priorityProcessesValue[] = {1, 2, 2};
 
 int current_process_index = 0;
+int current_prio_index = 0;
 int cant_of_active_processes = 0;
 int first_time_entering = 1;
 int rsp_kernel = 0;
+int last_pid = 1;
 
 // Creo y lleno el arreglo processes con todos los proceso que puedo tener
 // Version 1.0 de manejo de procesos
@@ -27,26 +31,42 @@ int rsp_kernel = 0;
 // hacer que el pid sea incremental
 void createprocesses()
 {
-    int p = 1;
-    for (; p <= CANT_PROCESS; p++)
+    int prio = 0;
+    for (; prio < CANT_PRIO; prio++)
     {
-        process proc;
-        proc.pid = p;
-        proc.memory = processMemory[p - 1];
-        proc.state = MATADO;
-        proc.priority = 0;
-        proc.innerPriority = 20; 
-        processes[p - 1] = proc;
-
+        int p = 0;
+        for (; p < CANT_PROCESS; p++)
+        {
+            process proc;
+            proc.pid = 0;
+            proc.memory = processMemory[prio][p];
+            proc.state = MATADO;
+            proc.priority = prio;
+            proc.innerPriority = DEATH_INNER_P;
+            processes[prio][p] = proc;
+        }
     }
 }
 
-int getAvailableProcess(process *processes)
+// int getAvailableProcessInPrio(process *processes)
+// {
+//     int i = 0;
+//     for (; i < CANT_PROCESS; i++)
+//     {
+//         if (processes[i].state == MATADO)
+//         {
+//             return i;
+//         }
+//     }
+//     return -1;
+// }
+
+int getAvailableProcessInPrio(int prio)
 {
     int i = 0;
     for (; i < CANT_PROCESS; i++)
     {
-        if (processes[i].state == MATADO)
+        if (processes[prio][i].state == MATADO)
         {
             return i;
         }
@@ -54,44 +74,59 @@ int getAvailableProcess(process *processes)
     return -1;
 }
 
+int getPriority(char *name)
+{
+    int i = 0;
+    for (; i < 3; i++) //TODO no hardcodear el 3
+    {
+        if (strcompare(name, priorityProcessesNames[i]))
+        {
+            return priorityProcessesValue[i];
+        }
+    }
+    return CANT_PRIO - 1; //si no está definido, le da la menor prioridad
+}
+
 void startProcess(char *name, void *func(int, char **), int argc, char *argv[])
 //se fija entre todos los procesos, agarra uno que esté muerto/disponible, le asigna la tarea, lo activa,
 {
     // print("Creo proceso",0x00,0xFF);
     // print(name,0x00,0xFF);
-    int availableProcess = getAvailableProcess(processes);
+    int prio_name = getPriority(name);                           //2
+    int availableProcess = getAvailableProcessInPrio(prio_name); //0
 
-    while ((availableProcess = getAvailableProcess(processes)) < 0)
+    if (availableProcess < 0)
     {
-        // _hlt(); //REVVVVVV!!!!!!!
-        availableProcess = getAvailableProcess(processes);
+        // ERROR --> No hay un lugar para el proceso nuevo
+        return;
     }
 
-    processes[availableProcess].function = func;
-    processes[availableProcess].state = ACTIVO;
-    processes[availableProcess].name = name;
-    processes[availableProcess].memory = processMemory[availableProcess]; // Habria que liberarla una vez matado el proceso
-    processes[availableProcess].stackPointer = initStack(processes[availableProcess].memory + STACK_SIZE,
-                                                         wrapper, processes[availableProcess].function, argc, argv, processes[availableProcess].pid);
-    setProcessPriority(&processes[availableProcess]);
-    processes[availableProcess].innerPriority = 0;
+    processes[prio_name][availableProcess].function = func;
+    processes[prio_name][availableProcess].state = ACTIVO;
+    processes[prio_name][availableProcess].name = name;
+    processes[prio_name][availableProcess].pid = last_pid++;
+    processes[prio_name][availableProcess].memory = processMemory[prio_name][availableProcess]; // Habria que liberarla una vez matado el proceso
+    processes[prio_name][availableProcess].stackPointer = initStack(processes[prio_name][availableProcess].memory + STACK_SIZE,
+                                                                    wrapper, processes[prio_name][availableProcess].function, argc, argv, processes[prio_name][availableProcess].pid);
+    // setProcessPriority(&processes[availableProcess]); //?/
+    processes[prio_name][availableProcess].innerPriority = 0;
     cant_of_active_processes++;
-    
 }
 
-void setProcessPriority(process * p){
-    int i=0;
-    for (; i < 3; i++)
-    {
-        if(strcompare(p->name,priorityProcessesNames[i])){
-            p->priority = priorityProcessesValue[i];
-        }
-    }
-    p->priority = CANT_PRIO - 1; //Si no está le asigna la peor prioridad
-}
+// void setProcessPriority(process *p)
+// {
+//     int i = 0;
+//     for (; i < 3; i++)
+//     {
+//         if (strcompare(p->name, priorityProcessesNames[i]))
+//         {
+//             p->priority = priorityProcessesValue[i];
+//         }
+//     }
+//     p->priority = CANT_PRIO - 1; //Si no está le asigna la peor prioridad
+// }
 
-    void
-    wrapper(void *func(int, char **), int argc, char *argv[], int pid)
+void wrapper(void *func(int, char **), int argc, char *argv[], int pid)
 {
     int retValue;
     retValue = (int)(*func)(argc, argv); // --> return --> wrapper -->  kill (libere todo) --> return a shell
@@ -104,7 +139,8 @@ uint64_t *activeProcess(uint64_t *rsp)
 {
     if (cant_of_active_processes == 0)
     {
-        if (first_time_entering){
+        if (first_time_entering)
+        {
             rsp_kernel = rsp;
         }
         return rsp_kernel;
@@ -113,34 +149,41 @@ uint64_t *activeProcess(uint64_t *rsp)
     {
         if (!first_time_entering) // Esto es para que un proceso se actualice el SP.
         {
-            processes[current_process_index].stackPointer = rsp;
+            processes[current_prio_index][current_process_index].stackPointer = rsp;
         }
         int prio = 0;
         int found = 0;
-        int minInnerPriorityProcess = 0;
+        int minInnerPriorityIndex = 0;
         for (; prio < CANT_PRIO; prio++)
         {
             int i = 0;
-            for (; i < CANT_PROCESS; i++) //TODO esta implementación no usa prioridades, habría que chequear el más prioritario
+            for (; i < CANT_PROCESS; i++)
             {
-                if (processes[i].state == ACTIVO && processes[i].priority == prio)
+                if (processes[prio][i].state == ACTIVO)
                 {
-                    if (processes[i].innerPriority < processes[minInnerPriorityProcess].innerPriority)
+                    if (processes[prio][i].innerPriority <= processes[prio][minInnerPriorityIndex].innerPriority && processes[prio][minInnerPriorityIndex].innerPriority != DEATH_INNER_P)
                     {
-                        minInnerPriorityProcess = i;
+                        minInnerPriorityIndex = i;
                         found = 1;
                     }
                 }
             }
-             if(found){
+            if (found)
+            {
+                print("AAAAAAAAAAAAAAAAAAAAAAAAA", 0xFF, 0x32);
                 first_time_entering = 0;
-                current_process_index = minInnerPriorityProcess;
-                processes[minInnerPriorityProcess].innerPriority += 1;
-                return processes[minInnerPriorityProcess].stackPointer; //TODO devolver el más prioritario
+                current_process_index = minInnerPriorityIndex;
+                current_prio_index = prio;
+                processes[prio][minInnerPriorityIndex].innerPriority++;
+                return processes[prio][minInnerPriorityIndex].stackPointer; //TODO devolver el más prioritario
             }
-           
+            else
+            {
+                minInnerPriorityIndex = 0;
+            }
         }
     }
+    print("________ACA NO DEBERIA ESTAR________", 0x32, 0xFF);
     return (uint64_t *)-1;
     // Tira warning pero nunca llega aca (al menos no deberia)
 }
@@ -148,25 +191,29 @@ uint64_t *activeProcess(uint64_t *rsp)
 void kill(int pid)
 {
     int pos = 0;
-    for (; pos < cant_of_active_processes; pos++)
+    int prio = 0;
+    for (; prio < CANT_PRIO; prio++)
     {
-        if (processes[pos].pid == pid)
+        for (; pos < CANT_PROCESS; pos++)
         {
-            processes[pos].state = MATADO;
-            cant_of_active_processes--;
+            if (processes[prio][pos].pid == pid)
+            {
+                processes[prio][pos].state = MATADO;
+                processes[prio][pos].innerPriority = DEATH_INNER_P;
+                cant_of_active_processes--;
+            }
         }
     }
 }
 
-void kill_current(){
-    processes[current_process_index].state = MATADO;
+void kill_current()
+{
+    processes[current_prio_index][current_process_index].state = MATADO;
     cant_of_active_processes--;
 }
 
 void exit(int status)
 {
-
     kill_current();
     timerTickInterrupt();
 }
- 

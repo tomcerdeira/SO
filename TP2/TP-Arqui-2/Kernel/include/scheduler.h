@@ -21,6 +21,7 @@ typedef struct
 extern uint64_t *initStack(uint64_t *rsp, void *wrapper, void *func, int argc, char *argv[], int pid);
 void createprocesses();
 int getAvailableProcess(process *processes);
+int getPriority(char *name);
 void startProcess(char *name, void *func(int, char **), int argc, char *argv[]);
 uint64_t *activeProcess(uint64_t *rsp);
 void wrapper(void *func(int, char **), int argc, char *argv[], int pid);

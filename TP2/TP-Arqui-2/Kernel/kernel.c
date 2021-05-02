@@ -38,7 +38,6 @@ static void *const sampleCodeModuleAddress = (void *)0x400000;
 static void *const sampleDataModuleAddress = (void *)0x500000;
 static void *const sampleMememoryModuleAddress = (void *)0x600000;
 
-
 typedef int (*EntryPoint)();
 
 void clearBSS(void *bssAddress, uint64_t bssSize)
@@ -71,24 +70,22 @@ int main()
 	//_cli();
 	initScreen();
 	//////
-	
+
 	//initScheduler();
 	createprocesses();
 
-	
 	print("LLEGO 2", 0x32, 0xFF);
 	//////
 	configureIDT();
 	setReturns(sampleCodeModuleAddress, getSP()); //Seteado de IP y SP
 
-	/////////////////////////////
 	//_cli();
 	print("AAAAAAAAAAAAAAAAAAAAAAAAA", 0xFF, 0x32);
-	 startProcess("prueba", &funcion, NULL, NULL);
-	 //_sti();
+	startProcess("prueba", &funcion, NULL, NULL);
+	print("EEEEEEEEEEEEEEEEEEEEEEEEEE", 0xFF, 0x32);
+	//_sti();
 	// startProcess("prueba", &funcion1, NULL, NULL);
 	// startProcess("prueba", &funcion, NULL, NULL);
-
 
 	// while (1)
 	// {
@@ -99,11 +96,12 @@ int main()
 
 	//_sti();
 
-	 ((EntryPoint)sampleCodeModuleAddress)();
-	 print("LLEGO000000000 2", 0xFF, 0x32);
-	 while(1){
-		 print("WHILE", 0x32, 0xFF);
-	 }
+	((EntryPoint)sampleCodeModuleAddress)();
+	// print("LLEGO000000000 2", 0xFF, 0x32);
+	// while (1)
+	// {
+	// 	print("WHILE", 0x32, 0xFF);
+	// }
 
 	//////////////////////
 
@@ -112,8 +110,8 @@ int main()
 
 void funcion()
 {
-	int i =0;
-	while (i<10)
+	int i = 0;
+	while (i < 10)
 	{
 		print("FUNCION", 0x32, 0xFF);
 		i++;
@@ -121,8 +119,8 @@ void funcion()
 }
 void funcion1()
 {
-	int i =0;
-	while (i<10)
+	int i = 0;
+	while (i < 10)
 	{
 		print("FUNCION 1 ", 0x32, 0xFF);
 		i++;
