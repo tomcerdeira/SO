@@ -37,7 +37,6 @@ void init()
   shellHandler();
 }
 
-
 void shellHandler()
 {
   int exit = 0;
@@ -106,8 +105,8 @@ void shellHandler()
     else if (strcmp(buff, "printmem"))
     {
       printf("\n");
-      createProcess("printMem",&printmem,strToInt(param1),0);
-     // printmem(strToInt(param1));
+      createProcess("printMem", &printmem, strToInt(param1), 0);
+      // printmem(strToInt(param1));
       printf("\n");
     }
     else if (strcmp(buff, "inforeg"))
@@ -139,8 +138,8 @@ void shellHandler()
     else if (strcmp(buff, "time"))
     {
       printf("\n");
-      createProcess("time",&printTime,0,0);
-      
+      createProcess("time", &printTime, 0, 0);
+
       printf("\n");
     }
     else if (strcmp(buff, "chess"))
@@ -165,7 +164,6 @@ void shellHandler()
     }
     else if (strcmp(buff, "exit"))
     {
-
       exit = 1;
     }
     //TODO agregar:

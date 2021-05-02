@@ -15,7 +15,7 @@ process processes[CANT_PRIO][CANT_PROCESS] = {{0}};
 uint64_t processMemory[CANT_PRIO][CANT_PROCESS][STACK_SIZE] = {{0}};
 
 char *priorityProcessesNames[] = {"shell", "time", "printmem"};
-int priorityProcessesValue[] = {1, 2, 2};
+int priorityProcessesValue[] = {2, 1, 2};
 
 int current_process_index = 0;
 int current_prio_index = 0;
@@ -48,19 +48,6 @@ void createprocesses()
     }
 }
 
-// int getAvailableProcessInPrio(process *processes)
-// {
-//     int i = 0;
-//     for (; i < CANT_PROCESS; i++)
-//     {
-//         if (processes[i].state == MATADO)
-//         {
-//             return i;
-//         }
-//     }
-//     return -1;
-// }
-
 int getAvailableProcessInPrio(int prio)
 {
     int i = 0;
@@ -90,8 +77,6 @@ int getPriority(char *name)
 void startProcess(char *name, void *func(int, char **), int argc, char *argv[])
 //se fija entre todos los procesos, agarra uno que esté muerto/disponible, le asigna la tarea, lo activa,
 {
-    // print("Creo proceso",0x00,0xFF);
-    // print(name,0x00,0xFF);
     int prio_name = getPriority(name);                           //2
     int availableProcess = getAvailableProcessInPrio(prio_name); //0
 
@@ -112,19 +97,6 @@ void startProcess(char *name, void *func(int, char **), int argc, char *argv[])
     processes[prio_name][availableProcess].innerPriority = 0;
     cant_of_active_processes++;
 }
-
-// void setProcessPriority(process *p)
-// {
-//     int i = 0;
-//     for (; i < 3; i++)
-//     {
-//         if (strcompare(p->name, priorityProcessesNames[i]))
-//         {
-//             p->priority = priorityProcessesValue[i];
-//         }
-//     }
-//     p->priority = CANT_PRIO - 1; //Si no está le asigna la peor prioridad
-// }
 
 void wrapper(void *func(int, char **), int argc, char *argv[], int pid)
 {
@@ -163,6 +135,7 @@ uint64_t *activeProcess(uint64_t *rsp)
                 {
                     if (processes[prio][i].innerPriority <= processes[prio][minInnerPriorityIndex].innerPriority && processes[prio][minInnerPriorityIndex].innerPriority != DEATH_INNER_P)
                     {
+                        // print(processes[prio][i].name, 0x32, 0xFF);
                         minInnerPriorityIndex = i;
                         found = 1;
                     }
@@ -170,7 +143,7 @@ uint64_t *activeProcess(uint64_t *rsp)
             }
             if (found)
             {
-                print("AAAAAAAAAAAAAAAAAAAAAAAAA", 0xFF, 0x32);
+                //  print("BBBBBBBBBBBBBBBBBBBBBBBBBBBB", 0xFF, 0x32);
                 first_time_entering = 0;
                 current_process_index = minInnerPriorityIndex;
                 current_prio_index = prio;
@@ -183,7 +156,7 @@ uint64_t *activeProcess(uint64_t *rsp)
             }
         }
     }
-    print("________ACA NO DEBERIA ESTAR________", 0x32, 0xFF);
+    print("_______ACA NO DEBERIA ESTAR________", 0x32, 0xFF);
     return (uint64_t *)-1;
     // Tira warning pero nunca llega aca (al menos no deberia)
 }
