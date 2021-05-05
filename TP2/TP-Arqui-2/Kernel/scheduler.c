@@ -99,9 +99,9 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[])
     // setProcessPriority(&processes[availableProcess]); //?/
     processes[prio_name][availableProcess].innerPriority = 0;
     cant_of_active_processes++;
-    char buf[12] = {0};
-    numToStr(buf, processes[prio_name][availableProcess].pid);
-    print(buf, 0xFF, 0x32);
+    // char buf[12] = {0};
+    // numToStr(buf, processes[prio_name][availableProcess].pid);
+    // print(buf, 0xFF, 0x32);
     return processes[prio_name][availableProcess].pid;
 }
 
