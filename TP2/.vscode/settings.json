@@ -11,6 +11,8 @@
         "stdint.h": "c",
         "unistd.h": "c",
         "test_util.h": "c",
-        "typeinfo": "c"
+        "typeinfo": "c",
+        "includes.h": "c",
+        "buddy_system2.h": "c"
     }
 }

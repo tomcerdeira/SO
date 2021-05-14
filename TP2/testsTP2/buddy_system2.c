@@ -26,9 +26,8 @@ int count = 0;
 
 node * initMemoryRec(char *memoryAddress, int memorySize, int height)
 {
-    if (height == 0) // Llegamos al ultimo nivel
+    if (height == -1) // Llegamos al ultimo nivel, es -1 porque al nivel 0 todavía quedan los bloques de tamaño 4
     {
-        
         return NULL;
     }
     
@@ -71,6 +70,7 @@ void *mallocNUESTRO(int size)
     }
     int sizeBlockRequired = getMinBlockSize(size);
 
+
     if (sizeBlockRequired > MEMORY_SIZE)
     {
         return NULL; // No se puede alocar tanta memoria
@@ -80,8 +80,8 @@ void *mallocNUESTRO(int size)
 
 void *searchMemoryRec(node * n, int sizeRequired)
 {
-    printf("%d size \t",sizeRequired);
-    if (n->sizeOfMemoryFree == sizeRequired )
+    //printf("%d size \t",sizeRequired);
+    if (n->sizeOfMemoryFree >= sizeRequired ) //CAMBIE == POR >=
     {
         if (n->sizeOfMemory == sizeRequired)
         {
@@ -93,11 +93,12 @@ void *searchMemoryRec(node * n, int sizeRequired)
     char *toRet = NULL;
     if(n->sizeOfMemoryFree >= sizeRequired){
         node * auxNode= n->leftN;
+
+
         if(auxNode->sizeOfMemoryFree >= sizeRequired)
         {
             toRet = searchMemoryRec(n->leftN, sizeRequired);
             if(toRet != NULL){
-                
                 n->sizeOfMemoryFree -= sizeRequired;
                 return toRet;
             }
@@ -112,9 +113,9 @@ void *searchMemoryRec(node * n, int sizeRequired)
                 return toRet;
             }
         }
-
+    
     }
-    printf("DEBERIA ESTAR?? \n");
+    //printf("No hay memoria para %d\n", sizeRequired); //Si llega acá es porque no tiene memoria suficiente para lo solicitado
     return NULL;
 }
 
@@ -140,14 +141,14 @@ int freeMemoryRec(node * n, char * ptr){
         {
             if(n->leftN == NULL && n->rightN == NULL){
                 n->sizeOfMemoryFree += n->sizeOfMemory;
-                printf("entro 1\n");
+                //printf("entro 1\n");
                    return n->sizeOfMemoryFree;
             }else if (auxNodeLeft->sizeOfMemoryFree != 0 && auxNodeRight->sizeOfMemoryFree != 0) {
                 n->sizeOfMemoryFree += n->sizeOfMemory;
-                printf("entro 2\n");
+                //printf("entro 2\n");
                    return n->sizeOfMemoryFree;
             }
-            printf("Se libero %d memoria mios y el valor del ptr es %d y izqFree:%d, derFree %d \n",n->sizeOfMemoryFree,ptr,auxNodeLeft->sizeOfMemoryFree,auxNodeRight->sizeOfMemoryFree );
+            //printf("Se libero %d memoria mios y el valor del ptr es %d y izqFree:%d, derFree %d \n",n->sizeOfMemoryFree,ptr,auxNodeLeft->sizeOfMemoryFree,auxNodeRight->sizeOfMemoryFree );
           
         }
 
@@ -157,14 +158,14 @@ int freeMemoryRec(node * n, char * ptr){
                 if(retLeft != -1){
                     n->sizeOfMemoryFree += retLeft;
                 }
-                 printf("Se libero %d memoria de mi hijo izquierdo \n",retLeft);
+                //printf("Se libero %d memoria de mi hijo izquierdo \n",retLeft);
             return retLeft;
         }else{
               int retRight = freeMemoryRec(n->rightN,ptr);
                 if(retRight != -1){
                     n->sizeOfMemoryFree += retRight;
                 }
-                printf("Se libero %d memoria hijo derecho\n",retRight);
+                //printf("Se libero %d memoria hijo derecho\n",retRight);
             return retRight;
         }
         return -1;
@@ -204,8 +205,8 @@ void *memsetNUESTRO(char *ptr, int toWrite, int size)
 //     char *ptr;
 //     // int i;
 //     // int j = 0;
-//     ptr = mallocNUESTRO(256);
-
+//     ptr = mallocNUESTRO(512);
+//
 //     if (ptr == NULL)
 //     {
 //         printf("No pude asignar memoria primer caso!\n");
@@ -281,5 +282,6 @@ void *memsetNUESTRO(char *ptr, int toWrite, int size)
 //     // }
 //     // //
 //     // printf("Ya LIBERE toda la memoria \n");
+//
 //     return 0;
-// }
+ //}

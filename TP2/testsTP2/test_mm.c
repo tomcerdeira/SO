@@ -19,21 +19,23 @@ void test_mm()
   uint8_t rq;
   uint32_t total;
 
-  initialize(); /////////////////////////////////////////////////
+  //initialize(); /////////////////////////////////////////////////
 
   while (1)
   {
     rq = 0;
     total = 0;
 
-    printf("Total memory USED: %d - Total memory AVAILABLE: %d\n", getMemoryUsed(), getMemoryAvailable());
-    printf("------------------------------------------------\n");
+    //printf("Total memory USED: %d - Total memory AVAILABLE: %d\n", getMemoryUsed(), getMemoryAvailable());
+    //printf("------------------------------------------------\n");
 
     // Request as many blocks as we can
+    printf("Pido memoria\n");
     while (rq < MAX_BLOCKS && total < MAX_MEMORY)
     {
       mm_rqs[rq].size = GetUniform(MAX_MEMORY - total - 1) + 1;
       //printf("%d\n", mm_rqs[rq].size);
+      printf("Se piden %d\n",mm_rqs[rq].size);
       mm_rqs[rq].address = mallocNUESTRO(mm_rqs[rq].size); // TODO: Port this call as required
                                                            //TODO: check if NULL
 
@@ -41,10 +43,9 @@ void test_mm()
 
       if (mm_rqs[rq].address == NULL)
       {
-        printf("ERROR EN MALLOC \n");
-        exit(1);
+        printf("No hay memoria suficiente para %d\n", mm_rqs[rq].size);
+        //exit(1);
       }
-
       printf("Total memory USED: %d - Total memory AVAILABLE: %d\n", getMemoryUsed(), getMemoryAvailable());
       printf("------------------------------------------------\n");
 
@@ -55,6 +56,7 @@ void test_mm()
     }
 
     // Set
+    printf("\nSeteo toda la memoria\n");
     uint32_t i;
 
     void *auxi;
@@ -93,6 +95,8 @@ void test_mm()
       }
     }
     // Free
+    printf("\nLibero memoria\n");
+    printf("Total memory USED: %d - Total memory AVAILABLE: %d\n", getMemoryUsed(), getMemoryAvailable());
     for (i = 0; i < rq; i++)
     {
       //printf("VALOR RQ: %d \n", rq);
@@ -106,10 +110,11 @@ void test_mm()
     }
 
     printf("Total memory USED: %d - Total memory AVAILABLE: %d\n", getMemoryUsed(), getMemoryAvailable());
-    printf("------------------------------------------------\n");
+    printf("------------------------------------------------\n\n");
 
     //free(mm_rqs[i].address); // TODO: Port this call as required
     ////////// USAR free DESPUES!!!
+    sleep(1);
   }
 }
 
