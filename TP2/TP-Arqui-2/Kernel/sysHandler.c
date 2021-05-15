@@ -114,13 +114,21 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (14):
     {
-        startProcess(par1, par6, par2, par5); //REVISAR!!!!!!!!!!!!!!!!!!!!! //(nombre, funcion, argc, argv)
+        //startProcess(par1, par6, par2, par5); //REVISAR!!!!!!!!!!!!!!!!!!!!! //(nombre, funcion, argc, argv)
+        print("CREANDO ", 0xFE, 0x32);
+        createNewProcess(par1, par6, par2, par5, par3);
         timerTickInterrupt();
         break;
     }
     case (15):
     {
         *par1 = getPid();
+        break;
+    }
+    case (16):
+    {
+        print("HALTEANDO ", 0xFE, 0x32);
+        _hlt();
         break;
     }
 

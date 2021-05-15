@@ -468,9 +468,9 @@ long getMillis()
 }
 
 //////////////////////////////// REV (si corresponde que este definida aca) y su funcionamiento
-int createProcess(char *name, void *func, int argc, char *argv[])
+int createProcess(char *name, void *func, int argc, char *argv[], int timeSlot)
 {
-    return createP(name, func, argc, argv);
+    return createP(name, func, argc, argv, timeSlot);
     /////////////// rdi, rsi, rdx, rcx
 }
 
@@ -479,4 +479,9 @@ int getPid()
     int pid = 0;
     getProcessPid(&pid);
     return pid;
+}
+
+void halt_cpu()
+{
+    halt();
 }

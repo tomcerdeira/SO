@@ -73,17 +73,19 @@ int main()
 
 	//initScheduler();
 	initializeMemory();
-	createprocesses();
+	initScheduler();
+	//createprocesses();
 
 	// print("LLEGO 2", 0x32, 0xFF);
 	//////
 	configureIDT();
+	print("AAAAAAAAAAAAAAAAAAAAAAAAA", 0xFF, 0x32);
 	setReturns(sampleCodeModuleAddress, getSP()); //Seteado de IP y SP
 
 	//_cli();
-	// print("AAAAAAAAAAAAAAAAAAAAAAAAA", 0xFF, 0x32);
-	//startProcess("prueba", &funcion, NULL, NULL);
-	// print("EEEEEEEEEEEEEEEEEEEEEEEEEE", 0xFF, 0x32);
+
+	//createNewProcess("prueba", &funcion, NULL, NULL, 1);
+	print("EEEEEEEEEEEEEEEEEEEEEEEEEE", 0xFF, 0x32);
 	//_sti();
 	// startProcess("prueba", &funcion1, NULL, NULL);
 	// startProcess("prueba", &funcion, NULL, NULL);
@@ -98,6 +100,7 @@ int main()
 	//_sti();
 
 	((EntryPoint)sampleCodeModuleAddress)();
+	print("ACA NO__________", 0xFF, 0x32);
 	// print("LLEGO000000000 2", 0xFF, 0x32);
 	// while (1)
 	// {

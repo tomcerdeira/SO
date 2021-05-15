@@ -17,7 +17,7 @@ void disableCursor();
 void setCursorUser(uint64_t x, uint64_t y);
 void printRectangle(uint64_t *pos, int color, uint64_t *widthHeight);
 
-int createP(char *name, void *func, int argc, char *argv[]);
+int createP(char *name, void *func, int argc, char *argv[], int timeSlot);
 int getProcessPid();
 
 #endif

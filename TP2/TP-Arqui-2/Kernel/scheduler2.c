@@ -1,182 +1,172 @@
-// #include <scheduler2.h>
+#include <scheduler2.h>
 
-// char *priorityProcessesNames[] = {"shell", "time", "printmem"};
-// int priorityProcessesValue[] = {1,2,2};
-// char memoryAUX[STACK_SIZE_PROCESS] = {0};
+#define KILLED 0
+#define ACTIVE 1
+#define BLOCKED 2
+#define CANT_PROCESS 10
+#define STACK_SIZE 4096
+#define CANT_PRIO 3
+#define DEATH_INNER_P -1
+#define HALTER_POSITION 0
+#define MAX_TIME_SLOT 10
 
-// int init = 0;
-// int cantActiveProcesses = 0;
-// int lastAvailablePid = 1;
+typedef struct
+{
+    char *name;
+    int pid;
+    void *function;
+    uint64_t *stackPointer;
+    uint64_t *memory;
+    int state;
+    int timeSlot;
+    int currentRunningTime;
+} process;
 
-// int currentIndex = 0;
-// int currentPriority = 0;
-// int firstTime = 1;
-// uint64_t * rspKernel = 0;
+int currentProcess = -1;
+int cantProcesses = 0;
+process processes[CANT_PROCESS];
+int globalPID = 0;
+int firstTime = 1;
 
-// process processes[CANT_PRIO][MAX_PROCESSES_PER_PRIO];
+void initScheduler()
+{
+    process halterProcess;
+    halterProcess.pid = globalPID++;
+    halterProcess.function = &(_hlt); //REV
+    halterProcess.memory = mallocNUESTRO(STACK_SIZE);
+    halterProcess.state = ACTIVE;
+    halterProcess.timeSlot = 1;
+    halterProcess.currentRunningTime = 0;
+    halterProcess.stackPointer = initStack(halterProcess.memory + STACK_SIZE, wrapper, halterProcess.function, NULL, NULL, halterProcess.pid);
+    processes[HALTER_POSITION] = halterProcess;
+    cantProcesses = 1;
 
-// void initScheduler(){
-//     int i =0;
-//     for(;i<CANT_PRIO;i++){
-//         int j=0;
-//         for(;j<MAX_PROCESSES_PER_PRIO;j++){
-//             process proc;
-//             proc.pid = 0;
-//             proc.memory =0; // No alocamos memoria aca para no malgastar memoria
-//             proc.state = KILLED;
-//             processes[i][j] = proc;
-//         }
-//     }
-//     init = 1;
-// }
+    int i = 1;
 
-// int getProcessesIndex(int priority){
-//     int i=0;
-//     for(;i<MAX_PROCESSES_PER_PRIO;i++){
-//         if(processes[priority][i].state == KILLED){
-//             return i;
-//         }
-//     }
-//     return -1;
-// }
+    for (; i < CANT_PROCESS; i++)
+    {
+        process p;
+        p.state = KILLED;
+        p.pid = 0;
+        p.memory = 0;
+    }
+}
 
-// process * getNextActiveProcess(){
-//    int i=0;
-//    int indexPriority = currentPriority; //0
-//    int indexInPriority = currentIndex +1 ; //0+1
+int chooseNextProcess()
+{
+    if (currentProcess != -1)
+    {
+        if (processes[currentProcess].currentRunningTime < processes[currentProcess].timeSlot && processes[currentProcess].state == ACTIVE)
+        {
+            return currentProcess; //Si no termino con su timeSlot, sigue corriendo el mismo proceso
+        }
+        int i = currentProcess + 1;
+        int j = 0;
+        for (; j < CANT_PROCESS; j++, i++)
+        {
+            int auxIndex = (i % CANT_PROCESS);
+            if (auxIndex != currentProcess && processes[auxIndex].state == ACTIVE && auxIndex != HALTER_POSITION)
+            {
+                return auxIndex;
+            }
+        }
+        if (processes[currentProcess].state == ACTIVE)
+        {
+            processes[currentProcess].currentRunningTime = 0; //Si no hay otro proceso activo, se sigue corriendo el current
+        }
+        else
+        {
+            return HALTER_POSITION;
+        }
+    }
+    return currentProcess;
+}
 
+int getFreeProcessIndex()
+{
+    int i = 0;
+    for (; i < CANT_PROCESS; i++)
+    {
+        if (processes[i].state == KILLED)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
 
-//    for (; i  < CANT_PRIO; i++,indexPriority++){
-//        //current+1 -> fin nada
-//                  //i= current_prio --> j= current +1
-//        int j = 0;
-//        for (; j < MAX_PROCESSES_PER_PRIO; j++, indexInPriority++)
-//        {
-//            if (processes[i][j].state == ACTIVE)
-//            {
-//                currentIndex = indexInPriority % MAX_PROCESSES_PER_PRIO;
-//                currentPriority = indexPriority % CANT_PRIO;
-//                firstTime = 0;
-//                return &processes[i][j];
-//            }
-//       }
-      
-//    }
-//    return (process *) -1;
-// }
+//Retorna el pid del proceso creado
+int createNewProcess(char *name, void *func(int, char **), int argc, char *argv[], int timeSlot)
+{
+    int pIndex = getFreeProcessIndex();
+    if (pIndex < 0)
+    {
+        return pIndex; // No hay lugar para crear el nuevo proceso
+    }
 
+    processes[pIndex].function = func;
+    processes[pIndex].state = ACTIVE;
+    processes[pIndex].name = name;
+    processes[pIndex].pid = globalPID++;
+    processes[pIndex].memory = mallocNUESTRO(STACK_SIZE);
+    processes[pIndex].stackPointer = initStack(processes[pIndex].memory + STACK_SIZE,
+                                               wrapper, processes[pIndex].function, argc, argv, processes[pIndex].pid);
 
-// uint64_t * changeProcess(uint64_t * sp){
+    processes[pIndex].timeSlot = (timeSlot > MAX_TIME_SLOT) ? MAX_TIME_SLOT : timeSlot;
+    processes[pIndex].currentRunningTime = 0;
+    if (currentProcess == -1)
+    { // Me fijo si es el primer proceso que se esta creando
+        print("CAMBIO CURRENT", 0xDE, 0x32);
+        currentProcess = pIndex;
+    }
+    return processes[pIndex].pid;
+}
 
-//    if (cantActiveProcesses == 0)
-//     {
-//         if (firstTime){
-//             rspKernel = sp;
-//         }
-//         print("___Adentro___",0x00,0xFF);
-//         return rspKernel;
-//     }
-//     else
-//     {
-//         if(!firstTime){
-//             char buf[21]={0};
-//             numToStr(buf,currentIndex);
-//             print(buf,0xFF,0xDA);
-//             print("currentIndex",0xFF,0xDA);
+uint64_t *sched(uint64_t *rsp)
+{
+    if (currentProcess == -1)
+    {
+        print("KERNEL", 0xFE, 0x32);
+        return rsp; // Sigue en el kernel
+    }
+    else
+    {
+        // print("currentProces != -1 valor: ", 0xFE, 0x32);
+        // char buf[10] = {0};
+        // numToStr(buf, currentProcess);
+        // print(buf, 0xFE, 0x32);
+        if (!firstTime)
+        {
+            processes[currentProcess].stackPointer = rsp; // Ver si no falla la primera q viene desde kernel
+        }
+        firstTime = 0;
+        int nextProcessIndex = chooseNextProcess();
+        currentProcess = nextProcessIndex;
+        print("CHOOSE NEXT PROCESS RETORNA valor: ", 0xFE, 0x32);
+        char buf[10] = {0};
+        numToStr(buf, currentProcess);
+        print(buf, 0xFE, 0x32);
+        return processes[currentProcess].stackPointer;
+    }
+}
 
-//         processes[currentPriority][currentIndex].stackPointer = sp;
-//         }
-//         // Estamos seguros de q next_p es valido por q validamos q alla algun proceso
-//         _cli();
-//          uint64_t * toRet = getNextActiveProcess()->stackPointer;
-//          _sti();
-//          return toRet;
-//     }
-// }
+void wrapper(void *func(int, char **), int argc, char *argv[], int pid)
+{
+    int retValue;
+    retValue = (int)(*func)(argc, argv); // --> return --> wrapper -->  kill (libere todo) --> return a shell
+                                         // exit -->kill (libere todo) --> return a padre
+    // print("Salgo del proceso",0xFF,0x32);
+    exit(retValue);
+}
 
+void exit(int status)
+{
+    //kill();
+    print("EXIT", 0x32, 0x32);
+    //timerTickInterrupt();
+}
 
-// int startProcess(char *name, void *func(int,char **), int argc, char *argv[])
-// {
-//     //_cli();
-//     int processPriority = getPriority(name); //1
-//     int indexProcesses = getProcessesIndex(processPriority); //primer lugar libre en esa prioridad (0)
-
-//     if(indexProcesses < 0)
-//     {
-//          return -1;
-//         // Q pasa si no hay lugar para el proceso? Como espera a ser insertado?
-//     }
-    
-//     process newProcess;
-//     newProcess.name = name;
-//     newProcess.pid = lastAvailablePid++;
-//     // newProcess.memory = mallocNUESTRO(STACK_SIZE_PROCESS);
-//     newProcess.memory = memoryAUX;
-//     newProcess.priority= processPriority;
-//     newProcess.function = func;
-//     newProcess.stackPointer = ACTIVE;
-//     newProcess.stackPointer = initStack(newProcess.memory + STACK_SIZE_PROCESS, wrapper, newProcess.function, argc, argv, newProcess.pid);
-//     currentIndex = indexProcesses;
-//     currentPriority = processPriority;
-//     processes[processPriority][indexProcesses] = newProcess;
-//     cantActiveProcesses++;
-//     //_sti();
-//     return newProcess.pid;
-// }
-
-// void wrapper(void *func(int, char **), int argc, char *argv[], int pid)
-//  {
-//     int retValue;
-//     retValue = (int)(*func)(argc, argv); // --> return --> wrapper -->  kill (libere todo) --> return a shell
-//                                          // exit -->kill (libere todo) --> return a padre
-//     // print("Salgo del proceso",0xFF,0x32);
-//     exit(retValue);
-// }
-
-// int getPriority(char * name)
-// {
-//     int i =0;
-//     for (;i< 3;i++){ //TODO mejorar la cantidad de elementos en el arreglo de procesos definidos
-//         if(strcompare(priorityProcessesNames[i],name)== 1){
-//             return priorityProcessesValue[i];
-//         }
-//     }
-//     // Si no esta en nuestro arreglo de procesos
-//     return CANT_PRIO -1;
-// }
-
-// void kill(int pid)
-// {
-//     process * p = getProcessIndexByPid(pid);
-//     p->state = KILLED;
-//     // Liberar memoria si no esta liberada
-//     freeMemory(p->memory);
-//     cantActiveProcesses--;
-// }
-
-// void killCurrent()
-// {
-//     processes[currentPriority][currentIndex].state = KILLED;
-//     freeMemory(processes[currentPriority][currentIndex].memory);
-//     cantActiveProcesses--;
-// }
-
-// process * getProcessIndexByPid(int pid)
-// {
-//     int i = 0;
-//     int j = 0;
-//     for(;i<CANT_PRIO;i++){
-//         for(;j<MAX_PROCESSES_PER_PRIO;j++){
-//             if(processes[i][j].pid == pid){
-//                 return &processes[i][j];
-//             }
-//         }
-//     }
-//     return NULL;
-// }
-
-// void exit(int status)
-// {
-//     killCurrent();
-//     timerTickInterrupt();
-// }
+int getPid()
+{
+    return processes[currentProcess].pid;
+}

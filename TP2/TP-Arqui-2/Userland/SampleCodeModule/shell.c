@@ -105,7 +105,7 @@ void shellHandler()
     else if (strcmp(buff, "printmem"))
     {
       printf("\n");
-      createProcess("printMem", &printmem, strToInt(param1), 0);
+      createProcess("printMem", &printmem, strToInt(param1), 0, 1);
       // printmem(strToInt(param1));
       printf("\n");
     }
@@ -138,7 +138,7 @@ void shellHandler()
     else if (strcmp(buff, "time"))
     {
       printf("\n");
-      createProcess("time", &printTime, 0, 0);
+      createProcess("time", &printTime, 0, 0, 1);
 
       printf("\n");
     }
