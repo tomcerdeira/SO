@@ -16,6 +16,7 @@
 #define SCREEN_HEIGHT 764 //ver donde deberia ir
 
 void shellManager();
+void endless_loop();
 void init();
 // void shell();
 // void loadModule(char *module);

@@ -5,6 +5,7 @@ static char userShell[30] = {0};
 
 static int isInitialized = 0;
 
+
 void init()
 {
   // if (isInitialized)
@@ -164,7 +165,9 @@ void shellHandler()
     }
     else if (strcmp(buff, "loop"))
     {
-      endless_loop();
+      createProcess("loop", &endless_loop, 0, 0);
+
+     
     }
     else if (strcmp(buff, "exit"))
     {
@@ -207,6 +210,6 @@ void endless_loop()
 {
   while (1)
   {
-    printf("Hola re molesto! %d \n\n", getPid());
+    printf("%d ", getPid());
   }
 }

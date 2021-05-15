@@ -15,16 +15,18 @@ typedef struct
     uint64_t *stackPointer;
     uint64_t *memory;
     int state;
-    int priority;
-    int innerPriority;
+    int timeSlot;
+    int timeRunnig;
+    // int priority;
+    // int innerPriority;
 } process;
 
 extern uint64_t *initStack(uint64_t *rsp, void *wrapper, void *func, int argc, char *argv[], int pid);
 void createprocesses();
-int getAvailableProcess(process *processes);
+int getAvailableProcess();
 int getPriority(char *name);
 int startProcess(char *name, void *func(int, char **), int argc, char *argv[]);
-uint64_t *activeProcess(uint64_t *rsp);
+uint64_t *sched(uint64_t *rsp);
 void wrapper(void *func(int, char **), int argc, char *argv[], int pid);
 void exit(int status);
 void kill(int pid);
