@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <string.h>
+// #include <string.h>
 #include <lib.h>
 #include <libC.h>
 #include <sysHandler.h>

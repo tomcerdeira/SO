@@ -10,7 +10,7 @@ int main()
 	// printf("Termino la funcion \n");
 	createProcess("shell", &shellManager, 0, 0);
 	//createProcess("shell2", &shellManager, 0, 0);
-
+	halt();
 	//printf("Termino la shell \n");
 
 	while (1)

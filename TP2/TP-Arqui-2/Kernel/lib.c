@@ -198,3 +198,13 @@ int strcompare(char *s1, char *s2)
 	}
 	return cmp;
 }
+
+int strlen(char *buffer){
+	int i=0;
+	int toRet = 0;
+	for (; buffer[i]!=0; i++)
+	{
+		toRet++;
+	}
+	return toRet;
+}

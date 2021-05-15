@@ -166,7 +166,15 @@ void shellHandler()
     else if (strcmp(buff, "loop"))
     {
       createProcess("loop", &endless_loop, 0, 0);
+      printf("LUEGO DE CREAR PROC \n");
+     
+    }
+    else if (strcmp(buff, "ps"))
+    {
+      char buffer[1024]={0};
+        ps(buffer);
 
+     printf(buffer);
      
     }
     else if (strcmp(buff, "exit"))
@@ -195,8 +203,8 @@ void shellHandler()
   }
 
   clearConsoleIn(0);
-  printf("Usted ha utilizado un simple SO implentado por: \n Tomas Cerdeira - 60051 \n Santiago Garcia Montager - 60352 \n Esperamos que le haya gustado \n");
-  printf("Noviembre 2020");
+  printf("Usted ha utilizado un simple SO implentado por: \n Tomas Cerdeira - 60051 \n Santiago Garcia Montager - 60352 \n Lucas Catolino - 61817 \n Esperamos que le haya gustado \n");
+  printf("Mayo 2021");
 }
 
 void shellManager()
@@ -210,6 +218,8 @@ void endless_loop()
 {
   while (1)
   {
+    // int i = 0;
+    // for(;i<100;i++);
     printf("%d ", getPid());
   }
 }

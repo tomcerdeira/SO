@@ -17,5 +17,6 @@ void setReturns(void *ip_, void *sp_);
 uint64_t *getIntructionPointer();
 uint64_t *getStackPointer();
 int strcompare(char *s1, char *s2);
+int strlen(char *buffer);
 
 #endif

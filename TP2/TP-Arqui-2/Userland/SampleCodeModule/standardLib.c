@@ -480,3 +480,4 @@ int getPid()
     getProcessPid(&pid);
     return pid;
 }
+

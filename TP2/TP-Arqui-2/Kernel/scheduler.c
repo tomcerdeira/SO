@@ -5,39 +5,51 @@
 #define BLOQUEADO 2
 #define CANT_PROCESS 10
 #define STACK_SIZE 4096
-#define MAX_PROCESSES_PER_PRIO 10
-//#define CANT_PRIO 3
 #define DEATH_INNER_P -1
 #define TIME_SLOT 5
 
+
 process processes[CANT_PROCESS] = {{0}};
-//process processes[CANT_PRIO][CANT_PROCESS] = {{0}};
+process halter;
 
-// uint64_t processMemory[CANT_PRIO][CANT_PROCESS][STACK_SIZE] = {{0}};
+int currentProcessIndex = 0;
 
-char *priorityProcessesNames[] = {"shell", "time", "printmem", "loop"};
-int priorityProcessesValue[] = {2, 1, 2, 1};
-
-int current_process_index = 0;
-int current_prio_index = 0;
-int cant_of_active_processes = 0;
-int first_time_entering = 1;
-int rsp_kernel = 0;
-int last_pid = 5;
+int cantOfActiveProcesses = 0;
+int firstTimeEntering = 1;
+int rspKernel = 0;
+int globalPid = 0;
 
 // Creo y lleno el arreglo processes con todos los proceso que puedo tener
 // Version 1.0 de manejo de procesos
 
 //TODO crearlos de manera "dinamica" a medida que se necesiten
 // hacer que el pid sea incremental
+
+void halterProcess(){
+    _hlt();
+    block(1); 
+    timerTickInterrupt();
+}
+
 void createprocesses()
 {
     //Todo HALTER
-    int p = 0;
+
+       
+        halter.function = &halterProcess;
+        halter.name = "Halter";
+        halter.pid = globalPid++;
+        halter.state = ACTIVO;
+        halter.timeSlot = 1;
+        halter.timeRunnig = 0;
+        halter.stackPointer = initStack(halter.memory + STACK_SIZE,wrapper, halter.function, NULL, NULL, halter.pid);
+        
+                
+        int p = 0;
         for (; p < CANT_PROCESS; p++)
         {
             process proc;
-            proc.pid = 0;
+            proc.pid = -1;
             //proc.memory = processMemory[prio][p];
             proc.memory = 0;
             proc.state = MATADO;
@@ -46,6 +58,32 @@ void createprocesses()
             processes[p] = proc;
         }
 
+}
+void nice(int pid,int newTimeSlot){
+    int i =0;
+    for(;i<CANT_PROCESS;i++){
+        if(processes[i].pid == pid){
+            processes[i].timeSlot = newTimeSlot;
+            return;
+        }
+    }
+}
+
+void block(int pid){
+    int i =0;
+    for(;i<CANT_PROCESS;i++){
+        if(processes[i].pid == pid){
+            if (processes[i].state == BLOQUEADO)
+            {
+                processes[i].state = ACTIVO;
+                cantOfActiveProcesses++;
+                return;
+            }
+            processes[i].state = BLOQUEADO;
+            cantOfActiveProcesses--;
+            return;
+        }
+    }
 }
 
 int getAvailableProcess(){
@@ -73,7 +111,7 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[])
     processes[availableProcess].function = func;
     processes[availableProcess].state = ACTIVO;
     processes[availableProcess].name = name;
-    processes[availableProcess].pid = last_pid++;
+    processes[availableProcess].pid = globalPid++;
     processes[availableProcess].timeSlot = TIME_SLOT;
     
     //processes[prio_name][availableProcess].memory = processMemory[prio_name][availableProcess]; // Habria que liberarla una vez matado el proceso
@@ -83,7 +121,7 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[])
                                                                     wrapper, processes[availableProcess].function, argc, argv, processes[availableProcess].pid);
     // setProcessPriority(&processes[availableProcess]); //?/
 
-    cant_of_active_processes++;
+    cantOfActiveProcesses++;
     // char buf[12] = {0};
     // numToStr(buf, processes[prio_name][availableProcess].pid);
     // print(buf, 0xFF, 0x32);
@@ -101,35 +139,37 @@ void wrapper(void *func(int, char **), int argc, char *argv[], int pid)
 
 uint64_t *sched(uint64_t *rsp) //TODO cambiar nombre a sched
 {
-    if (cant_of_active_processes == 0)
+    if (cantOfActiveProcesses == 0)
     {
-        
-        if (first_time_entering)
+        if (firstTimeEntering)
         {
-            rsp_kernel = rsp;
+            rspKernel = rsp;  
+        } else {
+            print("RETURN HALTER",0x32,0xFE);
+            return halter.stackPointer;
         }
-        return rsp_kernel;
+        return rspKernel;
     }
     else
     {
-        if (!first_time_entering) // Esto es para que un proceso se actualice el SP.
+        if (!firstTimeEntering) // Esto es para que un proceso se actualice el SP.
         {
-            processes[current_process_index].stackPointer = rsp;
+            processes[currentProcessIndex].stackPointer = rsp;
         }
-        first_time_entering = 0;
-        if(processes[current_process_index].timeSlot > processes[current_process_index].timeRunnig && processes[current_process_index].state == ACTIVO){
-            processes[current_process_index].timeRunnig++;
-            return processes[current_process_index].stackPointer;
+        firstTimeEntering = 0;
+        if(processes[currentProcessIndex].timeSlot > processes[currentProcessIndex].timeRunnig && processes[currentProcessIndex].state == ACTIVO){
+            processes[currentProcessIndex].timeRunnig++;
+            return processes[currentProcessIndex].stackPointer;
         }
 
-        int auxIndex = current_process_index + 1;
+        int auxIndex = currentProcessIndex + 1;
         int j = 0;
         for(; j<=CANT_PROCESS; j++, auxIndex++){
             if (processes[auxIndex % CANT_PROCESS].state == ACTIVO)
             {
-                processes[current_process_index].timeRunnig = 0;
-                current_process_index = auxIndex % CANT_PROCESS;
-                return processes[current_process_index].stackPointer;
+                processes[currentProcessIndex].timeRunnig = 0;
+                currentProcessIndex = auxIndex % CANT_PROCESS;
+                return processes[currentProcessIndex].stackPointer;
                 /* code */
             }
             
@@ -141,8 +181,10 @@ uint64_t *sched(uint64_t *rsp) //TODO cambiar nombre a sched
 }
 
 void kill(int pid)
-{
-
+{       
+        char buffer[1024] = {0};
+        ps(buffer);
+        print(buffer,0x32,0xFE);
         int pos = 0;
         for (; pos < CANT_PROCESS; pos++)
         {
@@ -150,18 +192,78 @@ void kill(int pid)
             {
                 processes[pos].state = MATADO;
                 freeMemory(processes[pos].memory);
-                cant_of_active_processes--;
+                cantOfActiveProcesses--;
             }
         }
 }
 
 void exit(int status)
 {
-    kill(processes[current_process_index].pid);
+    kill(processes[currentProcessIndex].pid);
     timerTickInterrupt();
 }
 
 int getPid()
 {
-    return processes[current_process_index].pid;
+    return processes[currentProcessIndex].pid;
+}
+
+
+void ps(char * buffer){
+    int i = 0;
+    int j=0;
+
+    char *header = "PID\tPRIO\tNAME\t\tSTACK\t\tSTATE\n";
+
+    memcpy(buffer, header, strlen(header));
+    j =strlen(header);
+
+
+    for(;i<CANT_PROCESS;i++){
+        if(processes[i].state != MATADO){
+            //PID
+            char auxPID[5];
+            numToStr(auxPID,processes[i].pid);
+            memcpy(buffer+j,auxPID,strlen(auxPID));
+            j+=strlen(auxPID);
+            memcpy(buffer+j,"\t",strlen("\t"));
+            j+=strlen("\t");
+
+            //Prioridad
+            char auxPrio[5];
+            numToStr(auxPrio,processes[i].timeSlot);
+            memcpy(buffer+j,auxPrio,strlen(auxPrio));
+            j+=strlen(auxPrio);
+            memcpy(buffer+j,"\t",strlen("\t"));
+            j+=strlen("\t");
+            
+        
+            //Name
+            memcpy(buffer+j,processes[i].name,strlen(processes[i].name));
+            j+=strlen(processes[i].name);
+            memcpy(buffer+j,"\t",strlen("\t"));
+            j+=strlen("\t");
+
+            memcpy(buffer+j,"\t",strlen("\t"));
+            j+=strlen("\t");
+
+            //Stack
+            char auxStack[10];
+            numToStr(auxStack,processes[i].stackPointer);
+            memcpy(buffer+j,auxStack,strlen(auxStack));
+            j+=strlen(auxStack);
+            
+            memcpy(buffer+j,"\t",strlen("\t"));
+            j+=strlen("\t");
+
+            //Estado
+            if(processes[i].state == ACTIVO){
+                 memcpy(buffer+j,"A\n",strlen("A\n"));
+            }else{
+                 memcpy(buffer+j,"B\n",strlen("A\n"));
+            }
+            j+=strlen("A\n");
+        }
+    }
+
 }

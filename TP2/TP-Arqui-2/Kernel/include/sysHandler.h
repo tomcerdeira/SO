@@ -8,7 +8,7 @@
 #include <libC.h>
 #include <registers.h>
 #include <time.h>
-#include <scheduler2.h>
+#include <scheduler.h>
 
 #define MEMORY_REQUIRED 32
 // Tomamos como modelo las de linux

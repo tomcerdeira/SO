@@ -19,5 +19,7 @@ void printRectangle(uint64_t *pos, int color, uint64_t *widthHeight);
 
 int createP(char *name, void *func, int argc, char *argv[]);
 int getProcessPid();
+void halt();
+void ps(char * buf);
 
 #endif

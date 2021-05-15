@@ -31,5 +31,8 @@ void wrapper(void *func(int, char **), int argc, char *argv[], int pid);
 void exit(int status);
 void kill(int pid);
 int getPid();
+void block(int pid);
+void halterProcess();
+void ps(char * buffer);
 
 #endif

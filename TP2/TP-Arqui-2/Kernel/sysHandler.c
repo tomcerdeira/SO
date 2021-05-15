@@ -2,7 +2,7 @@
 
 // System Calls --> casos y llamados a cada uno
 // https://stackoverflow.com/questions/37581530/passing-argument-from-c-to-assembly ( orden de los argumetos.)
-//      rdi             rsi             rdx         rcx             r8                      //r9
+                //      rdi             rsi             rdx         rcx             r8                      //r9
 void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uint64_t *stackFrame, uint64_t *par5, uint64_t *par6)
 {
 
@@ -121,6 +121,26 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     case (15):
     {
         *par1 = getPid();
+        break;
+    }
+    case (16):
+    {
+        _hlt();
+        break;
+    }
+    case (17):
+    {
+        nice(par3,par2);
+        break;
+    }
+    case (18):
+    {
+        block(par2);
+        break;
+    }
+    case (19):
+    {
+        ps(par1);
         break;
     }
 
