@@ -51,8 +51,9 @@ void shellHandler()
     setFontColor(DEFAULT_FONT_COLOR);
 
     char param1[100] = {0};
+    char param2[100] = {0};
 
-    scanf("%s %s", buff, param1);
+    scanf("%s %s %s", buff, param1,param2);
 
     if (strcmp(buff, "help"))
     {
@@ -172,11 +173,18 @@ void shellHandler()
     else if (strcmp(buff, "ps"))
     {
       char buffer[1024]={0};
-        ps(buffer);
-
+      ps(buffer);
      printf(buffer);
      
     }
+    else if(strcmp(buff,"block"))
+    {
+      block(strToInt(param1));
+    }
+    else if(strcmp(buff,"nice")){
+      nice(strToInt(param1),strToInt(param2));
+    }
+
     else if (strcmp(buff, "exit"))
     {
       exit = 1;
@@ -218,8 +226,6 @@ void endless_loop()
 {
   while (1)
   {
-    // int i = 0;
-    // for(;i<100;i++);
     printf("%d ", getPid());
   }
 }

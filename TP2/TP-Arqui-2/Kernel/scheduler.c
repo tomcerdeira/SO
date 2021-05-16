@@ -22,7 +22,7 @@ int globalPid = 0;
 // Creo y lleno el arreglo processes con todos los proceso que puedo tener
 // Version 1.0 de manejo de procesos
 
-//TODO crearlos de manera "dinamica" a medida que se necesiten
+
 // hacer que el pid sea incremental
 
 void halterProcess(){
@@ -112,7 +112,7 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[])
     processes[availableProcess].state = ACTIVO;
     processes[availableProcess].name = name;
     processes[availableProcess].pid = globalPid++;
-    processes[availableProcess].timeSlot = TIME_SLOT;
+    processes[availableProcess].timeSlot = TIME_SLOT - 4;
     
     //processes[prio_name][availableProcess].memory = processMemory[prio_name][availableProcess]; // Habria que liberarla una vez matado el proceso
     processes[availableProcess].memory = mallocNUESTRO(STACK_SIZE);

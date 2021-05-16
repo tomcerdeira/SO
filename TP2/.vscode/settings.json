@@ -16,6 +16,7 @@
         "buddy_system2.h": "c",
         "shell.h": "c",
         "interrupts.h": "c",
-        "initstack.h": "c"
+        "initstack.h": "c",
+        "synchro.h": "c"
     }
 }
