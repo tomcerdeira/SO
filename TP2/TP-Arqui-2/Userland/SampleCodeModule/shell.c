@@ -83,11 +83,52 @@ void shellHandler()
       setFontColor(DEFAULT_FONT_COLOR);
       printf("Despliega el dia y la hora del sistema.\n");
       printf("\n");
+      //setFontColor(MODULE_COLOR);
+      //printf("chess: ");
+      //setFontColor(DEFAULT_FONT_COLOR);
+      //printf("Despliega un juego de ajedrez en formato grafico.\n");
+      //printf("\n");
       setFontColor(MODULE_COLOR);
-      printf("chess: ");
+      printf("ps: ");
       setFontColor(DEFAULT_FONT_COLOR);
-      printf("Despliega un juego de ajedrez en formato grafico.\n");
+      printf("Imprime la lista de todos los procesos con sus propiedades: PID, prioridad, nombre, stack y estado.\n");
       printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("loop: ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Imprime constantemente su PID.\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("kill (PID): ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Dado un PID, mata al proceso.\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("nice (PID, Prio): ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Dado un PID, le asigna una nueva prioridad Prio al proceso.\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("block (PID): ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Dado un PID, bloquea al proceso.\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("cat: ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Imprime el stdin tal como lo recibe.\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("testnosync: ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Ejecuta el test de sincronismo sin semaforos.\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("testsync: ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Ejecuta el test de sincronismo con semaforos.\n");
+      printf("\n");
+      //
       setFontColor(ERROR_COLOR);
       printf("exceptionZero: ");
       setFontColor(DEFAULT_FONT_COLOR);
@@ -195,10 +236,14 @@ void shellHandler()
     {
       test_no_sync();
     }
-    else if (strcmp(buff, "testprocesses"))
+        else if (strcmp(buff, "cat"))
+    {
+      cat();
+    }
+     else if (strcmp(buff, "testprocesses"))
     {
       test_processes();
-    }
+    {
     //TODO agregar:
     // - help --> falta agregar todas las syscalls nuevas (los tests)
     // - MEM --> falta hacerla syscall
@@ -239,5 +284,19 @@ void endless_loop()
   while (1)
   {
     printf("%d ", getPid());
+  }
+}
+
+void cat(){
+  char buffer[100] = {0};
+  int exit= 0;
+  while (!exit){
+    scanf("%s", buffer);
+    if (!strcmp(buffer, "/")){
+      printf(buffer);
+      printf("\n");
+    } else {
+      exit = 1;
+    }
   }
 }
