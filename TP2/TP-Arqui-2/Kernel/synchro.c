@@ -15,7 +15,7 @@ int mySemWait(char * name){
         return -1;
     }
     while(_xadd(-1,&(sem->value)) <= 0)
-    _xadd(1,&(sem->value));
+        _xadd(1,&(sem->value));
     return 0;
 }
 
