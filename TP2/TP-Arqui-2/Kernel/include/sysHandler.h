@@ -10,6 +10,7 @@
 #include <time.h>
 #include <scheduler.h>
 #include <test_sync.h>
+#include <test_processes.h>
 
 #define MEMORY_REQUIRED 32
 // Tomamos como modelo las de linux

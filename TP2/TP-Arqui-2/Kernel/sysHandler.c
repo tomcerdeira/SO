@@ -153,6 +153,10 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
         startProcess("test_no_sync",&test_no_sync,NULL,NULL);
         break;
     }
+    case (22):
+    {
+         startProcess("test_processes",&test_processes,NULL,NULL);
+    }
 
     default:
         break;
