@@ -166,9 +166,7 @@ void shellHandler()
     }
     else if (strcmp(buff, "loop"))
     {
-      createProcess("loop", &endless_loop, 0, 0);
-      printf("LUEGO DE CREAR PROC \n");
-     
+      createProcess("loop", &endless_loop, 0, 0);     
     }
     else if (strcmp(buff, "ps"))
     {

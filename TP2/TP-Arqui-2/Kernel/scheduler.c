@@ -5,8 +5,7 @@
 #define BLOQUEADO 2
 #define CANT_PROCESS 10
 #define STACK_SIZE 4096
-#define DEATH_INNER_P -1
-#define TIME_SLOT 1
+#define TIME_SLOT 3
               
 
 process processes[CANT_PROCESS] = {{0}};
@@ -40,7 +39,7 @@ void createprocesses()
         halter.name = "Halter";
         halter.pid = globalPid++;
         halter.state = ACTIVO;
-        halter.timeSlot = TIME_SLOT;
+        halter.timeSlot = 1;
         halter.timeRunnig = 0;
         halter.stackPointer = initStack(halter.memory + STACK_SIZE,wrapper, halter.function, NULL, NULL, halter.pid);
         
@@ -112,7 +111,7 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[])
     processes[availableProcess].state = ACTIVO;
     processes[availableProcess].name = name;
     processes[availableProcess].pid = globalPid++;
-    processes[availableProcess].timeSlot = TIME_SLOT - 4;
+    processes[availableProcess].timeSlot = TIME_SLOT;
     
     //processes[prio_name][availableProcess].memory = processMemory[prio_name][availableProcess]; // Habria que liberarla una vez matado el proceso
     processes[availableProcess].memory = mallocNUESTRO(STACK_SIZE);
