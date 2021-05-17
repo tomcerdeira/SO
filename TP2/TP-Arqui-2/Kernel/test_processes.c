@@ -32,7 +32,7 @@ uint32_t my_unblock(uint32_t pid)
   return 0;
 }
 
-#define MAX_PROCESSES 10 //Should be around 80% of the the processes handled by the kernel
+#define MAX_PROCESSES 7 //Should be around 80% of the the processes handled by the kernel
 
 enum State
 {
@@ -59,9 +59,11 @@ void test_processes()
   {
 
     // Create MAX_PROCESSES processes
+     print("Creando  process\n",0xFFFFFF,0x000000);
     for (rq = 0; rq < MAX_PROCESSES; rq++)
     {
       p_rqs[rq].pid = my_create_process_test("endless_loop"); // TODO: Port this call as required
+
 
       if (p_rqs[rq].pid == -1)
       {                                     // TODO: Port this as required
@@ -82,12 +84,16 @@ void test_processes()
       for (rq = 0; rq < MAX_PROCESSES; rq++)
       {
         action = GetUniform(2) % 2;
-
+         
         switch (action)
         {
         case 0:
+        printBase(p_rqs[rq].pid,10);
+        print("MATANDO  process\n",0xFFFFFF,0x000000);
+        
           if (p_rqs[rq].state == RUNNING || p_rqs[rq].state == BLOCKED)
           {
+            
             if (my_kill(p_rqs[rq].pid) == -1)
             {                                    // TODO: Port this as required
               print("Error killing process\n",0xFFFFFF,0x000000); // TODO: Port this as required
@@ -99,6 +105,9 @@ void test_processes()
           break;
 
         case 1:
+         printBase(p_rqs[rq].pid,10);
+         print("BLOQUEANDO  process\n",0xFFFFFF,0x000000);
+         
           if (p_rqs[rq].state == RUNNING)
           {
             if (my_block(p_rqs[rq].pid) == -1)

@@ -102,7 +102,7 @@ void printf(const char *format, ...) //... ya que los parametros son variables
     va_end(valist);
     toRet[index] = 0;
     // PARECE QUE VA A HABER QUE BORRAR EL 1000!!                           //fin del string
-    writeScreen(toRet, *fontColor, *backgroundColor); //!!!!!!!!!!!!!!!!!!!! NO SE DEBERIA PODER USAR
+    writeScreen(toRet, *fontColor, *backgroundColor); 
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

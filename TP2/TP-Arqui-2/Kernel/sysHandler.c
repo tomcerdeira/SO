@@ -14,7 +14,7 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
 
         // codigo de escritura
         // par1 --> buffer donde esta lo que quiero escribir
-        // par2 --> fileDescrpitor
+        // par2 --> fileDescrpitor ----> mentira
         // par3 --> long del buffer
         writeScreen(par1, par2, par3);
         return;

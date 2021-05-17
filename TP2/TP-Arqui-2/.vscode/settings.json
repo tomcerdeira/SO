@@ -2,6 +2,10 @@
     "files.associations": {
         "irqdispatcher.h": "c",
         "shell.h": "c",
-        "standardlib.h": "c"
+        "standardlib.h": "c",
+        "cstring": "c",
+        "typeinfo": "c",
+        "scheduler.h": "c",
+        "memory_manager.h": "c"
     }
 }

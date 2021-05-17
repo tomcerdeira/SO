@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <lib.h>
+#include <libC.h>
 #include <initStack.h>
 #include <interrupts.h>
 #include <memory_manager.h>

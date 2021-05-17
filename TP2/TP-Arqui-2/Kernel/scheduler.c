@@ -71,7 +71,7 @@ void nice(int pid,int newTimeSlot){
 void block(int pid){
     int i =0;
     for(;i<CANT_PROCESS;i++){
-        if(processes[i].pid == pid){
+        if( (processes[i].state != MATADO ) && processes[i].pid == pid && !strcompare(processes[i].name,"shell")){ //sacar lo de la shell
             if (processes[i].state == BLOQUEADO)
             {
                 processes[i].state = ACTIVO;
@@ -121,9 +121,7 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[])
     // setProcessPriority(&processes[availableProcess]); //?/
 
     cantOfActiveProcesses++;
-    // char buf[12] = {0};
-    // numToStr(buf, processes[prio_name][availableProcess].pid);
-    // print(buf, 0xFF, 0x32);
+    
     return processes[availableProcess].pid;
 }
 
@@ -136,21 +134,36 @@ void wrapper(void *func(int, char **), int argc, char *argv[], int pid)
     exit(retValue);
 }
 
-uint64_t *sched(uint64_t *rsp) //TODO cambiar nombre a sched
+uint64_t *sched(uint64_t *rsp) 
 {
     if (cantOfActiveProcesses == 0)
     {
         if (firstTimeEntering)
         {
-            rspKernel = rsp;  
+            rspKernel = rsp; 
+             return rspKernel; 
         } else {
-            print("RETURN HALTER",0x32,0xFE);
+                int t=0;
+                int flagHalter = 1;
+                for (; t < CANT_PROCESS; t++)
+                {
+                    if(processes[t].state == ACTIVO){
+                        flagHalter = 0;
+                    }
+                }
+                if(flagHalter){
+                    print("RETURN HALTER",0x32,0xFE);
+            char bufferAux[1023]={0};
+            ps(bufferAux);
+            print(bufferAux,0x32,0xFE);
+            flagHalter = 1;
             return halter.stackPointer;
+                }
         }
-        return rspKernel;
+       
     }
-    else
-    {
+    // else
+    // {
         if (!firstTimeEntering) // Esto es para que un proceso se actualice el SP.
         {
             processes[currentProcessIndex].stackPointer = rsp;
@@ -173,7 +186,7 @@ uint64_t *sched(uint64_t *rsp) //TODO cambiar nombre a sched
             }
             
         }
-    }
+    // }
     print("_______ACA NO DEBERIA ESTAR________", 0x32, 0xFF);
     return (uint64_t *)-1;
     // Tira warning pero nunca llega aca (al menos no deberia)
@@ -181,19 +194,19 @@ uint64_t *sched(uint64_t *rsp) //TODO cambiar nombre a sched
 
 void kill(int pid)
 {       
-        char buffer[1024] = {0};
-        //ps(buffer);
-        print(buffer,0x32,0xFE);
-        int pos = 0;
-        for (; pos < CANT_PROCESS; pos++)
+    int pos = 0;
+    for (; pos < CANT_PROCESS; pos++)
+    {
+        if (processes[pos].state != MATADO  && processes[pos].pid == pid && !strcompare(processes[pos].name,"shell"))
         {
-            if (processes[pos].pid == pid)
-            {
-                processes[pos].state = MATADO;
-                freeMemory(processes[pos].memory);
-                cantOfActiveProcesses--;
-            }
+            print("ENTRE AL KILL", 0xFF, 0x35);
+            printBase(processes[pos].pid, 10);
+            print(" SALI",0xFF , 0x35);
+            processes[pos].state = MATADO;
+            freeMemory(processes[pos].memory);
+            cantOfActiveProcesses--;
         }
+    }
 }
 
 void exit(int status)

@@ -243,7 +243,7 @@ void shellHandler()
      else if (strcmp(buff, "testprocesses"))
     {
       test_processes();
-    {
+    }
     //TODO agregar:
     // - help --> falta agregar todas las syscalls nuevas (los tests)
     // - MEM --> falta hacerla syscall
