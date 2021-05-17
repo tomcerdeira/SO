@@ -114,6 +114,11 @@ void shellHandler()
       printf("Dado un PID, bloquea al proceso.\n");
       printf("\n");
       setFontColor(MODULE_COLOR);
+      printf("cat: ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Imprime el stdin tal como lo recibe.\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
       printf("testnosync: ");
       setFontColor(DEFAULT_FONT_COLOR);
       printf("Ejecuta el test de sincronismo sin semaforos.\n");
@@ -231,6 +236,10 @@ void shellHandler()
     {
       test_no_sync();
     }
+        else if (strcmp(buff, "cat"))
+    {
+      cat();
+    }
     //TODO agregar:
     // - help --> falta agregar todas las syscalls nuevas (los tests)
     // - MEM --> falta hacerla syscall
@@ -271,5 +280,19 @@ void endless_loop()
   while (1)
   {
     printf("%d ", getPid());
+  }
+}
+
+void cat(){
+  char buffer[100] = {0};
+  int exit= 0;
+  while (!exit){
+    scanf("%s", buffer);
+    if (!strcmp(buffer, "/")){
+      printf(buffer);
+      printf("\n");
+    } else {
+      exit = 1;
+    }
   }
 }
