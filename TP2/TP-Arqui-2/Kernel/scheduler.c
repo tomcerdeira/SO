@@ -6,8 +6,8 @@
 #define CANT_PROCESS 10
 #define STACK_SIZE 4096
 #define DEATH_INNER_P -1
-#define TIME_SLOT 5
-
+#define TIME_SLOT 1
+              
 
 process processes[CANT_PROCESS] = {{0}};
 process halter;
@@ -40,7 +40,7 @@ void createprocesses()
         halter.name = "Halter";
         halter.pid = globalPid++;
         halter.state = ACTIVO;
-        halter.timeSlot = 1;
+        halter.timeSlot = TIME_SLOT;
         halter.timeRunnig = 0;
         halter.stackPointer = initStack(halter.memory + STACK_SIZE,wrapper, halter.function, NULL, NULL, halter.pid);
         
@@ -183,7 +183,7 @@ uint64_t *sched(uint64_t *rsp) //TODO cambiar nombre a sched
 void kill(int pid)
 {       
         char buffer[1024] = {0};
-        ps(buffer);
+        //ps(buffer);
         print(buffer,0x32,0xFE);
         int pos = 0;
         for (; pos < CANT_PROCESS; pos++)
@@ -266,4 +266,10 @@ void ps(char * buffer){
         }
     }
 
+}
+
+void yield(){
+    // print("_______Llega al yield________", 0x32, 0xFF);
+    processes[currentProcessIndex].timeRunnig = processes[currentProcessIndex].timeSlot;
+    timerTickInterrupt();
 }

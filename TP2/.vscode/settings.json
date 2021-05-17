@@ -17,6 +17,7 @@
         "shell.h": "c",
         "interrupts.h": "c",
         "initstack.h": "c",
-        "synchro.h": "c"
+        "synchro.h": "c",
+        "stdio.h": "c"
     }
 }

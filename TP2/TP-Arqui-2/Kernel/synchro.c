@@ -113,19 +113,6 @@ int semClose(char* name){
     return -1;
 }
 
-semT *getSemByName(char *name)
-{
-    int i = 0;
-    for (; i < CANT_SEMAPHORES; i++)
-    {
-        if (strcmp(name, semaphores[i].name) != 0)
-        {
-            return &semaphores[i];
-        }
-    }
-    return -1;
-}
-
 semT * getSemByName(char * name){
     int i =0;
     for (; i < CANT_SEMAPHORES; i++)

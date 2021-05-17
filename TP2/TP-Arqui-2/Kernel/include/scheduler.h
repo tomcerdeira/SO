@@ -34,5 +34,6 @@ int getPid();
 void block(int pid);
 void halterProcess();
 void ps(char * buffer);
+void yield();
 
 #endif

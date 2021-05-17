@@ -17,6 +17,8 @@ GLOBAL halt
 GLOBAL nice
 GLOBAL block
 GLOBAL ps
+GLOBAL test_sync
+GLOBAL test_no_sync
 
 ;  par1 --> buffer donde esta lo que quiero escribir
 ;  par2 --> fileDescrpitor
@@ -334,6 +336,36 @@ ps:
 
    
     mov rcx, 19
+
+    int 80h
+
+    pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret
+
+test_sync:
+    push rbp
+    mov rbp,rsp
+
+    push rcx
+
+    mov rcx, 20
+
+    int 80h
+
+    pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret
+
+test_no_sync:
+    push rbp
+    mov rbp,rsp
+
+    push rcx
+
+    mov rcx, 21
 
     int 80h
 

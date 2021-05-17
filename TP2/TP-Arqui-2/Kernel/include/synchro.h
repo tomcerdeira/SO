@@ -11,8 +11,8 @@ typedef struct
 extern int _xadd(int inc, int *value);
 extern int _xchg(int *lock, int value);
 
-int mySemWait(semT *s);
-int mySemPost(semT *s);
+int mySemWait(char *name);
+int mySemPost(char *name);
 void initSemaphores();
 int strcmp(char *s1, char *s2);
 int getIndex();

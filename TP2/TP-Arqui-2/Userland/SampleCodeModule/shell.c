@@ -189,19 +189,29 @@ void shellHandler()
     {
       exit = 1;
     }
+    else if (strcmp(buff, "testsync"))
+    {
+      test_sync();
+    }
+    else if (strcmp(buff, "testnosync"))
+    {
+      test_no_sync();
+    }
     //TODO agregar:
-    // - MEM --> imprime el estado de la memoria
-    // - PS --> imprime la lista de proceso con sus propiedades (nombre, id, etc...)
-    // - LOOP (id) --> imprime su ID con un saludo despues de X segs
-    // - Kill (id) --> mata un proceso dado su ID
-    // - Nice (id np) --> Cambia la prioridad del proceso ID por NP
-    // - Block (id) --> Cambia el estado del proceso ID (entre BLOQUEADO y ACTIVO)
-    // - Sem --> Imprime la lista de todos los semaforos con sus propiedades
+    // - help --> falta agregar todas las syscalls nuevas (los tests)
+    // - MEM --> falta hacerla syscall
+    // - PS --> hacerlo más lindo
+    // - LOOP (id) --> hacerlo más lindo
+    // - Kill (id) --> falta hacerla syscall
+    // - Nice (id np) --> Listo
+    // - Block (id) --> listo
+    // - Sem --> Imprime la lista de todos los semaforos con sus propiedades (ya funcionan los semáforos)
     // - Cat (stdin) --> Imprime el stdin pasado como param
     // - WC (input)--> Cuenta la cantidad de lineas del input
     // - Filter (input) --> Filtra las vocales del input
     // - Pipe --> Imprime la lista de todos los pipes con sus propiedades
     // - Phylo --> Implementar el problema de los filosofos
+    // Implementar forground y background
     else
     {
       printf("\n");

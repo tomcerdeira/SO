@@ -23,5 +23,7 @@ void halt();
 void block(int pid);
 void nice (int pid,int newTimeSlot);
 void ps(char * buf);
+void test_sync();
+void test_no_sync();
 
 #endif
