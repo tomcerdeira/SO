@@ -180,8 +180,20 @@ void read(uint64_t *buffer, uint64_t lengthBuffer)
 {
     if (currentProcessIsForeground())
     {
+        // char *keyboardBuffer = getKeyboardBuffer();
+        // while ((keyboardBuffer = getKeyboardBuffer())[0] == 0)
+        // {
+        //     print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
+        //     blockReader(getPid());
+        // }
 
+        // print("DESBLOQUEO A LA SHELL", 0x000000, 0xFFFFFF);
         char *keyboardBuffer = getKeyboardBuffer();
+        if (keyboardBuffer[0] == 0)
+        {
+            print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
+            blockReader(getPid());
+        }
 
         for (int i = 0; i < lengthBuffer && keyboardBuffer[i] != 0; i++)
         {

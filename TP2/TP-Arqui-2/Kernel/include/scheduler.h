@@ -37,5 +37,7 @@ void halterProcess();
 void ps(char *buffer);
 void yield();
 int currentProcessIsForeground();
+void unblockReaders();
+void blockReader(int pid);
 
 #endif

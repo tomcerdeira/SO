@@ -26,7 +26,10 @@ process foregroundProcess = {0};
 
 void halterProcess()
 {
+    print("ENTRO AL HLT", 0xCD, 0xFE);
+    _sti();
     _hlt();
+    unblockReaders();
     block(1);
     timerTickInterrupt();
 }
@@ -87,6 +90,28 @@ void block(int pid)
             return;
         }
     }
+    timerTickInterrupt();
+}
+
+void unblockReaders()
+{
+    foregroundProcess.state = ACTIVO;
+
+    if (foregroundProcess.pid == processes[SHELL_POSITION].pid)
+    {
+        processes[SHELL_POSITION].state = ACTIVO;
+    }
+    cantOfActiveProcesses++;
+}
+void blockReader(int pid)
+{
+    foregroundProcess.state = BLOCK;
+
+    if (pid == processes[SHELL_POSITION].pid)
+    {
+        processes[SHELL_POSITION].state = BLOCK;
+    }
+    cantOfActiveProcesses--;
 }
 
 int getAvailableProcess()
@@ -204,8 +229,10 @@ uint64_t *sched(uint64_t *rsp)
         }
     }
     // }
-    print("_______ACA NO DEBERIA ESTAR________", 0x32, 0xFF);
-    return (uint64_t *)-1;
+    print("_______ACA NO DEBERIA ESTAR________", 0xFF, 0xDA);
+    halter.stackPointer = rsp;
+    return halter.stackPointer;
+
     // Tira warning pero nunca llega aca (al menos no deberia)
 }
 

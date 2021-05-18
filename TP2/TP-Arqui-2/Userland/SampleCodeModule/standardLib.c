@@ -23,6 +23,7 @@ char getChar()
 
     char res = 0;
     while (res == 0)
+    // -- > opcion comentada en syshandler va sin el while
     {
         readKeyBuff(&res, 1);
     }
