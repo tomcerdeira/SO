@@ -67,15 +67,15 @@ void readKeyboardBuffer()
             case (CAPS_LCK):
             {
                 capitalLetters += 1;
-                capitalLetters %= 2; 
+                capitalLetters %= 2;
                 break;
             }
-            case(R_SHIFT):
+            case (R_SHIFT):
             {
                 break;
             }
             default:
-                if ((shift || capitalLetters!=0 )&& (!(R_SHIFT==key || L_SHIFT==key || R_SHIFT_RELEASED==key || L_SHIFT_RELEASED==key)))
+                if ((shift || capitalLetters != 0) && (!(R_SHIFT == key || L_SHIFT == key || R_SHIFT_RELEASED == key || L_SHIFT_RELEASED == key)))
                 {
                     //  print("llego al switch 1",0xba,0x12);
                     //  printBase(key,16);
@@ -84,7 +84,6 @@ void readKeyboardBuffer()
                 else
                 {
                     buffer[currentPos++] = keyCodes[key][0];
-                    
                 }
             }
         }

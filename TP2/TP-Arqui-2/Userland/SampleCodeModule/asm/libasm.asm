@@ -249,10 +249,14 @@ createP:
 
    push r8
    push r9
- 
+   push r8
+
+   
    mov r8, rsi
-   mov r9, rcx
    mov rsi, rdx
+   mov r9, rcx
+   pop rdx
+   
 
    mov rcx, 14
    int 80h

@@ -5,7 +5,6 @@ static char userShell[30] = {0};
 
 static int isInitialized = 0;
 
-
 void init()
 {
   // if (isInitialized)
@@ -53,7 +52,7 @@ void shellHandler()
     char param1[100] = {0};
     char param2[100] = {0};
 
-    scanf("%s %s %s", buff, param1,param2);
+    scanf("%s %s %s", buff, param1, param2);
 
     if (strcmp(buff, "help"))
     {
@@ -116,7 +115,7 @@ void shellHandler()
       setFontColor(MODULE_COLOR);
       printf("cat: ");
       setFontColor(DEFAULT_FONT_COLOR);
-      printf("Imprime el stdin tal como lo recibe.\n");
+      printf("Imprime el stdin tal como lo recibe (pulsar / para salir).\n");
       printf("\n");
       setFontColor(MODULE_COLOR);
       printf("testnosync: ");
@@ -127,6 +126,11 @@ void shellHandler()
       printf("testsync: ");
       setFontColor(DEFAULT_FONT_COLOR);
       printf("Ejecuta el test de sincronismo con semaforos.\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("testprocesses: ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Ejecuta el test de procesos.\n");
       printf("\n");
       //
       setFontColor(ERROR_COLOR);
@@ -147,8 +151,9 @@ void shellHandler()
     }
     else if (strcmp(buff, "printmem"))
     {
+      int isForeground = strcmp(param2, "&") ? 0 : 1;
       printf("\n");
-      createProcess("printMem", &printmem, strToInt(param1), 0);
+      createProcess("printMem", &printmem, strToInt(param1), 0, isForeground);
       // printmem(strToInt(param1));
       printf("\n");
     }
@@ -180,8 +185,9 @@ void shellHandler()
     }
     else if (strcmp(buff, "time"))
     {
+      int isForeground = strcmp(param1, "&") ? 0 : 1;
       printf("\n");
-      createProcess("time", &printTime, 0, 0);
+      createProcess("time", &printTime, 0, 0, isForeground);
 
       printf("\n");
     }
@@ -207,21 +213,22 @@ void shellHandler()
     }
     else if (strcmp(buff, "loop"))
     {
-      createProcess("loop", &endless_loop, 0, 0);     
+      int isForeground = strcmp(param1, "&") ? 0 : 1;
+      createProcess("loop", &endless_loop, 0, 0, isForeground);
     }
     else if (strcmp(buff, "ps"))
     {
-      char buffer[1024]={0};
+      char buffer[1024] = {0};
       ps(buffer);
-     printf(buffer);
-     
+      printf(buffer);
     }
-    else if(strcmp(buff,"block"))
+    else if (strcmp(buff, "block"))
     {
       block(strToInt(param1));
     }
-    else if(strcmp(buff,"nice")){
-      nice(strToInt(param1),strToInt(param2));
+    else if (strcmp(buff, "nice"))
+    {
+      nice(strToInt(param1), strToInt(param2));
     }
 
     else if (strcmp(buff, "exit"))
@@ -236,11 +243,11 @@ void shellHandler()
     {
       test_no_sync();
     }
-        else if (strcmp(buff, "cat"))
+    else if (strcmp(buff, "cat"))
     {
       cat();
     }
-     else if (strcmp(buff, "testprocesses"))
+    else if (strcmp(buff, "testprocesses"))
     {
       test_processes();
     }
@@ -287,15 +294,20 @@ void endless_loop()
   }
 }
 
-void cat(){
+void cat()
+{
   char buffer[100] = {0};
-  int exit= 0;
-  while (!exit){
+  int exit = 0;
+  while (!exit)
+  {
     scanf("%s", buffer);
-    if (!strcmp(buffer, "/")){
+    if (!strcmp(buffer, "/"))
+    {
       printf(buffer);
       printf("\n");
-    } else {
+    }
+    else
+    {
       exit = 1;
     }
   }

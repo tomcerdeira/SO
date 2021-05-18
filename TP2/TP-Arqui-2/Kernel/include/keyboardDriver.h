@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <consoleManager.h>
 #include <registers.h>
+#include <scheduler.h>
 
 #define KEYS 59
 #define ESC 0x1B

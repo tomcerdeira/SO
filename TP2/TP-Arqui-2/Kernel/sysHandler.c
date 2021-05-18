@@ -2,7 +2,7 @@
 
 // System Calls --> casos y llamados a cada uno
 // https://stackoverflow.com/questions/37581530/passing-argument-from-c-to-assembly ( orden de los argumetos.)
-                //      rdi             rsi             rdx         rcx             r8                      //r9
+//      rdi             rsi             rdx         rcx             r8                      //r9
 void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uint64_t *stackFrame, uint64_t *par5, uint64_t *par6)
 {
 
@@ -114,7 +114,7 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (14):
     {
-        startProcess(par1, par6, par2, par5); //REVISAR!!!!!!!!!!!!!!!!!!!!! //(nombre, funcion, argc, argv)
+        startProcess(par1, par6, par2, par5, par3); //REVISAR!!!!!!!!!!!!!!!!!!!!! //(nombre, funcion, argc, argv)
         timerTickInterrupt();
         break;
     }
@@ -130,7 +130,7 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (17):
     {
-        nice(par3,par2);
+        nice(par3, par2);
         break;
     }
     case (18):
@@ -145,17 +145,17 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (20):
     {
-        startProcess("test_sync",&test_sync,NULL,NULL);
+        startProcess("test_sync", &test_sync, NULL, NULL, par3);
         break;
     }
     case (21):
     {
-        startProcess("test_no_sync",&test_no_sync,NULL,NULL);
+        startProcess("test_no_sync", &test_no_sync, NULL, NULL, par3);
         break;
     }
     case (22):
     {
-         startProcess("test_processes",&test_processes,NULL,NULL);
+        startProcess("test_processes", &test_processes, NULL, NULL, par3);
     }
 
     default:
@@ -178,28 +178,31 @@ void writeScreen(uint64_t *buffer, uint64_t fontColor, uint64_t background_color
 // SE USA UN PARAMETRO DE SALIDA (BUFFER) PARA ALMACENAR LO LEIDO DESDE TECLADO
 void read(uint64_t *buffer, uint64_t lengthBuffer)
 {
-
-    char *keyboardBuffer = getKeyboardBuffer();
-
-    for (int i = 0; i < lengthBuffer && keyboardBuffer[i] != 0; i++)
+    if (currentProcessIsForeground())
     {
-        if (keyboardBuffer[i] == ESPACE)
-        {
-            // print(keyboardBuffer,0xFF0000,0x000000);
-            ((char *)buffer)[i] = ' ';
-        }
-        else if (L_SHIFT == keyboardBuffer[i] || R_SHIFT_RELEASED == keyboardBuffer[i] || L_SHIFT_RELEASED == keyboardBuffer[i])
-        {
-            continue;
-        }
-        else
-        {
-            ((char *)buffer)[i] = keyboardBuffer[i];
-        }
-    }
 
-    // LIMPIAMOS EL BUFFER DEL TECLADO YA QUE LO CONSUMIMOS.
-    cleanBuffer();
+        char *keyboardBuffer = getKeyboardBuffer();
+
+        for (int i = 0; i < lengthBuffer && keyboardBuffer[i] != 0; i++)
+        {
+            if (keyboardBuffer[i] == ESPACE)
+            {
+                // print(keyboardBuffer,0xFF0000,0x000000);
+                ((char *)buffer)[i] = ' ';
+            }
+            else if (L_SHIFT == keyboardBuffer[i] || R_SHIFT_RELEASED == keyboardBuffer[i] || L_SHIFT_RELEASED == keyboardBuffer[i])
+            {
+                continue;
+            }
+            else
+            {
+                ((char *)buffer)[i] = keyboardBuffer[i];
+            }
+        }
+
+        // LIMPIAMOS EL BUFFER DEL TECLADO YA QUE LO CONSUMIMOS.
+        cleanBuffer();
+    }
 }
 
 /////////////////////////////////////////////////////////////////

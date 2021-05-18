@@ -26,7 +26,7 @@ extern uint64_t *initStack(uint64_t *rsp, void *wrapper, void *func, int argc, c
 void createprocesses();
 int getAvailableProcess();
 int getPriority(char *name);
-int startProcess(char *name, void *func(int, char **), int argc, char *argv[]);
+int startProcess(char *name, void *func(int, char **), int argc, char *argv[], int isForeground);
 uint64_t *sched(uint64_t *rsp);
 void wrapper(void *func(int, char **), int argc, char *argv[], int pid);
 void exit(int status);
@@ -34,7 +34,8 @@ void kill(int pid);
 int getPid();
 void block(int pid);
 void halterProcess();
-void ps(char * buffer);
+void ps(char *buffer);
 void yield();
+int currentProcessIsForeground();
 
 #endif

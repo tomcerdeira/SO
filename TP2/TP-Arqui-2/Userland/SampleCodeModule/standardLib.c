@@ -102,7 +102,7 @@ void printf(const char *format, ...) //... ya que los parametros son variables
     va_end(valist);
     toRet[index] = 0;
     // PARECE QUE VA A HABER QUE BORRAR EL 1000!!                           //fin del string
-    writeScreen(toRet, *fontColor, *backgroundColor); 
+    writeScreen(toRet, *fontColor, *backgroundColor);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -468,7 +468,7 @@ long getMillis()
 }
 
 //////////////////////////////// REV (si corresponde que este definida aca) y su funcionamiento
-int createProcess(char *name, void *func, int argc, char *argv[])
+int createProcess(char *name, void *func, int argc, char *argv[], int isForeground)
 {
     return createP(name, func, argc, argv);
     /////////////// rdi, rsi, rdx, rcx
@@ -480,4 +480,3 @@ int getPid()
     getProcessPid(&pid);
     return pid;
 }
-

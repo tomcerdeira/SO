@@ -38,6 +38,6 @@ void printmem();
 void printTime();
 long getMillis();
 
-int createProcess(char *name, void *func, int argc, char *argv[]);
+int createProcess(char *name, void *func, int argc, char *argv[], int isForeground);
 
 #endif
