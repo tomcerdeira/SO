@@ -115,9 +115,9 @@ int scanf(const char *format, ...)
     char usrInput[SCREEN_WIDTH];
 
     int index = 0;
-
+    ///printf("SCANF DEL CAT");
     char in = getChar();
-
+   // printf("SALGO DEL SCANF CAT");
     while (in != '\n')
     {
 

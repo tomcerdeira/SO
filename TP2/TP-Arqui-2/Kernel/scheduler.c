@@ -247,9 +247,6 @@ void kill(int pid)
     {
         if (processes[pos].state != MATADO && processes[pos].pid == pid && !strcompare(processes[pos].name, "shell"))
         {
-            print("ENTRE AL KILL", 0xFF, 0x35);
-            printBase(processes[pos].pid, 10);
-            print(" SALI", 0xFF, 0x35);
             processes[pos].state = MATADO;
             freeMemory(processes[pos].memory);
             foregroundProcess = processes[SHELL_POSITION];
@@ -348,15 +345,19 @@ int currentProcessIsForeground()
 void getPidByName(char *name, int *pid)
 {
     int i = 0;
+    int flag = 0;
     for (; i < CANT_PROCESS; i++)
     {
         if (strcompare(processes[i].name, name))
         {
             *pid = processes[i].pid;
-            return;
+            flag =1;
         }
     }
+    //print("ACA NO DEBERIA LLEGAR_____", 0xCD, 0xFE);
+    if(!flag){
     *pid = -1;
+    }
 }
 
 int getIndexOfPid(int pid)

@@ -1,9 +1,20 @@
 #include <shell.h>
 
+#define CANT_OF_PIPEABLE_PROCESS 2
+
 static char user[20] = {0};
 static char userShell[30] = {0};
 
+typedef struct{
+  char * name;
+  void (*funcion) (int, char **) ;
+}pipeableProcess;
+
+static pipeableProcess pipeableProcesses[CANT_OF_PIPEABLE_PROCESS] = {{"loop", &endless_loop}, {"cat", &cat}}; 
+//COMPLETAR
+
 static int isInitialized = 0;
+int * fdAux ; // BORRAR ES SOLO PARA PRUEBAS
 
 void init()
 {
@@ -191,12 +202,6 @@ void shellHandler()
 
       printf("\n");
     }
-    // else if (strcmp(buff, "chess"))
-    // {
-    //   //printf("CHESS");
-    //   initChess();
-    //   clearConsoleIn(0);
-    // }
     else if (strcmp(buff, "clear"))
     {
       clearConsoleIn(0);
@@ -217,22 +222,47 @@ void shellHandler()
       if (strcmp(param1, "&"))
       {
         isForeground = 0;
+        createProcess("loop", &endless_loop, 0, 0, isForeground);
+      }else if(strcmp(param1, "|"))
+      {   
+        createProcess("loop", &endless_loop, 0, 0, 0); //0= background
+        //logica pipes loop
+        // creamos el param2 como proceso (en foreground)
+        //logica pipes para param2
+        int pid;
+        getPidByName("loop", &pid);
+        int *fd;
+  
+        getPipe(fd);
+        //
+        changeOutputFd(pid, *fd); //cambia OUTPUT de loop a FD
+        ////////
+        int index = isAPipeableProcess(param2);
+        if(index > 0){
+          createProcess(param2,pipeableProcesses[index].funcion,0,0,1); // 1= foreground 
+          getPidByName(param2, &pid);
+          printf("FD %d | PID %d",*fd,pid);
+          changeInputFd(pid, *fd); //cambia INPUT de param2 a FD
+        }
+    
+      }else if (strcmp(param1,"prueba")){  ///////////////////////////////////////// PRUEBA!!!!!!!!!
+        createProcess("loop", &endless_loop, 0, 0, 0); //0 = background
+        // Causa cond de carrera
+        int pid;
+        getPidByName("loop", &pid);
+        getPipe(fdAux);
+        changeOutputFd(pid, *fdAux);
       }
-      // else if (strcmp(param1, "|"))
-      // {
-
-      // }
-
-      createProcess("loop", &endless_loop, 0, 0, isForeground);
-      int *pid;
-      getPidByName("loop", pid);
-
-      int *fd;
-      *fd = 12;
-      getPipe(fd);
-      printf("SACO PIPE %d", *fd);
-      changeOutputFd(*pid, *fd);
+      else{
+        createProcess("loop", &endless_loop, 0, 0, 1);
+      }
     }
+    /////////////////////////////////////////////////////// PRUEBA!!!!!!!!!
+    else if (strcmp(buff, "prueba"))
+    {
+       createProcess("funAux", &funAux, 0, 0, 0); //0 = background      
+    }
+    ///////////////////////////////////////////////////////
     else if (strcmp(buff, "ps"))
     {
       char buffer[1024] = {0};
@@ -256,13 +286,15 @@ void shellHandler()
     {
       test_sync();
     }
+    
     else if (strcmp(buff, "testnosync"))
     {
       test_no_sync();
     }
     else if (strcmp(buff, "cat"))
     {
-      cat();
+      
+      createProcess("cat", &cat, 0, 0, 1);
     }
     else if (strcmp(buff, "testprocesses"))
     {
@@ -303,33 +335,75 @@ void shellHandler()
 void shellManager()
 {
   setFontColor(DEFAULT_FONT_COLOR);
-  //setBackGroundColor(DEFAULT_BACKGROUND_COLOR);
+  
   init();
 }
 
 void endless_loop()
 {
-  while (1)
-  {
-    printf("%d ", getPid());
-  }
+  printf("LOOP%d", getPid());
+  printf("LOOP%d", getPid());
+  printf("LOOP%d", getPid());
+  printf("LOOP%d", getPid());
+  printf("LOOP%d", getPid());
+  printf("LOOP%d", getPid());
+  // while (1)
+  // {
+  //   printf("LOOP%d", getPid());
+  // }
 }
 
 void cat()
 {
   char buffer[100] = {0};
   int exit = 0;
+  char * aux;
+  printf("DENTRO DEL CAT");
+
   while (!exit)
   {
-    scanf("%s", buffer);
+    // printf("entra 1");
+   // aux = getChar();
+    scanf("%s",buffer);
+    printf("sale 2");
     if (!strcmp(buffer, "/"))
     {
-      printf(buffer);
+      printf("+++++++++++DENTRO DEL CAT__________________");
+
+      printf("%s",buffer);
       printf("\n");
+      int i =0;
+      while(buffer[i] != 0){
+        buffer[i++] = 0;
+      }
     }
     else
     {
       exit = 1;
     }
   }
+}
+
+int isAPipeableProcess(char * name){
+  int i=0;
+  for(;i<CANT_OF_PIPEABLE_PROCESS;i++){
+      if(strcmp(pipeableProcesses[i].name,name)){
+        return i;
+      }
+  } 
+  return -1;
+}
+
+/// BORRAR
+void funAux(){
+
+  int pid;
+  getPidByName("funAux", &pid);
+  changeInputFd(pid, *fdAux);
+
+
+  char buffer[100] = {0};
+  //readKeyBuff(buffer, 5, 0);
+  scanf("%s", buffer);
+  printf("%s FD %d | PID %d", buffer,*fdAux,pid);
 }

@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
-#include "synchro.h"
+// #include "synchro.h"
 #include "scheduler.h"
 
 uint64_t my_create_process(char *name, void *func(int, char **), int argc, char *argv[])

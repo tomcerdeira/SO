@@ -18,8 +18,13 @@
 void shellManager();
 void endless_loop();
 void init();
+void cat();
+int isAPipeableProcess(char * name);
 // void shell();
 // void loadModule(char *module);
 void shellHandler();
+
+///// BORRAR
+void funAux();
 
 #endif

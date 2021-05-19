@@ -25,6 +25,11 @@ GLOBAL getPipe
 GLOBAL changeInputFd
 GLOBAL changeOutputFd
 GLOBAL getPidByName
+; GLOBAL getBuffOf   
+; GLOBAL semWait
+; GLOBAL semClose
+; GLOBAL semOpen
+; GLOBAL semPost 
 
 ;  par1 --> buffer donde esta lo que quiero escribir
 ;  par2 --> fileDescrpitor
@@ -145,8 +150,6 @@ deleteN:
     push rsi
     mov rcx,7
     mov rsi,rdi
-
-
     int 80h
     pop rcx
      pop rsi
@@ -465,7 +468,7 @@ changeOutputFd:
     pop rbp
     ret
 
-getPidByName: ; ver los params
+getPidByName: 
     push rbp
     mov rbp,rsp
 
@@ -474,7 +477,7 @@ getPidByName: ; ver los params
 
     mov r9,rsi
     
-    mov rcx, 26
+    mov rcx, 27
 
     int 80h
 
@@ -483,3 +486,54 @@ getPidByName: ; ver los params
     mov rsp,rbp
     pop rbp
     ret
+
+
+; semOpen: 
+;     push rbp
+;     mov rbp,rsp
+;     push rcx
+;     mov rcx, 28
+
+;     int 80h
+;     pop rcx
+;     mov rsp,rbp
+;     pop rbp
+;     ret
+
+; semClose: 
+;     push rbp
+;     mov rbp,rsp
+;     push rcx
+;     mov rcx, 29
+
+;     int 80h
+;     pop rcx
+;     mov rsp,rbp
+;     pop rbp
+;     ret
+
+; semPost: 
+;     push rbp
+;     mov rbp,rsp
+;     push rcx
+;     mov rcx, 30
+
+;     int 80h
+;     pop rcx
+;     mov rsp,rbp
+;     pop rbp
+;     ret
+
+; semWait: 
+;     push rbp
+;     mov rbp,rsp
+;     push rcx
+;     mov rcx, 31
+
+;     int 80h
+;     pop rcx
+;     mov rsp,rbp
+;     pop rbp
+;     ret
+
+

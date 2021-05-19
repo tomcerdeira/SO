@@ -5,7 +5,7 @@
 
 // System Calls --> casos y llamados a cada uno
 // https://stackoverflow.com/questions/37581530/passing-argument-from-c-to-assembly ( orden de los argumetos.)
-//      rdi             rsi             rdx         rcx             r8                      //r9
+                //      rdi             rsi             rdx         rcx             r8                      //r9
 void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uint64_t *stackFrame, uint64_t *par5, uint64_t *par6)
 {
 
@@ -84,10 +84,6 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     case (10):
     {
         int aux = getSecondsCronometro();
-        // char buff[20] = {0};
-        // numToStr(buff, aux);
-        // print(buff, 0xFFFFFF, 0x000000);
-        // newLine(8, 16, 0xFFFFFF, 0x000000);
         par1 = &aux;
         break;
     }
@@ -103,16 +99,6 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (13):
     {
-        // printBase(par1[0],10);
-        // print('  ',0x000000,0x000000);
-        // printBase(par1[0],10);
-        // print('  ',0x000000,0x000000);
-        // printBase(par2,16);
-        // print('  ',0x000000,0x000000);
-        // printBase(par5[0],10);
-        // print('  ',0x000000,0x000000);
-        // printBase(par5[1],10);
-        // print('  ',0x000000,0x000000);
         drawRectangle(par1[0], par1[1], par2, par5[0], par5[1]);
         break;
     }
@@ -179,14 +165,30 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (26):
     {
-        changeOutputFd(par3, par2);
+         changeOutputFd(par3, par2);
         break;
     }
     case (27):
     {
-        getPidByName(par1, par5);
+        getPidByName(par1, par5);     
         break;
     }
+    case(28):{
+        semOpen(par1,par2);
+    }
+    case(29):{
+        semClose(par1);
+    }
+    case(30):{
+        mySemPost(par1);
+    }
+     case(31):{
+        mySemWait(par1);
+    }
+   
+   
+   
+   
 
     default:
         break;
@@ -198,10 +200,11 @@ void write(uint64_t *buffer, uint64_t fontColor, uint64_t fd)
 {
     int currentPID;
     int fdCurrentOutput;
-
+   
     switch (fd)
     {
     case FD_STOUT:
+        print(" syshandler.c ACA",fontColor,0x000000);
         print((char *)buffer, fontColor, 0x000000);
         break;
     case 0: // Si quiere escribir en su FD que podria ser la pantalla u otro FD.
@@ -230,9 +233,13 @@ void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
     char *keyboardBuffer;
     char *pipeBuffer;
     int sizeRead;
+    int currentPID;
+    int fdCurrentInput;
+   
     switch (fd)
     {
-    case 0:
+    case FD_STDIN:
+       
         // if (currentProcessIsForeground())
         // {
         // char *keyboardBuffer = getKeyboardBuffer();
@@ -270,8 +277,39 @@ void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
         // LIMPIAMOS EL BUFFER DEL TECLADO YA QUE LO CONSUMIMOS.
         cleanBuffer();
         break;
-    case 1:
-        return;
+    case 0:
+        currentPID = getPid();
+        fdCurrentInput = getFdInput(currentPID);
+        if (fdCurrentInput == FD_STDIN)
+        {
+             keyboardBuffer = getKeyboardBuffer();
+             for (int i = 0; i < lengthBuffer && keyboardBuffer[i] != 0; i++)
+            {
+                    if (keyboardBuffer[i] == ESPACE)
+                    {
+                        // print(keyboardBuffer,0xFF0000,0x000000);
+                        ((char *)buffer)[i] = ' ';
+                    }
+                    else if (L_SHIFT == keyboardBuffer[i] || R_SHIFT_RELEASED == keyboardBuffer[i] || L_SHIFT_RELEASED == keyboardBuffer[i])
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        ((char *)buffer)[i] = keyboardBuffer[i];
+                    }
+            }
+
+        // LIMPIAMOS EL BUFFER DEL TECLADO YA QUE LO CONSUMIMOS.
+        cleanBuffer();
+        }
+        else
+        {
+            readPipe(buffer,1,fdCurrentInput);
+        }
+        break;
+
+
     default:
         sizeRead = readPipe(buffer, lengthBuffer, fd);
         if (sizeRead < 0)
@@ -288,25 +326,22 @@ void getDecimalTime(uint8_t *buff, uint64_t fd)
     {
     case 0:
     {
-        // printBase(((getHour() & 0xF0) >> 4) * 10 + (getHour() & 0x0F),10);
-
-        // print("HOURS",0xffffff,0x000000);
         *buff = BCDtoInt(getHour());
-        //*buff= getHour();
+       
         break;
     }
     case 1:
     {
-        //print("MINS",0xffffff,0x000000);
+     
         *buff = BCDtoInt(getMins());
-        //*buff= getMins();
+        
         break;
     }
     case 2:
     {
-        // print("SECS",0xffffff,0x000000);
+        
         *buff = BCDtoInt(getSeconds());
-        //*buff= getSeconds();
+        
         break;
     }
     }

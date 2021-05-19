@@ -23,6 +23,9 @@
         "standardlib.h": "c",
         "libasm.h": "c",
         "pipe.h": "c",
-        "limits": "c"
+        "limits": "c",
+        "exceptionsmanager.h": "c",
+        "*.tcc": "c",
+        "cstring": "c"
     }
 }
