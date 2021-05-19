@@ -7,6 +7,8 @@
 #define STACK_SIZE 4096
 #define TIME_SLOT 3
 #define SHELL_POSITION 0
+#define FD_STDIN 1
+#define FD_STOUT 2
 
 process processes[CANT_PROCESS] = {{0}};
 process halter;
@@ -143,6 +145,8 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[], i
     processes[availableProcess].state = ACTIVO;
     processes[availableProcess].name = name;
     processes[availableProcess].pid = globalPid++;
+    processes[availableProcess].fdInput = FD_STDIN;
+    processes[availableProcess].fdOutput = FD_STOUT;
     processes[availableProcess].timeSlot = TIME_SLOT;
 
     //processes[prio_name][availableProcess].memory = processMemory[prio_name][availableProcess]; // Habria que liberarla una vez matado el proceso
@@ -339,4 +343,71 @@ void yield()
 int currentProcessIsForeground()
 {
     return processes[currentProcessIndex].pid == foregroundProcess.pid;
+}
+
+void getPidByName(char *name, int *pid)
+{
+    int i = 0;
+    for (; i < CANT_PROCESS; i++)
+    {
+        if (strcompare(processes[i].name, name))
+        {
+            *pid = processes[i].pid;
+            return;
+        }
+    }
+    *pid = -1;
+}
+
+int getIndexOfPid(int pid)
+{
+    int i = 0;
+    for (; i < CANT_OF_PIPES; i++)
+    {
+        if (processes[i].pid == pid)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void changeOutputFd(int pid, int fd)
+{
+    int index = getIndexOfPid(pid);
+    if (index < 0)
+    {
+        return; //ERROR
+    }
+    processes[index].fdOutput = fd;
+}
+
+void changeInputFd(int pid, int fd)
+{
+    int index = getIndexOfPid(pid);
+    if (index < 0)
+    {
+        return; //ERROR
+    }
+    processes[index].fdInput = fd;
+}
+
+int getFdOutput(int pid)
+{
+    int index = getIndexOfPid(pid);
+    if (index < 0)
+    {
+        return; //ERROR
+    }
+    return processes[index].fdOutput;
+}
+
+int getFdInput(int pid)
+{
+    int index = getIndexOfPid(pid);
+    if (index < 0)
+    {
+        return; //ERROR
+    }
+    return processes[index].fdInput;
 }

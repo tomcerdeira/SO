@@ -18,6 +18,8 @@ typedef struct
     int state;
     int timeSlot;
     int timeRunnig;
+    int fdInput;
+    int fdOutput;
     // int priority;
     // int innerPriority;
 } process;
@@ -25,7 +27,6 @@ typedef struct
 extern uint64_t *initStack(uint64_t *rsp, void *wrapper, void *func, int argc, char *argv[], int pid);
 void createprocesses();
 int getAvailableProcess();
-int getPriority(char *name);
 int startProcess(char *name, void *func(int, char **), int argc, char *argv[], int isForeground);
 uint64_t *sched(uint64_t *rsp);
 void wrapper(void *func(int, char **), int argc, char *argv[], int pid);
@@ -39,5 +40,11 @@ void yield();
 int currentProcessIsForeground();
 void unblockReaders();
 void blockReader(int pid);
+void getPidByName(char *name, int *pid);
+void changeOutputFd(int pid, int fd);
+void changeInputFd(int pid, int fd);
+int getIndexOfPid(int pid);
+int getFdInput(int pid);
+int getFdOutput(int pid);
 
 #endif

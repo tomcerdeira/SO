@@ -191,12 +191,12 @@ void shellHandler()
 
       printf("\n");
     }
-    else if (strcmp(buff, "chess"))
-    {
-      //printf("CHESS");
-      initChess();
-      clearConsoleIn(0);
-    }
+    // else if (strcmp(buff, "chess"))
+    // {
+    //   //printf("CHESS");
+    //   initChess();
+    //   clearConsoleIn(0);
+    // }
     else if (strcmp(buff, "clear"))
     {
       clearConsoleIn(0);
@@ -213,8 +213,25 @@ void shellHandler()
     }
     else if (strcmp(buff, "loop"))
     {
-      int isForeground = strcmp(param1, "&") ? 0 : 1;
+      int isForeground = 1;
+      if (strcmp(param1, "&"))
+      {
+        isForeground = 0;
+      }
+      // else if (strcmp(param1, "|"))
+      // {
+
+      // }
+
       createProcess("loop", &endless_loop, 0, 0, isForeground);
+      int *pid;
+      getPidByName("loop", pid);
+
+      int *fd;
+      *fd = 12;
+      getPipe(fd);
+      printf("SACO PIPE %d", *fd);
+      changeOutputFd(*pid, *fd);
     }
     else if (strcmp(buff, "ps"))
     {
@@ -251,12 +268,16 @@ void shellHandler()
     {
       test_processes();
     }
+    else if (strcmp(buff, "kill"))
+    {
+      kill(strToInt(param1));
+    }
     //TODO agregar:
     // - help --> falta agregar todas las syscalls nuevas (los tests)
     // - MEM --> falta hacerla syscall
     // - PS --> hacerlo más lindo
     // - LOOP (id) --> hacerlo más lindo
-    // - Kill (id) --> falta hacerla syscall
+    // - Kill (id) --> listo
     // - Nice (id np) --> Listo
     // - Block (id) --> listo
     // - Sem --> Imprime la lista de todos los semaforos con sus propiedades (ya funcionan los semáforos)
@@ -282,7 +303,7 @@ void shellHandler()
 void shellManager()
 {
   setFontColor(DEFAULT_FONT_COLOR);
-  setBackGroundColor(DEFAULT_BACKGROUND_COLOR);
+  //setBackGroundColor(DEFAULT_BACKGROUND_COLOR);
   init();
 }
 

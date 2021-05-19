@@ -7,9 +7,10 @@
 #include <consoleManager.h>
 // #include <naiveConsole.h>
 #include <idt.h>
+#include <pipe.h>
 
-/////// SACAR
-#include <scheduler2.h>
+// /////// SACAR
+// #include <scheduler2.h>
 
 ////////////////////////////
 
@@ -73,6 +74,7 @@ int main()
 
 	//initScheduler();
 	initializeMemory();
+	initPipes();
 	createprocesses();
 
 	// print("LLEGO 2", 0x32, 0xFF);

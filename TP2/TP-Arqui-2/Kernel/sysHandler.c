@@ -1,5 +1,8 @@
 #include <sysHandler.h>
 
+#define FD_STDIN 1
+#define FD_STOUT 2
+
 // System Calls --> casos y llamados a cada uno
 // https://stackoverflow.com/questions/37581530/passing-argument-from-c-to-assembly ( orden de los argumetos.)
 //      rdi             rsi             rdx         rcx             r8                      //r9
@@ -8,15 +11,15 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
 
     switch (sysCallID)
     {
-        // SYSCALL WRITE
+
     case (0):
     {
-
+        // SYSCALL WRITE
         // codigo de escritura
         // par1 --> buffer donde esta lo que quiero escribir
-        // par2 --> fileDescrpitor ----> mentira
-        // par3 --> long del buffer
-        writeScreen(par1, par2, par3);
+        // par2 --> FONTCOLOR ----> mentira
+        // par3 --> FD
+        write(par1, par2, par3);
         return;
     }
     case (1):
@@ -24,7 +27,8 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
 
         // par1 --> buffer donde escribir lo leido
         // par2 --> long del buffer
-        read(par1, par2);
+        // par3 --> fd
+        read(par1, par2, par3); //
         return;
     }
     case (2):
@@ -156,6 +160,32 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     case (22):
     {
         startProcess("test_processes", &test_processes, NULL, NULL, par3);
+        break;
+    }
+    case (23):
+    {
+        kill(par2);
+        break;
+    }
+    case (24):
+    {
+        createNewPipe(par1);
+        break;
+    }
+    case (25):
+    {
+        changeInputFd(par3, par2);
+        break;
+    }
+    case (26):
+    {
+        changeOutputFd(par3, par2);
+        break;
+    }
+    case (27):
+    {
+        getPidByName(par1, par5);
+        break;
     }
 
     default:
@@ -164,36 +194,61 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
 }
 
 /////////////////////////////////////////////////////////////////
-void writeScreen(uint64_t *buffer, uint64_t fontColor, uint64_t background_color)
+void write(uint64_t *buffer, uint64_t fontColor, uint64_t fd)
 {
-    // print("SYS WRITE",0xf3,0xd2);
-    // if (fd == 0)
-    // {
+    int currentPID;
+    int fdCurrentOutput;
 
-    print((char *)buffer, fontColor, background_color);
-    // }
+    switch (fd)
+    {
+    case FD_STOUT:
+        print((char *)buffer, fontColor, 0x000000);
+        break;
+    case 0: // Si quiere escribir en su FD que podria ser la pantalla u otro FD.
+        currentPID = getPid();
+        fdCurrentOutput = getFdOutput(currentPID);
+        if (fdCurrentOutput == FD_STOUT)
+        {
+            print((char *)buffer, fontColor, 0x000000);
+        }
+        else
+        {
+            writePipe(fdCurrentOutput, buffer);
+        }
+        break;
+    default:
+        writePipe(fd, buffer);
+        break;
+    }
 }
 
 /////////////////////////////////////////////////////////////////
 // SE USA UN PARAMETRO DE SALIDA (BUFFER) PARA ALMACENAR LO LEIDO DESDE TECLADO
-void read(uint64_t *buffer, uint64_t lengthBuffer)
+void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
 {
-    if (currentProcessIsForeground())
+
+    char *keyboardBuffer;
+    char *pipeBuffer;
+    int sizeRead;
+    switch (fd)
     {
+    case 0:
+        // if (currentProcessIsForeground())
+        // {
         // char *keyboardBuffer = getKeyboardBuffer();
         // while ((keyboardBuffer = getKeyboardBuffer())[0] == 0)
         // {
         //     print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
-        //     blockReader(getPid());
+        //     //blockReader(getPid());
         // }
 
         // print("DESBLOQUEO A LA SHELL", 0x000000, 0xFFFFFF);
-        char *keyboardBuffer = getKeyboardBuffer();
-        if (keyboardBuffer[0] == 0)
-        {
-            print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
-            blockReader(getPid());
-        }
+        keyboardBuffer = getKeyboardBuffer();
+        // if (keyboardBuffer[0] == 0)
+        // {
+        //     print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
+        //     blockReader(getPid());
+        // }
 
         for (int i = 0; i < lengthBuffer && keyboardBuffer[i] != 0; i++)
         {
@@ -214,6 +269,15 @@ void read(uint64_t *buffer, uint64_t lengthBuffer)
 
         // LIMPIAMOS EL BUFFER DEL TECLADO YA QUE LO CONSUMIMOS.
         cleanBuffer();
+        break;
+    case 1:
+        return;
+    default:
+        sizeRead = readPipe(buffer, lengthBuffer, fd);
+        if (sizeRead < 0)
+        {
+            print("(sysHandler.c) ERROR: readPipe", 0x000000, 0xFFFFFF);
+        }
     }
 }
 

@@ -11,6 +11,7 @@
 #include <scheduler.h>
 #include <test_sync.h>
 #include <test_processes.h>
+#include <pipe.h>
 
 #define MEMORY_REQUIRED 32
 // Tomamos como modelo las de linux
@@ -26,8 +27,8 @@
 //sysCallDescryptor --> R10
 
 void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uint64_t *stackFrame, uint64_t *par5, uint64_t *par6);
-void writeScreen(uint64_t *buffer, uint64_t fontColor, uint64_t background_color);
-void read(uint64_t *buffer, uint64_t lengthBuffer);
+void write(uint64_t *buffer, uint64_t fontColor, uint64_t background_color);
+void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd);
 void getDecimalTime(uint8_t *buff, uint64_t fd);
 void sysGetRegisterState(uint64_t *par1, uint64_t *stackFrame);
 void getMemoryState(unsigned char par1[], uint64_t memoryStart);

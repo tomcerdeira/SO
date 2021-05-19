@@ -1,8 +1,8 @@
 #ifndef LIBASM_USER
 #define LIBASM_USER
 #include <stdint.h>
-void writeScreen(char *buffer, int fontColor, int backgrounColor);
-void readKeyBuff(char *buffer, int longBuffer);
+void write(char *buffer, int fontColor, int backgrounColor);
+void readKeyBuff(char *buffer, int longBuffer, int fd);
 void getTime(uint8_t *buffer, int parameter);
 void getRegisterState(int *buffer);
 void getMemoryState(unsigned char *buffer, int memoryStart);
@@ -26,5 +26,12 @@ void ps(char *buf);
 void test_sync();
 void test_no_sync();
 void test_processes();
+void kill(int pid);
+
+int getPipe(int *fd);
+
+void changeOutputFd(int pid, int fd);
+void changeInputFd(int pid, int fd);
+void getPidByName(char *name, int *fd);
 
 #endif

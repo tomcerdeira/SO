@@ -1,5 +1,5 @@
 GLOBAL readKeyBuff
-GLOBAL writeScreen
+GLOBAL write
 GLOBAL getTime
 GLOBAL getRegisterState
 GLOBAL getMemoryState
@@ -20,11 +20,16 @@ GLOBAL ps
 GLOBAL test_sync
 GLOBAL test_no_sync
 GLOBAL test_processes
+GLOBAL kill
+GLOBAL getPipe
+GLOBAL changeInputFd
+GLOBAL changeOutputFd
+GLOBAL getPidByName
 
 ;  par1 --> buffer donde esta lo que quiero escribir
 ;  par2 --> fileDescrpitor
 ;  par3 --> long del buffer
-writeScreen:
+write:
     push rbp
     mov rbp,rsp
     push rcx
@@ -40,6 +45,7 @@ writeScreen:
 
 ;par1 --> buffer donde escribir lo leido
 ;par2 --> long del buffer
+;par3 --> fd 
 readKeyBuff:
     push rbp
 mov rbp,rsp
@@ -395,3 +401,85 @@ test_processes:
     pop rbp
     ret
 
+kill:
+    push rbp
+    mov rbp,rsp
+
+    push rsi
+
+    mov rsi, rdi
+    mov rcx, 23
+
+    int 80h
+
+    pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret
+
+getPipe:
+    push rbp
+    mov rbp,rsp
+
+    mov rcx, 24
+
+    int 80h
+
+    pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret
+
+
+changeInputFd:
+    push rbp
+    mov rbp,rsp
+
+    push rdx
+    push rcx
+
+    mov rdx, rdi
+    mov rcx, 25
+
+    int 80h
+
+    pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret
+
+changeOutputFd:
+    push rbp
+    mov rbp,rsp
+
+    push rdx
+    push rcx
+
+    mov rdx, rdi
+    mov rcx, 26
+
+    int 80h
+
+    pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret
+
+getPidByName: ; ver los params
+    push rbp
+    mov rbp,rsp
+
+    push rcx
+    push r9
+
+    mov r9,rsi
+    
+    mov rcx, 26
+
+    int 80h
+
+    pop r9
+    pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret

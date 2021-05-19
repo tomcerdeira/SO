@@ -20,6 +20,9 @@
         "synchro.h": "c",
         "stdio.h": "c",
         "keyboarddriver.h": "c",
-        "standardlib.h": "c"
+        "standardlib.h": "c",
+        "libasm.h": "c",
+        "pipe.h": "c",
+        "limits": "c"
     }
 }

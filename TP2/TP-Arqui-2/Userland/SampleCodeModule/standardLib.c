@@ -1,16 +1,18 @@
 #include <standardLib.h>
 
 int fontColor[1] = {0};
-int backgroundColor[1] = {0};
+// int backgroundColor[1] = {0};
 
 void setFontColor(int color)
 {
     *fontColor = color;
 }
-void setBackGroundColor(int color)
-{
-    *backgroundColor = color;
-}
+
+// void setBackGroundColor(int color)
+// {
+//     *backgroundColor = color;
+// }
+
 void putChar(char str)
 {
     // char buff[2] = {0};
@@ -25,7 +27,8 @@ char getChar()
     while (res == 0)
     // -- > opcion comentada en syshandler va sin el while
     {
-        readKeyBuff(&res, 1);
+        readKeyBuff(&res, 1, 0);
+        //halt();
     }
 
     return res;
@@ -103,7 +106,7 @@ void printf(const char *format, ...) //... ya que los parametros son variables
     va_end(valist);
     toRet[index] = 0;
     // PARECE QUE VA A HABER QUE BORRAR EL 1000!!                           //fin del string
-    writeScreen(toRet, *fontColor, *backgroundColor);
+    write(toRet, *fontColor, 0);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
