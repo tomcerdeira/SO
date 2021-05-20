@@ -5,7 +5,7 @@
 
 // System Calls --> casos y llamados a cada uno
 // https://stackoverflow.com/questions/37581530/passing-argument-from-c-to-assembly ( orden de los argumetos.)
-                //      rdi             rsi             rdx         rcx             r8                      //r9
+//      rdi             rsi             rdx         rcx             r8                      //r9
 void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uint64_t *stackFrame, uint64_t *par5, uint64_t *par6)
 {
 
@@ -165,30 +165,30 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (26):
     {
-         changeOutputFd(par3, par2);
+        changeOutputFd(par3, par2);
         break;
     }
     case (27):
     {
-        getPidByName(par1, par5);     
+        getPidByName(par1, par5);
         break;
     }
-    case(28):{
-        semOpen(par1,par2);
+    case (28):
+    {
+        semOpen(par1, par2);
     }
-    case(29):{
+    case (29):
+    {
         semClose(par1);
     }
-    case(30):{
+    case (30):
+    {
         mySemPost(par1);
     }
-     case(31):{
+    case (31):
+    {
         mySemWait(par1);
     }
-   
-   
-   
-   
 
     default:
         break;
@@ -200,11 +200,11 @@ void write(uint64_t *buffer, uint64_t fontColor, uint64_t fd)
 {
     int currentPID;
     int fdCurrentOutput;
-   
+
     switch (fd)
     {
     case FD_STOUT:
-        print(" syshandler.c ACA",fontColor,0x000000);
+        print(" syshandler.c ACA", fontColor, 0x000000);
         print((char *)buffer, fontColor, 0x000000);
         break;
     case 0: // Si quiere escribir en su FD que podria ser la pantalla u otro FD.
@@ -235,33 +235,15 @@ void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
     int sizeRead;
     int currentPID;
     int fdCurrentInput;
-   
+
     switch (fd)
     {
     case FD_STDIN:
-       
-        // if (currentProcessIsForeground())
-        // {
-        // char *keyboardBuffer = getKeyboardBuffer();
-        // while ((keyboardBuffer = getKeyboardBuffer())[0] == 0)
-        // {
-        //     print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
-        //     //blockReader(getPid());
-        // }
-
-        // print("DESBLOQUEO A LA SHELL", 0x000000, 0xFFFFFF);
-        keyboardBuffer = getKeyboardBuffer();
-        // if (keyboardBuffer[0] == 0)
-        // {
-        //     print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
-        //     blockReader(getPid());
-        // }
 
         for (int i = 0; i < lengthBuffer && keyboardBuffer[i] != 0; i++)
         {
             if (keyboardBuffer[i] == ESPACE)
             {
-                // print(keyboardBuffer,0xFF0000,0x000000);
                 ((char *)buffer)[i] = ' ';
             }
             else if (L_SHIFT == keyboardBuffer[i] || R_SHIFT_RELEASED == keyboardBuffer[i] || L_SHIFT_RELEASED == keyboardBuffer[i])
@@ -277,38 +259,61 @@ void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
         // LIMPIAMOS EL BUFFER DEL TECLADO YA QUE LO CONSUMIMOS.
         cleanBuffer();
         break;
+
     case 0:
         currentPID = getPid();
         fdCurrentInput = getFdInput(currentPID);
         if (fdCurrentInput == FD_STDIN)
         {
-             keyboardBuffer = getKeyboardBuffer();
-             for (int i = 0; i < lengthBuffer && keyboardBuffer[i] != 0; i++)
+            // DESCOMENTAR unblockreaders() (keyboardDriver.c KERNEL)
+            // VERSION 1:
+            // Hay que comentar el ciclo en getchar() (standardLib.c USERLAND)
+            //
+            // if (currentProcessIsForeground())
+            // {
+            char *keyboardBuffer = getKeyboardBuffer();
+            while ((keyboardBuffer = getKeyboardBuffer())[0] == 0)
             {
-                    if (keyboardBuffer[i] == ESPACE)
-                    {
-                        // print(keyboardBuffer,0xFF0000,0x000000);
-                        ((char *)buffer)[i] = ' ';
-                    }
-                    else if (L_SHIFT == keyboardBuffer[i] || R_SHIFT_RELEASED == keyboardBuffer[i] || L_SHIFT_RELEASED == keyboardBuffer[i])
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        ((char *)buffer)[i] = keyboardBuffer[i];
-                    }
+                print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
+                blockReader(getPid());
             }
 
-        // LIMPIAMOS EL BUFFER DEL TECLADO YA QUE LO CONSUMIMOS.
-        cleanBuffer();
+            // VERSION 2:
+            // Hay q tener el ciclo en getChar() (standardLib.c USERLADN)
+            //
+            // print("DESBLOQUEO A LA SHELL", 0x000000, 0xFFFFFF);
+            // char keyboardBuffer = getKeyboardBuffer();
+            // if (keyboardBuffer[0] == 0)
+            // {
+            //     print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
+            //     blockReader(getPid());
+            //  keyboardBuffer = getKeyboardBuffer();
+            // }
+            //keyboardBuffer = getKeyboardBuffer();
+            for (int i = 0; i < lengthBuffer && keyboardBuffer[i] != 0; i++)
+            {
+                if (keyboardBuffer[i] == ESPACE)
+                {
+                    ((char *)buffer)[i] = ' ';
+                }
+                else if (L_SHIFT == keyboardBuffer[i] || R_SHIFT_RELEASED == keyboardBuffer[i] || L_SHIFT_RELEASED == keyboardBuffer[i])
+                {
+                    continue;
+                }
+                else
+                {
+                    ((char *)buffer)[i] = keyboardBuffer[i];
+                }
+            }
+
+            // LIMPIAMOS EL BUFFER DEL TECLADO YA QUE LO CONSUMIMOS.
+            cleanBuffer();
         }
         else
         {
-            readPipe(buffer,1,fdCurrentInput);
+            readPipe(buffer, 1, fdCurrentInput);
         }
         break;
-
 
     default:
         sizeRead = readPipe(buffer, lengthBuffer, fd);
@@ -327,21 +332,21 @@ void getDecimalTime(uint8_t *buff, uint64_t fd)
     case 0:
     {
         *buff = BCDtoInt(getHour());
-       
+
         break;
     }
     case 1:
     {
-     
+
         *buff = BCDtoInt(getMins());
-        
+
         break;
     }
     case 2:
     {
-        
+
         *buff = BCDtoInt(getSeconds());
-        
+
         break;
     }
     }
@@ -361,6 +366,4 @@ void getMemoryState(unsigned char par1[], uint64_t memoryStart)
     {
         par1[i] = startMemory[i];
     }
-
-    // memcpy(par1,memoryStart);
 }

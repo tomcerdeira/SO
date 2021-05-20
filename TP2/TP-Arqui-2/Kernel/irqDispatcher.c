@@ -13,6 +13,8 @@ uint64_t *irqDispatcher(uint64_t irq, uint64_t *sp)
         break;
     case 1:
         readKeyboardBuffer();
+        print("LLEGO", 0xFFFFFF, 0x000000);
+        unblockReaders();
         return sp;
         break;
     }

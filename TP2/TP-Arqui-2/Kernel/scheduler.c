@@ -21,32 +21,33 @@ int rspKernel = 0;
 int globalPid = 0;
 process foregroundProcess = {0};
 
-// Creo y lleno el arreglo processes con todos los proceso que puedo tener
 // Version 1.0 de manejo de procesos
-
-// hacer que el pid sea incremental
 
 void halterProcess()
 {
-    print("ENTRO AL HLT", 0xCD, 0xFE);
-    _sti();
-    _hlt();
-    unblockReaders();
-    block(1);
+    print("ENTRO AL HLT", 0x9C0412, 0xFFFFFF);
+    while (1)
+    {
+        _sti();
+        _hlt();
+    }
+
+    // unblockReaders();
+    // block(1);
     timerTickInterrupt();
 }
 
 void createprocesses()
 {
-    //Todo HALTER
-
-    halter.function = &halterProcess;
-    halter.name = "Halter";
-    halter.pid = globalPid++;
-    halter.state = ACTIVO;
-    halter.timeSlot = 1;
-    halter.timeRunnig = 0;
-    halter.stackPointer = initStack(halter.memory + STACK_SIZE, wrapper, halter.function, NULL, NULL, halter.pid);
+    process procHalter;
+    procHalter.function = &halterProcess;
+    procHalter.name = "Halter";
+    procHalter.pid = globalPid++;
+    procHalter.state = ACTIVO;
+    procHalter.timeSlot = 1;
+    procHalter.timeRunnig = 0;
+    procHalter.stackPointer = initStack(procHalter.memory + STACK_SIZE, wrapper, procHalter.function, NULL, NULL, procHalter.pid);
+    halter = procHalter;
 
     int p = 0;
     for (; p < CANT_PROCESS; p++)
@@ -98,10 +99,11 @@ void block(int pid)
 void unblockReaders()
 {
     foregroundProcess.state = ACTIVO;
-
+    print("LLEGO", 0xFFFFFF, 0x000000);
     if (foregroundProcess.pid == processes[SHELL_POSITION].pid)
     {
         processes[SHELL_POSITION].state = ACTIVO;
+        print(ps, 0xFFFFFF, 0x000000);
     }
     cantOfActiveProcesses++;
 }
@@ -114,6 +116,7 @@ void blockReader(int pid)
         processes[SHELL_POSITION].state = BLOCK;
     }
     cantOfActiveProcesses--;
+    timerTickInterrupt();
 }
 
 int getAvailableProcess()
@@ -195,28 +198,36 @@ uint64_t *sched(uint64_t *rsp)
             }
             if (flagHalter)
             {
-                print("RETURN HALTER", 0x32, 0xFE);
+                if (currentProcessIndex != -1)
+                {
+                    processes[currentProcessIndex].stackPointer = rsp;
+                }
+                print("RETURN HALTER EN SCHED", 0x32, 0xFE);
                 char bufferAux[1023] = {0};
                 ps(bufferAux);
-                print(bufferAux, 0x32, 0xFE);
+                print(bufferAux, 0x00000, 0xFFFFFF);
                 flagHalter = 1;
+                currentProcessIndex = -1;
                 return halter.stackPointer;
             }
         }
     }
     // else
     // {
-    if (!firstTimeEntering) // Esto es para que un proceso se actualice el SP.
+    if (!firstTimeEntering && currentProcessIndex != -1) // Esto es para que un proceso se actualice el SP.
     {
         processes[currentProcessIndex].stackPointer = rsp;
     }
     firstTimeEntering = 0;
-    if (processes[currentProcessIndex].timeSlot > processes[currentProcessIndex].timeRunnig && processes[currentProcessIndex].state == ACTIVO)
+    if (currentProcessIndex != -1 && processes[currentProcessIndex].timeSlot > processes[currentProcessIndex].timeRunnig && processes[currentProcessIndex].state == ACTIVO)
     {
         processes[currentProcessIndex].timeRunnig++;
         return processes[currentProcessIndex].stackPointer;
     }
-
+    if (currentProcessIndex == -1)
+    {
+        currentProcessIndex = 0;
+    }
     int auxIndex = currentProcessIndex + 1;
     int j = 0;
     if (!strcompare(foregroundProcess.name, "shell"))
@@ -332,7 +343,6 @@ void ps(char *buffer)
 
 void yield()
 {
-    // print("_______Llega al yield________", 0x32, 0xFF);
     processes[currentProcessIndex].timeRunnig = processes[currentProcessIndex].timeSlot;
     timerTickInterrupt();
 }
@@ -351,12 +361,13 @@ void getPidByName(char *name, int *pid)
         if (strcompare(processes[i].name, name))
         {
             *pid = processes[i].pid;
-            flag =1;
+            flag = 1;
         }
     }
     //print("ACA NO DEBERIA LLEGAR_____", 0xCD, 0xFE);
-    if(!flag){
-    *pid = -1;
+    if (!flag)
+    {
+        *pid = -1;
     }
 }
 
