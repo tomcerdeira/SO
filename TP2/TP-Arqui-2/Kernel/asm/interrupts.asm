@@ -123,8 +123,8 @@ _picSlaveMask:
 
 	call sysHandler
 
-	; mov al,20h
-	; out 20h,al
+	mov al,20h
+	out 20h,al
 	pop r8
 	mov rsp,rbp
 	pop rbp
@@ -146,8 +146,8 @@ _picSlaveMask:
 	call exceptionDispatcher
 	
 	; ; signal pic EOI (End of Interrupt)
-	; mov al, 20h
-	; out 20h, al
+	mov al, 20h
+	out 20h, al
 	
 	;mov rsp,rbp
 	;pop rbp

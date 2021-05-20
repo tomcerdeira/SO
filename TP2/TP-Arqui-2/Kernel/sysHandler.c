@@ -271,10 +271,10 @@ void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
             //
             // if (currentProcessIsForeground())
             // {
-            char *keyboardBuffer = getKeyboardBuffer();
+            char *keyboardBuffer ;
             while ((keyboardBuffer = getKeyboardBuffer())[0] == 0)
             {
-                print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
+               // print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
                 blockReader(getPid());
             }
 

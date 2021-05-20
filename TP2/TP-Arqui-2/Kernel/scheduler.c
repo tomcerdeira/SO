@@ -25,10 +25,10 @@ process foregroundProcess = {0};
 
 void halterProcess()
 {
-    print("ENTRO AL HLT", 0x9C0412, 0xFFFFFF);
+   // print("ENTRO AL HLT", 0x9C0412, 0xFFFFFF);
     while (1)
     {
-        _sti();
+      
         _hlt();
     }
 
@@ -36,18 +36,21 @@ void halterProcess()
     // block(1);
     timerTickInterrupt();
 }
+char bufferHalter[STACK_SIZE]={0};
 
 void createprocesses()
 {
-    process procHalter;
-    procHalter.function = &halterProcess;
-    procHalter.name = "Halter";
-    procHalter.pid = globalPid++;
-    procHalter.state = ACTIVO;
-    procHalter.timeSlot = 1;
-    procHalter.timeRunnig = 0;
-    procHalter.stackPointer = initStack(procHalter.memory + STACK_SIZE, wrapper, procHalter.function, NULL, NULL, procHalter.pid);
-    halter = procHalter;
+    // process procHalter;
+    halter.function = &halterProcess;
+    halter.name = "Halter";
+    halter.pid = globalPid++;
+    halter.state = ACTIVO;
+    halter.timeSlot = 1;
+    halter.timeRunnig = 0;
+    halter.memory = bufferHalter;
+    // halter.memory =  mallocNUESTRO(STACK_SIZE);
+    halter.stackPointer = initStack(halter.memory + STACK_SIZE, wrapper, halter.function, NULL, NULL, halter.pid);
+    // halter = procHalter;
 
     int p = 0;
     for (; p < CANT_PROCESS; p++)
@@ -99,25 +102,30 @@ void block(int pid)
 void unblockReaders()
 {
     foregroundProcess.state = ACTIVO;
-    print("LLEGO", 0xFFFFFF, 0x000000);
+    //print("LLEGO", 0xFFFFFF, 0x000000);
     if (foregroundProcess.pid == processes[SHELL_POSITION].pid)
     {
         processes[SHELL_POSITION].state = ACTIVO;
-        print(ps, 0xFFFFFF, 0x000000);
+        //   print(ps, 0xFFFFFF, 0x000000);
     }
     cantOfActiveProcesses++;
 }
 void blockReader(int pid)
 {
-    foregroundProcess.state = BLOCK;
+    foregroundProcess.state = BLOQUEADO;
 
     if (pid == processes[SHELL_POSITION].pid)
     {
-        processes[SHELL_POSITION].state = BLOCK;
+        processes[SHELL_POSITION].state = BLOQUEADO;
+    }
+    if(cantOfActiveProcesses == 0){
+        foo();
     }
     cantOfActiveProcesses--;
     timerTickInterrupt();
 }
+
+void foo(){}
 
 int getAvailableProcess()
 {
@@ -201,12 +209,14 @@ uint64_t *sched(uint64_t *rsp)
                 if (currentProcessIndex != -1)
                 {
                     processes[currentProcessIndex].stackPointer = rsp;
+                }else{
+                    halter.stackPointer = rsp;
                 }
-                print("RETURN HALTER EN SCHED", 0x32, 0xFE);
-                char bufferAux[1023] = {0};
-                ps(bufferAux);
-                print(bufferAux, 0x00000, 0xFFFFFF);
-                flagHalter = 1;
+                // print("RETURN HALTER EN SCHED", 0x32, 0xFE);
+                // char bufferAux[1023] = {0};
+                // ps(bufferAux);
+                // print(bufferAux, 0x00000, 0xFFFFFF);
+                // flagHalter = 1;
                 currentProcessIndex = -1;
                 return halter.stackPointer;
             }
@@ -224,10 +234,7 @@ uint64_t *sched(uint64_t *rsp)
         processes[currentProcessIndex].timeRunnig++;
         return processes[currentProcessIndex].stackPointer;
     }
-    if (currentProcessIndex == -1)
-    {
-        currentProcessIndex = 0;
-    }
+  
     int auxIndex = currentProcessIndex + 1;
     int j = 0;
     if (!strcompare(foregroundProcess.name, "shell"))
@@ -238,18 +245,26 @@ uint64_t *sched(uint64_t *rsp)
     {
         if (processes[auxIndex % CANT_PROCESS].state == ACTIVO)
         {
-            processes[currentProcessIndex].timeRunnig = 0;
+            if(currentProcessIndex !=-1){
+                 processes[currentProcessIndex].timeRunnig = 0;
+            }
+           
             currentProcessIndex = auxIndex % CANT_PROCESS;
             return processes[currentProcessIndex].stackPointer;
         }
     }
     // }
-    print("_______ACA NO DEBERIA ESTAR________", 0xFF, 0xDA);
-    halter.stackPointer = rsp;
+   // print("_______ACA NO DEBERIA ESTAR________", 0xFF, 0xDA);
+    // halter.stackPointer = rsp;
+     if(currentProcessIndex == -1){
+         halter.stackPointer = rsp;
+     }
     return halter.stackPointer;
 
     // Tira warning pero nunca llega aca (al menos no deberia)
 }
+
+void bar(){}
 
 void kill(int pid)
 {
