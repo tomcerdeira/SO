@@ -363,8 +363,9 @@ int isAPipeableProcess(char * name){
   return -1;
 }
 
+int lines;
 void wc(){
-  int lines;
+  //int lines;
   lines = 0;
   char in[100]={0};
   scanf("%s", in);
@@ -374,10 +375,9 @@ void wc(){
       //}
       //printf("%s",in);
       cleanBuffer(in,100);
-      printf("%d",lines);
       scanf("%s", in);
   }
-  printf("Cantidad de lineas: %d", lines);
+  printf("Cantidad de lineas: %d\n", lines);
 }
 
 int isVowel(char input){
