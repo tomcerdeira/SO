@@ -30,6 +30,8 @@ int numToBase(uint64_t value, uint_least32_t base, uint64_t *buffer);
 void error(char *str1, char *str2);
 char *strcpy(char *destination, const char *source);
 
+void cleanBuffer(char *buffer, int size);
+
 int getDistance(int to, int from);
 // void hexaTo2(char *buff, int dim);
 void parseHexa(char *buff, int dim);

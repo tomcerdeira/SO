@@ -1,6 +1,6 @@
 #include <shell.h>
 
-#define CANT_OF_PIPEABLE_PROCESS 2
+#define CANT_OF_PIPEABLE_PROCESS 3
 #define BACKGROUND 0
 #define FOREGROUND 1
 
@@ -12,7 +12,7 @@ typedef struct{
   void (*funcion) (int, char **) ;
 }pipeableProcess;
 
-static pipeableProcess pipeableProcesses[CANT_OF_PIPEABLE_PROCESS] = {{"loop", &endless_loop}, {"cat", &cat}}; 
+static pipeableProcess pipeableProcesses[CANT_OF_PIPEABLE_PROCESS] = {{"loop", &endless_loop}, {"cat", &cat},{"prueba",&funAux}}; 
 //COMPLETAR
 
 static int isInitialized = 0;
@@ -227,35 +227,15 @@ void shellHandler()
         createProcess("loop", &endless_loop, 0, 0, isForeground);
       }else if(strcmp(param1, "|"))
       {   
-        createProcess("loop", &endless_loop, 0, 0, BACKGROUND); //0= background
-        //logica pipes loop
-        // creamos el param2 como proceso (en foreground)
-        //logica pipes para param2
-        // int pid;
-        // getPidByName("loop", &pid);
-        // int *fd;
-  
-        // getPipe(fd);
-        // //
-        // changeOutputFd(pid, *fd); //cambia OUTPUT de loop a FD
-        ////////
-        int index = isAPipeableProcess(param2);
-        if(index > 0){
-          createProcess(param2,pipeableProcesses[index].funcion,0,0,FOREGROUND); // 1= foreground 
-          // getPidByName(param2, &pid);
-          // printf("FD %d | PID %d",*fd,pid);
-          // changeInputFd(pid, *fd); //cambia INPUT de param2 a FD
-        }
-    
-      }else if (strcmp(param1,"prueba")){  ///////////////////////////////////////// PRUEBA!!!!!!!!!
         getPipe(fdAux);
         setNextProcessFd(*fdAux,*fdAux);
-        createProcess("loop", &endless_loop, 0, 0, BACKGROUND); //0 = background
-        // Causa cond de carrera
-        
-      }
-      else{
-        createProcess("loop", &endless_loop, 0, 0, FOREGROUND);
+        createProcess("loop", &endless_loop, 0, 0, BACKGROUND); //0= background
+       
+        int index = isAPipeableProcess(param2);
+        if(index > 0){
+          setNextProcessFd(*fdAux,2);
+          createProcess(param2,pipeableProcesses[index].funcion,0,0,FOREGROUND); // 1= foreground 
+        }
       }
     }
     /////////////////////////////////////////////////////// PRUEBA!!!!!!!!!
@@ -294,8 +274,7 @@ void shellHandler()
       test_no_sync();
     }
     else if (strcmp(buff, "cat"))
-    {
-      
+    { 
       createProcess("cat", &cat, 0, 0, FOREGROUND);
     }
     else if (strcmp(buff, "testprocesses"))
@@ -342,42 +321,25 @@ void shellManager()
 }
 
 void endless_loop()
-{
-  // int pid;
-  //       getPidByName("loop", &pid);
-  //       // getPipe(fdAux);
-        // changeOutputFd(pid, *fdAux);
-  printf("LOOP%d", getPid());
-  printf("LOOP%d", getPid());
-  printf("LOOP%d \n", getPid());
-  printf("LOOP%d", getPid());
-  printf("LOOP%d", getPid());
-  printf("LOOP%d \n", getPid());
-  // while (1)
-  // {
-  //   printf("LOOP%d", getPid());
-  // }
+{ 
+  while (1)
+  {
+    printf("%d \n", getPid());
+  }
 }
 
 void cat()
 {
   char buffer[100] = {0};
   int exit = 0;
-  char * aux;
-  printf("DENTRO DEL CAT");
 
   while (!exit)
   {
-    // printf("entra 1");
-   // aux = getChar();
     scanf("%s",buffer);
-    printf("sale 2");
     if (!strcmp(buffer, "/"))
     {
-      printf("+++++++++++DENTRO DEL CAT__________________");
-
       printf("%s",buffer);
-      printf("\n");
+      //printf("\n");
       int i =0;
       while(buffer[i] != 0){
         buffer[i++] = 0;
@@ -406,13 +368,23 @@ void funAux(){
   // int pid;
   // getPidByName("funAux", &pid);
   // changeInputFd(pid, *fdAux);
-
+  while(1){
     char buffer[100] = {0};
+    scanf("%s", buffer);
+    int i =0;
+    while (buffer[i] !=0 && i <100)
+    {
+      buffer[i] = 0;
+      i++;
+    }
+    
+  }
+    //char buffer[100] = {0};
     //readKeyBuff(buffer, 5, 0);
     //printf("Sale al prueba");
-    scanf("%s", buffer);
-    char buffer2[100]={0};
-    scanf("%s", buffer2);
+    //scanf("%s", buffer);
+    //char buffer2[100]={0};
+    //scanf("%s", buffer2);
 
     // printf("%s FD %d | PID %d", buffer,*fdAux,pid);
 }

@@ -147,7 +147,6 @@ int readPipe(char *buffer, int size, int fd)
         {
            
              mySemPost(pipes[index].sem->name);
-             buffer[i+1] = 0;
             return i; // Aca termina
         }
         buffer[i] = pipes[index].buffer[pipes[index].readIndex];

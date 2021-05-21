@@ -135,6 +135,7 @@ int scanf(const char *format, ...)
         {
             usrInput[index++] = in;
             putChar(in);
+            
         }
         //
         // printf("%s|| %d",usrInput,index);
@@ -483,4 +484,13 @@ int getPid()
     int pid = 0;
     getProcessPid(&pid);
     return pid;
+}
+
+void cleanBuffer(char * buffer, int size)
+{
+    int i = 0;
+    for (; i < size || buffer[i]!=0; i++)
+    {
+        buffer[i] = 0;
+    }
 }
