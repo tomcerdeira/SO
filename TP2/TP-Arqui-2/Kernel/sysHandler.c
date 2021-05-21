@@ -5,7 +5,7 @@
 
 // System Calls --> casos y llamados a cada uno
 // https://stackoverflow.com/questions/37581530/passing-argument-from-c-to-assembly ( orden de los argumetos.)
-//      rdi             rsi             rdx         rcx             r8                      //r9
+    //      rdi             rsi             rdx         rcx             r8                      //r9
 void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uint64_t *stackFrame, uint64_t *par5, uint64_t *par6)
 {
 
@@ -160,7 +160,7 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (25):
     {
-        changeInputFd(par3, par2);
+        setFDNextNewProcess(par3,par2);
         break;
     }
     case (26):
@@ -189,6 +189,7 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     {
         mySemWait(par1);
     }
+
 
     default:
         break;
@@ -272,11 +273,11 @@ void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
             // if (currentProcessIsForeground())
             // {
             char *keyboardBuffer ;
-            while ((keyboardBuffer = getKeyboardBuffer())[0] == 0)
-            {
-               // print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
-                blockReader(getPid());
-            }
+            // while ((keyboardBuffer = getKeyboardBuffer())[0] == 0)
+            // {
+            //    // print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
+            //     blockReader(getPid());
+            // }
 
             // VERSION 2:
             // Hay q tener el ciclo en getChar() (standardLib.c USERLADN)
@@ -287,7 +288,7 @@ void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
             // {
             //     print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
             //     blockReader(getPid());
-            //  keyboardBuffer = getKeyboardBuffer();
+              keyboardBuffer = getKeyboardBuffer();
             // }
             //keyboardBuffer = getKeyboardBuffer();
             for (int i = 0; i < lengthBuffer && keyboardBuffer[i] != 0; i++)

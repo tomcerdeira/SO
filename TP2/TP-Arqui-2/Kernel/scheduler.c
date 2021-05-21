@@ -9,6 +9,7 @@
 #define SHELL_POSITION 0
 #define FD_STDIN 1
 #define FD_STOUT 2
+#define NOT_SETED -1
 
 process processes[CANT_PROCESS] = {{0}};
 process halter;
@@ -20,18 +21,17 @@ int firstTimeEntering = 1;
 int rspKernel = 0;
 int globalPid = 0;
 process foregroundProcess = {0};
+int fdInputNextProcess = NOT_SETED;
+int fdOutputNextProcess = NOT_SETED;
 
 // Version 1.0 de manejo de procesos
 
 void halterProcess()
 {
-   // print("ENTRO AL HLT", 0x9C0412, 0xFFFFFF);
     while (1)
-    {
-      
+    { 
         _hlt();
     }
-
     // unblockReaders();
     // block(1);
     timerTickInterrupt();
@@ -118,14 +118,14 @@ void blockReader(int pid)
     {
         processes[SHELL_POSITION].state = BLOQUEADO;
     }
-    if(cantOfActiveProcesses == 0){
-        foo();
-    }
+    // if(cantOfActiveProcesses == 0){
+    //     foo();
+    // }
     cantOfActiveProcesses--;
     timerTickInterrupt();
 }
 
-void foo(){}
+// void foo(){}
 
 int getAvailableProcess()
 {
@@ -156,8 +156,17 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[], i
     processes[availableProcess].state = ACTIVO;
     processes[availableProcess].name = name;
     processes[availableProcess].pid = globalPid++;
-    processes[availableProcess].fdInput = FD_STDIN;
-    processes[availableProcess].fdOutput = FD_STOUT;
+    if(fdInputNextProcess == NOT_SETED ){
+        processes[availableProcess].fdInput = FD_STDIN;
+        processes[availableProcess].fdOutput = FD_STOUT;
+    }else{
+        processes[availableProcess].fdInput = fdInputNextProcess;
+        processes[availableProcess].fdOutput = fdOutputNextProcess;
+        fdInputNextProcess = NOT_SETED; //Reseteo para el próximo proceso que se cree
+        fdOutputNextProcess = NOT_SETED;
+    }
+
+    
     processes[availableProcess].timeSlot = TIME_SLOT;
 
     //processes[prio_name][availableProcess].memory = processMemory[prio_name][availableProcess]; // Habria que liberarla una vez matado el proceso
@@ -206,30 +215,30 @@ uint64_t *sched(uint64_t *rsp)
             }
             if (flagHalter)
             {
-                if (currentProcessIndex != -1)
-                {
-                    processes[currentProcessIndex].stackPointer = rsp;
-                }else{
-                    halter.stackPointer = rsp;
-                }
+                // if (currentProcessIndex != -1)
+                // {
+                //     processes[currentProcessIndex].stackPointer = rsp;
+                // }else{
+                //     halter.stackPointer = rsp;
+                // }
                 // print("RETURN HALTER EN SCHED", 0x32, 0xFE);
                 // char bufferAux[1023] = {0};
                 // ps(bufferAux);
                 // print(bufferAux, 0x00000, 0xFFFFFF);
                 // flagHalter = 1;
-                currentProcessIndex = -1;
+                //currentProcessIndex = -1;
                 return halter.stackPointer;
             }
         }
     }
     // else
     // {
-    if (!firstTimeEntering && currentProcessIndex != -1) // Esto es para que un proceso se actualice el SP.
+    if (!firstTimeEntering ) // Esto es para que un proceso se actualice el SP.
     {
         processes[currentProcessIndex].stackPointer = rsp;
     }
     firstTimeEntering = 0;
-    if (currentProcessIndex != -1 && processes[currentProcessIndex].timeSlot > processes[currentProcessIndex].timeRunnig && processes[currentProcessIndex].state == ACTIVO)
+    if (processes[currentProcessIndex].timeSlot > processes[currentProcessIndex].timeRunnig && processes[currentProcessIndex].state == ACTIVO)
     {
         processes[currentProcessIndex].timeRunnig++;
         return processes[currentProcessIndex].stackPointer;
@@ -245,9 +254,9 @@ uint64_t *sched(uint64_t *rsp)
     {
         if (processes[auxIndex % CANT_PROCESS].state == ACTIVO)
         {
-            if(currentProcessIndex !=-1){
+            // if(currentProcessIndex !=-1){
                  processes[currentProcessIndex].timeRunnig = 0;
-            }
+            // }
            
             currentProcessIndex = auxIndex % CANT_PROCESS;
             return processes[currentProcessIndex].stackPointer;
@@ -256,15 +265,15 @@ uint64_t *sched(uint64_t *rsp)
     // }
    // print("_______ACA NO DEBERIA ESTAR________", 0xFF, 0xDA);
     // halter.stackPointer = rsp;
-     if(currentProcessIndex == -1){
-         halter.stackPointer = rsp;
-     }
+    //  if(currentProcessIndex == -1){
+    //      halter.stackPointer = rsp;
+    //  }
     return halter.stackPointer;
 
     // Tira warning pero nunca llega aca (al menos no deberia)
 }
 
-void bar(){}
+// void bar(){}
 
 void kill(int pid)
 {
@@ -356,6 +365,11 @@ void ps(char *buffer)
     }
 }
 
+void setFDNextNewProcess(int fdInput, int fdOutPut){
+    fdInputNextProcess  = fdInput;
+    fdOutputNextProcess = fdOutPut;
+}
+
 void yield()
 {
     processes[currentProcessIndex].timeRunnig = processes[currentProcessIndex].timeSlot;
@@ -370,20 +384,15 @@ int currentProcessIsForeground()
 void getPidByName(char *name, int *pid)
 {
     int i = 0;
-    int flag = 0;
     for (; i < CANT_PROCESS; i++)
     {
         if (strcompare(processes[i].name, name))
         {
             *pid = processes[i].pid;
-            flag = 1;
+            return;
         }
     }
-    //print("ACA NO DEBERIA LLEGAR_____", 0xCD, 0xFE);
-    if (!flag)
-    {
-        *pid = -1;
-    }
+    *pid = -1;
 }
 
 int getIndexOfPid(int pid)

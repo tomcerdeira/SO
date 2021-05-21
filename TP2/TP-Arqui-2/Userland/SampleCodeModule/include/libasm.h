@@ -32,7 +32,7 @@ void kill(int pid);
 int getPipe(int *fd);
 
 void changeOutputFd(int pid, int fd);
-void changeInputFd(int pid, int fd);
+void setNextProcessFd(int fdInput, int fdOutPut);
 void getPidByName(char *name, int *fd);
 
 #endif

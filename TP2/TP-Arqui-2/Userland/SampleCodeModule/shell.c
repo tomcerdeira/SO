@@ -1,6 +1,8 @@
 #include <shell.h>
 
 #define CANT_OF_PIPEABLE_PROCESS 2
+#define BACKGROUND 0
+#define FOREGROUND 1
 
 static char user[20] = {0};
 static char userShell[30] = {0};
@@ -225,42 +227,42 @@ void shellHandler()
         createProcess("loop", &endless_loop, 0, 0, isForeground);
       }else if(strcmp(param1, "|"))
       {   
-        createProcess("loop", &endless_loop, 0, 0, 0); //0= background
+        createProcess("loop", &endless_loop, 0, 0, BACKGROUND); //0= background
         //logica pipes loop
         // creamos el param2 como proceso (en foreground)
         //logica pipes para param2
-        int pid;
-        getPidByName("loop", &pid);
-        int *fd;
+        // int pid;
+        // getPidByName("loop", &pid);
+        // int *fd;
   
-        getPipe(fd);
-        //
-        changeOutputFd(pid, *fd); //cambia OUTPUT de loop a FD
+        // getPipe(fd);
+        // //
+        // changeOutputFd(pid, *fd); //cambia OUTPUT de loop a FD
         ////////
         int index = isAPipeableProcess(param2);
         if(index > 0){
-          createProcess(param2,pipeableProcesses[index].funcion,0,0,1); // 1= foreground 
-          getPidByName(param2, &pid);
-          printf("FD %d | PID %d",*fd,pid);
-          changeInputFd(pid, *fd); //cambia INPUT de param2 a FD
+          createProcess(param2,pipeableProcesses[index].funcion,0,0,FOREGROUND); // 1= foreground 
+          // getPidByName(param2, &pid);
+          // printf("FD %d | PID %d",*fd,pid);
+          // changeInputFd(pid, *fd); //cambia INPUT de param2 a FD
         }
     
       }else if (strcmp(param1,"prueba")){  ///////////////////////////////////////// PRUEBA!!!!!!!!!
-        createProcess("loop", &endless_loop, 0, 0, 0); //0 = background
-        // Causa cond de carrera
-        int pid;
-        getPidByName("loop", &pid);
         getPipe(fdAux);
-        changeOutputFd(pid, *fdAux);
+        setNextProcessFd(*fdAux,*fdAux);
+        createProcess("loop", &endless_loop, 0, 0, BACKGROUND); //0 = background
+        // Causa cond de carrera
+        
       }
       else{
-        createProcess("loop", &endless_loop, 0, 0, 1);
+        createProcess("loop", &endless_loop, 0, 0, FOREGROUND);
       }
     }
     /////////////////////////////////////////////////////// PRUEBA!!!!!!!!!
     else if (strcmp(buff, "prueba"))
     {
-       createProcess("funAux", &funAux, 0, 0, 0); //0 = background      
+       setNextProcessFd(*fdAux,2);
+       createProcess("funAux", &funAux, 0, 0, BACKGROUND); //0 = background      
     }
     ///////////////////////////////////////////////////////
     else if (strcmp(buff, "ps"))
@@ -294,7 +296,7 @@ void shellHandler()
     else if (strcmp(buff, "cat"))
     {
       
-      createProcess("cat", &cat, 0, 0, 1);
+      createProcess("cat", &cat, 0, 0, FOREGROUND);
     }
     else if (strcmp(buff, "testprocesses"))
     {
@@ -341,12 +343,16 @@ void shellManager()
 
 void endless_loop()
 {
+  // int pid;
+  //       getPidByName("loop", &pid);
+  //       // getPipe(fdAux);
+        // changeOutputFd(pid, *fdAux);
   printf("LOOP%d", getPid());
   printf("LOOP%d", getPid());
+  printf("LOOP%d \n", getPid());
   printf("LOOP%d", getPid());
   printf("LOOP%d", getPid());
-  printf("LOOP%d", getPid());
-  printf("LOOP%d", getPid());
+  printf("LOOP%d \n", getPid());
   // while (1)
   // {
   //   printf("LOOP%d", getPid());
@@ -397,13 +403,16 @@ int isAPipeableProcess(char * name){
 /// BORRAR
 void funAux(){
 
-  int pid;
-  getPidByName("funAux", &pid);
-  changeInputFd(pid, *fdAux);
+  // int pid;
+  // getPidByName("funAux", &pid);
+  // changeInputFd(pid, *fdAux);
 
+    char buffer[100] = {0};
+    //readKeyBuff(buffer, 5, 0);
+    //printf("Sale al prueba");
+    scanf("%s", buffer);
+    char buffer2[100]={0};
+    scanf("%s", buffer2);
 
-  char buffer[100] = {0};
-  //readKeyBuff(buffer, 5, 0);
-  scanf("%s", buffer);
-  printf("%s FD %d | PID %d", buffer,*fdAux,pid);
+    // printf("%s FD %d | PID %d", buffer,*fdAux,pid);
 }

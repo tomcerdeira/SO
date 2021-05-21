@@ -125,7 +125,7 @@ void writePipe(int fd, char *buffer)
         pipes[index].writeIndex += buffLength;
     }
     mySemPost(pipes[index].sem->name);
-    print(pipes[index].buffer, 0xFF0000, 0x000000);
+    //print(pipes[index].buffer, 0xFF0000, 0x000000);
 }
 
 int readPipe(char *buffer, int size, int fd)
@@ -140,23 +140,25 @@ int readPipe(char *buffer, int size, int fd)
     int i = 0;
     // if(pipes[index].readIndex == pipes[index].writeIndex){
     mySemWait(pipes[index].sem->name);
-    print("Salgo wait read",0xDEAD,0xC0DE);
+    //print("Salgo wait read",0xDEAD,0xC0DE);
     for (; i < SIZE_OF_PIPE && i<size && pipes[index].buffer[i]!=0; i++)
     {
         if (pipes[index].readIndex == pipes[index].writeIndex )
         {
-            print("entro al IF!!!!!!!!!!!!!!!!!!!!!!", 0x3232, 0xFFFFF);
+           
+             mySemPost(pipes[index].sem->name);
+             buffer[i+1] = 0;
             return i; // Aca termina
         }
         buffer[i] = pipes[index].buffer[pipes[index].readIndex];
         pipes[index].readIndex++;
         pipes[index].readIndex %= SIZE_OF_PIPE;
     }
-    buffer[i+1] = 0;
+    //buffer[i+1] = 0;
     // memcpy(buffer, pipes[i].buffer, 256);
     // print(buffer, 0x000000, 0xFFFFFF);
     mySemPost(pipes[index].sem->name);
-    print("POST READ", 0xCAFE, 0xC0DE);
+   // print("POST READ", 0xCAFE, 0xC0DE);
     // }
     return i;
 }

@@ -22,7 +22,7 @@ GLOBAL test_no_sync
 GLOBAL test_processes
 GLOBAL kill
 GLOBAL getPipe
-GLOBAL changeInputFd
+GLOBAL setNextProcessFd
 GLOBAL changeOutputFd
 GLOBAL getPidByName
 ; GLOBAL getBuffOf   
@@ -434,7 +434,7 @@ getPipe:
     ret
 
 
-changeInputFd:
+setNextProcessFd:
     push rbp
     mov rbp,rsp
 
