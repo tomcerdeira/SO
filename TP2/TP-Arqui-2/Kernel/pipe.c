@@ -9,7 +9,7 @@ void initPipes()
     auxPipe.readIndex = 0;
     auxPipe.writeIndex = 0;
     auxPipe.fd = 0;
-    auxPipe.isFree = 1;
+    auxPipe.isFree = FREE;
     auxPipe.buffer = 0;
     auxPipe.cantOfProcessesConsuming = 0;
     int i = 0;
@@ -44,7 +44,7 @@ void createNewPipe(int *fd)
     pipe newPipe;
     newPipe.buffer = mallocNUESTRO(SIZE_OF_PIPE);
     newPipe.fd = globalFD++;
-    newPipe.isFree = 0;
+    newPipe.isFree = NOT_FREE;
     newPipe.cantOfProcessesConsuming++;
     newPipe.sem = semOpen("prueba",1);
 
@@ -78,7 +78,7 @@ void closePipe(int fd)
     pipes[index].cantOfProcessesConsuming--;
     if (pipes[index].cantOfProcessesConsuming == 0) //Si no hay más procesos con el pipe, se libera
     {
-        pipes[index].isFree = 1;
+        pipes[index].isFree = FREE;
         freeMemory(pipes[index].buffer);
         pipes[index].readIndex = 0;
         pipes[index].writeIndex = 0;
@@ -162,6 +162,58 @@ int readPipe(char *buffer, int size, int fd)
     return i;
 }
 
+void pipesInfo(char *buffer)
+{
+    int i = 0;
+    int j = 0;
+
+    char *header = "Read\tWrite\tFD\t\tCant. proc\n";
+
+    memcpy(buffer, header, strlen(header));
+    j = strlen(header);
+
+    for (; i < CANT_OF_PIPES; i++)
+    {
+        if (!pipes[i].isFree)
+        {
+            //Read
+            char auxRead[1];
+            numToStr(auxRead, pipes[i].readIndex);
+            memcpy(buffer + j, auxRead, strlen(auxRead));
+            j += strlen(auxRead);
+            memcpy(buffer + j, "\t\t\t\t\t\t", strlen("\t\t\t\t\t\t"));
+            j += strlen("\t\t\t\t");
+
+            //Write
+            char auxWrite[1];
+            numToStr(auxWrite, pipes[i].writeIndex);
+            memcpy(buffer + j, auxWrite, strlen(auxWrite));
+            j += strlen(auxWrite);
+            memcpy(buffer + j, "\t\t\t\t\t\t", strlen("\t\t\t\t\t\t"));
+            j += strlen("\t\t\t\t\t\t");
+
+            //FD
+            char auxFD[2];
+            numToStr(auxFD, pipes[i].fd);
+            memcpy(buffer + j, auxFD, strlen(auxFD));
+            j += strlen(auxFD);
+            memcpy(buffer + j, "\t\t\t", strlen("\t\t\t"));
+            j += strlen("\t\t\t");
+
+            memcpy(buffer + j, "\t\t\t", strlen("\t\t\t"));
+            j += strlen("\t\t\t");
+
+            //Cant of processes
+            char auxCant[10];
+            numToStr(auxCant, pipes[i].cantOfProcessesConsuming);
+            memcpy(buffer + j, auxCant, strlen(auxCant));
+            j += strlen(auxCant);
+
+            memcpy(buffer + j, "\n", strlen("\n"));
+            j += strlen("\n");
+        }
+    }
+}
 //// FUNCION AUX BORRAR /////
 
 // char * getBuffOf(char * buff, int fd){

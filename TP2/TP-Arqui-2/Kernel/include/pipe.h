@@ -7,6 +7,8 @@
 
 #define SIZE_OF_PIPE 2048
 #define CANT_OF_PIPES 10
+#define FREE 1
+#define NOT_FREE 0
 
 typedef struct
 {
@@ -27,5 +29,6 @@ void closePipe(int fd);
 void writePipe(int fd, char *buffer);
 int readPipe(char *buffer, int size, int fd);
 char *getBuffOf(char *buff, int fd);
+void pipesInfo(char *buffer);
 
 #endif

@@ -27,6 +27,7 @@ void test_sync();
 void test_no_sync();
 void test_processes();
 void kill(int pid);
+void pipesInfo(char *buffer);
 
 
 int getPipe(int *fd);

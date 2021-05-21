@@ -189,6 +189,10 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     {
         mySemWait(par1);
     }
+    case (32):
+    {
+        pipesInfo(par1);
+    }
 
 
     default:

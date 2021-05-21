@@ -29,7 +29,8 @@ GLOBAL getPidByName
 ; GLOBAL semWait
 ; GLOBAL semClose
 ; GLOBAL semOpen
-; GLOBAL semPost 
+; GLOBAL semPost
+GLOBAL pipesInfo
 
 ;  par1 --> buffer donde esta lo que quiero escribir
 ;  par2 --> fileDescrpitor
@@ -536,4 +537,19 @@ getPidByName:
 ;     pop rbp
 ;     ret
 
+pipesInfo:
+    push rbp
+    mov rbp,rsp
 
+   
+    push rcx
+
+   
+    mov rcx, 32
+
+    int 80h
+
+    pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret

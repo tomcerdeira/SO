@@ -286,6 +286,12 @@ void shellHandler()
     {
      createProcess("filter",&filter,0,0,FOREGROUND);
     }
+    else if (strcmp(buff, "pipe"))
+    {
+      char buffer[1024] = {0};
+      pipesInfo(buffer);
+      printf(buffer);
+    }
     //TODO agregar:
     // - help --> falta agregar todas las syscalls nuevas (los tests)
     // - MEM --> falta hacerla syscall
@@ -396,7 +402,6 @@ void filter(){
   int cantVowels = 0;
   int exit = 0;
 
-  //scanf("%s",buffer);
   while( !exit ){
     scanf("%s",buffer);
     if (!strcmp(buffer, "/")){
