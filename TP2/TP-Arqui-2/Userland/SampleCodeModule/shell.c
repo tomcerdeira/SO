@@ -392,6 +392,28 @@ int isVowel(char input){
 }
 
 void filter(){
+  char buffer[100] = {0};
+  int cantVowels = 0;
+  int exit = 0;
+
+  //scanf("%s",buffer);
+  while( !exit ){
+    scanf("%s",buffer);
+    if (!strcmp(buffer, "/")){
+      int i= 0;
+      for (; i<sizeof(buffer); i++){
+        if(isVowel(buffer[i])){
+          cantVowels++;
+        }
+      }
+    } else {
+      exit = 1;
+    }
+  }
+  printf("Cantidad de vocales: %d\n",cantVowels);
+
+
+  //}
   // char in[100]={0};
   // int cantVowels = 0;
   // in=getChar();
