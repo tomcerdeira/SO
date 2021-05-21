@@ -12,7 +12,7 @@ typedef struct{
   void (*funcion) (int, char **) ;
 }pipeableProcess;
 
-static pipeableProcess pipeableProcesses[CANT_OF_PIPEABLE_PROCESS] = {{"loop", &endless_loop}, {"cat", &cat},{"prueba",&funAux}}; 
+static pipeableProcess pipeableProcesses[CANT_OF_PIPEABLE_PROCESS] = {{"loop", &endless_loop}, {"cat", &cat}}; 
 //COMPLETAR
 
 static int isInitialized = 0;
@@ -238,13 +238,6 @@ void shellHandler()
         }
       }
     }
-    /////////////////////////////////////////////////////// PRUEBA!!!!!!!!!
-    else if (strcmp(buff, "prueba"))
-    {
-       setNextProcessFd(*fdAux,2);
-       createProcess("funAux", &funAux, 0, 0, BACKGROUND); //0 = background      
-    }
-    ///////////////////////////////////////////////////////
     else if (strcmp(buff, "ps"))
     {
       char buffer[1024] = {0};
@@ -284,6 +277,14 @@ void shellHandler()
     else if (strcmp(buff, "kill"))
     {
       kill(strToInt(param1));
+    }
+    else if (strcmp(buff, "wc"))
+    {
+      createProcess("wc",&wc,0,0,FOREGROUND);
+    }
+    else if (strcmp(buff, "filter"))
+    {
+     createProcess("filter",&filter,0,0,FOREGROUND);
     }
     //TODO agregar:
     // - help --> falta agregar todas las syscalls nuevas (los tests)
@@ -362,29 +363,45 @@ int isAPipeableProcess(char * name){
   return -1;
 }
 
-/// BORRAR
-void funAux(){
-
-  // int pid;
-  // getPidByName("funAux", &pid);
-  // changeInputFd(pid, *fdAux);
-  while(1){
-    char buffer[100] = {0};
-    scanf("%s", buffer);
-    int i =0;
-    while (buffer[i] !=0 && i <100)
-    {
-      buffer[i] = 0;
-      i++;
-    }
-    
+void wc(){
+  int lines;
+  lines = 0;
+  char in[100]={0};
+  scanf("%s", in);
+  while( strcmp(in,"/") ==0){
+      //if(in == '\n'){
+        lines++;
+      //}
+      //printf("%s",in);
+      cleanBuffer(in,100);
+      printf("%d",lines);
+      scanf("%s", in);
   }
-    //char buffer[100] = {0};
-    //readKeyBuff(buffer, 5, 0);
-    //printf("Sale al prueba");
-    //scanf("%s", buffer);
-    //char buffer2[100]={0};
-    //scanf("%s", buffer2);
+  printf("Cantidad de lineas: %d", lines);
+}
 
-    // printf("%s FD %d | PID %d", buffer,*fdAux,pid);
+int isVowel(char input){
+  char vowels[] = {'a','e','i','o','u'};
+  int i=0;
+  for(;i<5;i++){
+    if(input == vowels[i]){
+      return 1;
+    }
+  }
+  return 0;
+}
+
+void filter(){
+  // char in[100]={0};
+  // int cantVowels = 0;
+  // in=getChar();
+  // while( strcmp(in,"/") == 0 ){
+  //     if(isVowel(in)){
+  //       cantVowels++;
+  //       printf(in);
+  //     }
+  //     in=getChar();
+  // }
+  //printf("Cantidad de vocales: %d\n",cantVowels);
+
 }

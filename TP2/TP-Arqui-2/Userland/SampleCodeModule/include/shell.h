@@ -24,7 +24,11 @@ int isAPipeableProcess(char * name);
 // void loadModule(char *module);
 void shellHandler();
 
-///// BORRAR
-void funAux();
+void wc();
+int isVowel(char input);
+void filter();
+
+    ///// BORRAR
+    void funAux();
 
 #endif
