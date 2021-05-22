@@ -2,7 +2,7 @@
 #include <standardLib.h>
 
 #define N 8
-#define THINKING 2
+#define PHILOSOPHIZING 2
 #define HUNGRY 1
 #define EATING 0
 #define LEFT ((i + cant-1) % cant)
@@ -81,7 +81,7 @@ void takeFork(int i){
 
 void putFork(int i){
     semWait(mutex);
-    state[i] = THINKING;
+    state[i] = PHILOSOPHIZING;
     if (i == cant - 1) test(0);
     else    test(i + 1);
     if (i == 0) test(cant - 1);
@@ -162,19 +162,13 @@ void killPhil(int i){
     if (*status==1) {
         semWait(names[i]);
     } 
-    //printf("PID A MATAR %d \n",philPID[i]);
     kill(philPID[i]);   
-    // if (kill(philPID[i],0) == -1) {
-    //     printf("Error al matar un filosofo");
-    // }
     semClose(names[i]);
-    // if(semClose(names[i]) != 0) {
-    //     printf("Error cerrando sem");
-    // }
+   
     cant--;
     numPhil--;
     semPost(mutex);
-    printf("Filosofo muer\n");
+    printf("Filosofo muerto \n");
 }
 
 void exitPhilo(){
@@ -193,7 +187,7 @@ void exitPhilo(){
 
 int philosphers(){
     putNames();       
-    printf("Problema de los filosofos comensales: \n");
+    printf("Problema de los filosofos: \n");
     printf("a: agregar filososfos\n");
     printf("r: remover filososfos\n");
     printf("p: ver los procesos \n");
@@ -202,7 +196,7 @@ int philosphers(){
     mutex = "mutex";
     semOpen(mutex, 1, &retSemOpen); // ver si el 1 esta bien
     if(retSemOpen < 0){
-        printf("No se pudo abrir el semaforo");
+        printf("No se pudo abrir el semaforo\n");
         return;
     }
    semWait(mutex);
@@ -220,11 +214,11 @@ int philosphers(){
 
         switch (k) {
         case 'a':
-            printf("ADD recibido \n");
+            //printf("ADD recibido \n");
             addPhilo(cant);
             break;
         case 'r':
-            printf("REMOVE recibido \n");
+            printf("");
             if (cant > 0)
             {
                 killPhil(cant - 1);  
@@ -239,7 +233,7 @@ int philosphers(){
             printf("\n\n");
             break;
         case '/':
-            printf("EXIT recibido \n");
+            //printf("EXIT recibido \n");
             exitPhilo();
             flag = 0;
             break;
@@ -249,5 +243,6 @@ int philosphers(){
         }
     }
     printf("Saliendo de los filosos \n");
+    clearConsoleIn(2);
     return 0;
 }

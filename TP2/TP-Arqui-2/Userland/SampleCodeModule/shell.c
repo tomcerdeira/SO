@@ -296,8 +296,20 @@ void shellHandler()
     }
      else if (strcmp(buff, "philo"))
     {
-     createProcess("philos",&philosphers,0,0,FOREGROUND);
+      if (strcmp(param1, "&"))
+      {
+        createProcess("philos",&philosphers,0,0,BACKGROUND);
+      }else{
+        createProcess("philos",&philosphers,0,0,FOREGROUND);
+      }
     }
+     else if (strcmp(buff, "sem"))
+    {
+      char buffer[1024] = {0};
+      getSemInfo(buffer);
+      printf(buffer);
+    }
+
 
     //TODO agregar:
     // - help --> falta agregar todas las syscalls nuevas (los tests)

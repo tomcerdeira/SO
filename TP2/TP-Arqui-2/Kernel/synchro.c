@@ -162,55 +162,76 @@ void getSemStatus(char * name, int * status)
 // HACER!!!!!
 // Ver como hacer con el tema de "los procesos bloqueados en cada uno"
 //
-// void semsInfo(char *buffer)
-// {
-//     int i = 0;
-//     int j = 0;
+void semsInfo(char *buffer)
+{
+    int i = 0;
+    int j = 0;
 
-//     char *header = "Name\tState\tFD\t\tCant. proc\n";
+    char *header = "Name\tID\tValue\tCant. Given\tCantPidBlocked\tPidsBlocked\n";
 
-//     memcpy(buffer, header, strlen(header));
-//     j = strlen(header);
+    memcpy(buffer, header, strlen(header));
+    j = strlen(header);
 
-//     for (; i < CANT_SEMAPHORES; i++)
-//     {
-//         // if (!pipes[i].isFree)
-//         // {
-//         //     //Read
-//         //     char auxRead[1];
-//         //     numToStr(auxRead, pipes[i].readIndex);
-//         //     memcpy(buffer + j, auxRead, strlen(auxRead));
-//         //     j += strlen(auxRead);
-//         //     memcpy(buffer + j, "\t\t\t\t\t\t", strlen("\t\t\t\t\t\t"));
-//         //     j += strlen("\t\t\t\t");
+    for (; i < CANT_SEMAPHORES; i++)
+    {
+        if(semaphores[i].cantGiven > 0)
+        {
+            //Name
+            memcpy(buffer + j, semaphores[i].name, strlen(semaphores[i].name));
+            j += strlen(semaphores[i].name);
+            memcpy(buffer + j, "\t\t\t\t", strlen( "\t\t\t\t"));
+            j += strlen("\t\t\t\t");
 
-//         //     //Write
-//         //     char auxWrite[1];
-//         //     numToStr(auxWrite, pipes[i].writeIndex);
-//         //     memcpy(buffer + j, auxWrite, strlen(auxWrite));
-//         //     j += strlen(auxWrite);
-//         //     memcpy(buffer + j, "\t\t\t\t\t\t", strlen("\t\t\t\t\t\t"));
-//         //     j += strlen("\t\t\t\t\t\t");
+            //ID
+            char auxId[1];
+            numToStr(auxId,semaphores[i].semID);
+            memcpy(buffer + j, auxId, strlen(auxId));
+            j += strlen(auxId);
+            memcpy(buffer + j, "\t\t\t\t\t\t", strlen("\t\t\t\t\t\t"));
+            j += strlen("\t\t\t\t\t\t");
 
-//         //     //FD
-//         //     char auxFD[2];
-//         //     numToStr(auxFD, pipes[i].fd);
-//         //     memcpy(buffer + j, auxFD, strlen(auxFD));
-//         //     j += strlen(auxFD);
-//         //     memcpy(buffer + j, "\t\t\t", strlen("\t\t\t"));
-//         //     j += strlen("\t\t\t");
+            //Value
+            char auxValue[2];
+            numToStr(auxValue, semaphores[i].value);
+            memcpy(buffer + j, auxValue, strlen(auxValue));
+            j += strlen(auxValue);
+            memcpy(buffer + j, "\t\t\t", strlen("\t\t\t"));
+            j += strlen("\t\t\t");
 
-//         //     memcpy(buffer + j, "\t\t\t", strlen("\t\t\t"));
-//         //     j += strlen("\t\t\t");
+            memcpy(buffer + j, "\t\t\t", strlen("\t\t\t"));
+            j += strlen("\t\t\t");
 
-//         //     //Cant of processes
-//         //     char auxCant[10];
-//         //     numToStr(auxCant, pipes[i].cantOfProcessesConsuming);
-//         //     memcpy(buffer + j, auxCant, strlen(auxCant));
-//         //     j += strlen(auxCant);
+            //Cant given
+            char auxCant[2];
+            numToStr(auxCant, semaphores[i].cantGiven);
+            memcpy(buffer + j, auxCant, strlen(auxCant));
+            j += strlen(auxCant);
+            memcpy(buffer + j, "\t\t\t", strlen("\t\t\t"));
+            j += strlen("\t\t\t");
 
-//         //     memcpy(buffer + j, "\n", strlen("\n"));
-//         //     j += strlen("\n");
-//         // }
-//     }
-// }
+             //CantPidBlockeds
+            char auxPidBlockeds[2];
+            numToStr(auxPidBlockeds, semaphores[i].cantBlockedPids);
+            memcpy(buffer + j, auxPidBlockeds, strlen(auxPidBlockeds));
+            j += strlen(auxPidBlockeds);
+            memcpy(buffer + j, "\t\t\t", strlen("\t\t\t"));
+            j += strlen("\t\t\t");
+
+            //Blocked PIDs
+            int k =0;
+            for(;k<semaphores[i].cantBlockedPids;k++)
+            {
+                char auxPid[2];
+                numToStr(auxPid, semaphores[i].blockedPids[k]);
+                memcpy(buffer + j, auxPid, strlen(auxPid));
+                j += strlen(auxPid);
+                memcpy(buffer + j, ", ", strlen(", "));
+                j += strlen(", ");
+            }
+
+            memcpy(buffer + j, "\n", strlen("\n"));
+            j += strlen("\n");
+        }
+    }
+}
+

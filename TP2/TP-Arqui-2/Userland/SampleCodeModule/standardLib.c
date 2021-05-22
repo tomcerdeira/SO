@@ -492,7 +492,6 @@ void cleanBuffer(char * buffer, int size)
     for (; i < size && buffer[i]!=0; i++)
     {
         buffer[i] = 0;
-        printf("%d ",i);
     }
 }
 

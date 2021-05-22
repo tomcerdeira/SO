@@ -36,6 +36,7 @@ void mallocNUESTRO(void * ptr, int size);
 void yield();
 void getSemStatus(char * name, int * status);
 void freeMemory(char * ptr);
+void getSemInfo(char * buffer);
 
 
 
