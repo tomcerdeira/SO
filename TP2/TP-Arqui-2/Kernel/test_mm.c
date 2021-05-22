@@ -26,7 +26,7 @@ void test_mm()
 
       mm_rqs[rq].address = mallocNUESTRO(mm_rqs[rq].size);
 
-      if (mm_rqs[rq].address == NULL)
+      if (mm_rqs[rq].address == 0)
       {
         print("ERROR EN MALLOC \n",0xffffff,0x000000);
         exit(1);
@@ -49,7 +49,7 @@ void test_mm()
 
     for (i = 0; i < rq; i++)
     {
-      if (mm_rqs[i].address != NULL)
+      if (mm_rqs[i].address != 0)
       {
         memsetNUESTRO(mm_rqs[i].address, i, mm_rqs[i].size); 
        
@@ -58,7 +58,7 @@ void test_mm()
     //Check
     for (i = 0; i < rq; i++)
     {
-      if (mm_rqs[i].address != NULL)
+      if (mm_rqs[i].address != 0)
       {
         if (!memcheck(mm_rqs[i].address, i, mm_rqs[i].size))
         {
@@ -71,7 +71,7 @@ void test_mm()
     for (i = 0; i < rq; i++)
     {
 
-      if (mm_rqs[i].address != NULL)
+      if (mm_rqs[i].address != 0)
       {
         freeMemory(mm_rqs[i].address);
       }

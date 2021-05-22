@@ -45,7 +45,7 @@ void *dummy_malloc_with_blocks(int requestedCantOfBlocks)
         return bitMapMemory[index].start;
     }
     // Si llega aca es por que no hay memoria contigua libre para dar
-    return NULL;
+    return 0;
 }
 
 int searchFreeBlocks(int requestedBlocks)
@@ -153,7 +153,7 @@ void *memsetNUESTRO(char *ptr, int toWrite, int size)
         return bitMapMemory[index].start;
     }
 
-    return NULL;
+    return 0;
 }
 
 int getTotalMemorySize()

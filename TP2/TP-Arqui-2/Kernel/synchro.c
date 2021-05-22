@@ -8,7 +8,7 @@ int globalSemID = 0;
 
 int mySemWait(char * name){
     semT * sem = getSemByName(name);
-    if(sem == -1){
+    if(sem ==  (semT*) 0){
         return -1;
     }
     while(_xadd(-1,&(sem->value)) <= 0){
@@ -27,7 +27,7 @@ int mySemPost(char * name){
     
      unblockMultiple(sem->blockedPids, sem->cantBlockedPids);
      sem->cantBlockedPids = 0;
-    if(sem == -1){
+    if(sem ==  (semT*) 0){
         return -1;
     }
     _xadd(1,&(sem->value));
@@ -85,11 +85,11 @@ semT * semOpen(char * name,int initValue, int * retValue){
     else
     {
         *retValue = -1;
-        return -1; //ERROR --> No se pudo crear el semaforo
+        return (semT *)-1; //ERROR --> No se pudo crear el semaforo
     }
     print("__ACA NO DEBERIA ESTAR__",0x32,0xFE);
     *retValue = -1;
-    return -1;
+    return (semT *) -1;
 }
 
 int semClose(char* name){
@@ -117,7 +117,7 @@ semT * getSemByName(char * name){
             return &semaphores[i];
         }
     }
-    return -1;
+    return (semT*) 0;
 }
 
 void getSemStatus(char * name, int * status)

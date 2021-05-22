@@ -8,6 +8,13 @@
 #define CANT_SEMAPHORES 10
 
 ////////
+extern int getPid();
+extern void block(int pid);
+extern void unblockMultiple(int* pids, int cant);
+extern void print(char * buffer, int fontColor,int backColor);
+extern void *memcpy(void *destination, const void *source, uint64_t length);
+extern int numToStr(char *str, int num);
+
 
 typedef struct
 {
