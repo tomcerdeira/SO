@@ -37,6 +37,7 @@ void yield();
 void getSemStatus(char * name, int * status);
 void freeMemory(char * ptr);
 void getSemInfo(char * buffer);
+void memInfo(char * buffer);
 
 
 

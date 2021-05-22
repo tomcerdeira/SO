@@ -243,6 +243,5 @@ int philosphers(){
         }
     }
     printf("Saliendo de los filosos \n");
-    clearConsoleIn(2);
     return 0;
 }

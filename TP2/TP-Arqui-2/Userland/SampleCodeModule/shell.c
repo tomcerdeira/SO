@@ -3,6 +3,8 @@
 #define CANT_OF_PIPEABLE_PROCESS 3
 #define BACKGROUND 0
 #define FOREGROUND 1
+#define FD_STDIN 1
+#define FD_STOUT 2
 
 static char user[20] = {0};
 static char userShell[30] = {0};
@@ -12,7 +14,8 @@ typedef struct{
   void (*funcion) (int, char **) ;
 }pipeableProcess;
 
-static pipeableProcess pipeableProcesses[CANT_OF_PIPEABLE_PROCESS] = {{"loop", &endless_loop}, {"cat", &cat}}; 
+static pipeableProcess pipeableProcesses[CANT_OF_PIPEABLE_PROCESS] = {{"loop", &endless_loop}, {"cat", &cat},
+                        {"wc",&wc}, {"filter", &filter}, {"phylo", &philosphers}};
 //COMPLETAR
 
 static int isInitialized = 0;
@@ -294,13 +297,24 @@ void shellHandler()
       pipesInfo(buffer);
       printf(buffer);
     }
-     else if (strcmp(buff, "philo"))
+     else if (strcmp(buff, "phylo"))
     {
       if (strcmp(param1, "&"))
       {
-        createProcess("philos",&philosphers,0,0,BACKGROUND);
+        createProcess("phylo",&philosphers,0,0,BACKGROUND);
+      }else if(strcmp(param1, "|")){
+         getPipe(fdAux);
+        setNextProcessFd(FD_STDIN,*fdAux);
+        createProcess("phylo", &philosphers, 0, 0, BACKGROUND); //0= background
+       
+        int index = isAPipeableProcess(param2);
+        if(index > 0){
+          setNextProcessFd(*fdAux,FD_STOUT);
+          createProcess(param2,pipeableProcesses[index].funcion,0,0,FOREGROUND); // 1= foreground 
+        }
+      
       }else{
-        createProcess("philos",&philosphers,0,0,FOREGROUND);
+        createProcess("phylo",&philosphers,0,0,FOREGROUND);
       }
     }
      else if (strcmp(buff, "sem"))
@@ -309,23 +323,22 @@ void shellHandler()
       getSemInfo(buffer);
       printf(buffer);
     }
+     else if (strcmp(buff, "mem"))
+    {
+      char buffer[1024] = {0};
+      memInfo(buffer);
+      printf(buffer);
+    }
 
 
     //TODO agregar:
     // - help --> falta agregar todas las syscalls nuevas (los tests)
-    // - MEM --> falta hacerla syscall
-    // - PS --> hacerlo más lindo
-    // - LOOP (id) --> hacerlo más lindo
-    // - Kill (id) --> listo
-    // - Nice (id np) --> Listo
-    // - Block (id) --> listo
-    // - Sem --> Imprime la lista de todos los semaforos con sus propiedades (ya funcionan los semáforos)
     // - Cat (stdin) --> Imprime el stdin pasado como param
     // - WC (input)--> Cuenta la cantidad de lineas del input
     // - Filter (input) --> Filtra las vocales del input
     // - Pipe --> Imprime la lista de todos los pipes con sus propiedades
     // - Phylo --> Implementar el problema de los filosofos
-    // Implementar forground y background
+    // Implementar foreground y background
     else
     {
       printf("\n");

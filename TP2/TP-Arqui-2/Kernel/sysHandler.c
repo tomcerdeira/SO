@@ -223,6 +223,11 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
          semsInfo(par1);
          break;
     }
+        case (38):
+    {
+         getMemoryInfo(par1);
+         break;
+    }
     default:
         break;
     }

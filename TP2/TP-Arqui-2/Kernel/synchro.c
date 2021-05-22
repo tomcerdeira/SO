@@ -167,7 +167,7 @@ void semsInfo(char *buffer)
     int i = 0;
     int j = 0;
 
-    char *header = "Name\tID\tValue\tCant. Given\tCantPidBlocked\tPidsBlocked\n";
+    char *header = "Name\tID\tValue\tCant.Given\tCantPidBlocked\tPidsBlocked\n";
 
     memcpy(buffer, header, strlen(header));
     j = strlen(header);

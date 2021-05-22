@@ -33,6 +33,7 @@ void *memsetNUESTRO(char *ptr, int toWrite, int size);
 int getMemoryAvailable();
 int getMemoryUsed();
 int getTotalMemorySize();
+void getMemoryInfo(char * buffer);
 
 typedef struct
 {

@@ -23,9 +23,6 @@ void initializeMemory()
         newMemoryblock.id_request = id;
         bitMapMemory[i] = newMemoryblock;
     }
-
-    // printf("%d cantt \n", CANTBLOCKS);
-    // printf("Ya inicialice \n\n");
 }
 
 void *dummy_malloc_with_blocks(int requestedCantOfBlocks)
@@ -34,7 +31,7 @@ void *dummy_malloc_with_blocks(int requestedCantOfBlocks)
 
     int index = searchFreeBlocks(requestedCantOfBlocks);
 
-    // printf("ANTES: Requested cant of blocks: %d - Index: %d - cantBlocksUsed: %d\n", requestedCantOfBlocks, index, cantOfMemoryUsed);
+    
 
     if (index >= 0)
     {
@@ -48,8 +45,6 @@ void *dummy_malloc_with_blocks(int requestedCantOfBlocks)
         }
         return bitMapMemory[index].start;
     }
-
-    // printf("No hay memoria \n");
     // Si llega aca es por que no hay memoria contigua libre para dar
     return NULL;
 }
@@ -60,14 +55,13 @@ int searchFreeBlocks(int requestedBlocks)
     int flag = 1;
     for (; i < CANTBLOCKS; i++)
     {
-        //printf("ENTRO 1\n");
         if (bitMapMemory[i].isFree == 1)
         {
-            //printf("ENTRO 2\n");
+            
             int j = i + 1;
             for (; j < CANTBLOCKS && flag && j < i + requestedBlocks; j++)
             {
-                //printf("ENTRO 3\n");
+                
                 if (!bitMapMemory[j].isFree)
                 {
                     flag = 0;
@@ -106,7 +100,7 @@ void freeMemory(char *ptr)
     int index_block = searchIndexBitMap(ptr);
     if (index_block < 0)
     {
-        // printf("No hay memoria para liberar");
+        
         return;
     }
     int id_find = bitMapMemory[index_block].id_request;
@@ -147,11 +141,10 @@ void *memsetNUESTRO(char *ptr, int toWrite, int size)
     {
         for (; j < BLOCK && size != 0; j++)
         {
-            // printf("ENTROOOOOO. id_request: %d - size: %d\n", id_found, size);
+            
             bitMapMemory[i].start[j] = toWrite;
             size--;
         }
-        // printf("UN BLOQUE COMPLETO. id_request (i): %d - id_request (i+1): %d\n", bitMapMemory[i].id_request, bitMapMemory[i + 1].id_request);
         i++;
         j = 0;
     }
@@ -179,140 +172,40 @@ int getMemoryUsed()
     return (cantOfMemoryUsed * BLOCK);
 }
 
-/////////////////////////////// HASTA ACA
+void getMemoryInfo(char *buffer)
+{
+    int i = 0;
+    int j = 0;
 
-// int main(int argc, char *argv[])
-// {
-//     initialize();
-//     char *ptr;
-//     int i;
-//     // int j = 0;
-//     ptr = dummy_malloc_with_blocks(15);
-//     if (ptr == NULL)
-//     {
-//         printf("No pude asignar memoria primer caso!\n");
-//     }
+    char *header = "Total\t\tEn uso\tLibre\n";
 
-//     char *ptr2;
-//     ptr2 = dummy_malloc_with_blocks(5);
-//     if (ptr2 == NULL)
-//     {
-//         printf("No pude asignar memoria segundo caso!\n");
-//     }
-//     char *ptr3;
-//     ptr3 = dummy_malloc_with_blocks(5);
-//     if (ptr3 == NULL)
-//     {
-//         printf("No pude asignar memoria tercer caso!\n");
-//     }
-//     char *ptr4;
-//     ptr4 = dummy_malloc_with_blocks(5);
-//     if (ptr4 == NULL)
-//     {
-//         printf("No pude asignar memoria cuarta caso!\n");
-//     }
-//     char *ptr5;
-//     ptr5 = dummy_malloc_with_blocks(5);
-//     if (ptr5 == NULL)
-//     {
-//         printf("No pude asignar memoria quinto caso!\n");
-//     }
-//     char *ptr6;
-//     ptr6 = dummy_malloc_with_blocks(5);
-//     if (ptr6 == NULL)
-//     {
-//         printf("No pude asignar memoria sexto caso!\n");
-//     }
+    memcpy(buffer, header, strlen(header));
+    j = strlen(header);
 
-//     printf("Ya DI toda la memoria \n");
-//     printf("Voy a liberar la memoria \n");
-//     printf("%d valor del ptr sin mover \n", ptr);
+            //Total
+            char auxTotal[6];
+            numToStr(auxTotal, getTotalMemorySize());
+            memcpy(buffer + j, auxTotal, strlen(auxTotal));
+            j += strlen(auxTotal);
+            memcpy(buffer + j, "\t\t\t", strlen("t\t\t"));
+            j += strlen("\t\t\t");
 
-//     freeMemory(ptr);
-//     printf("Libero 1 \n ");
+            //En uso
+            char auxUsed[2];
+            numToStr(auxUsed, getMemoryUsed());
+            memcpy(buffer + j, auxUsed, strlen(auxUsed));
+            j += strlen(auxUsed);
+            memcpy(buffer + j, "\t\t\t", strlen("\t\t\t"));
+            j += strlen("\t\t\t");
 
-//     freeMemory(ptr2);
-//     printf("Libero 2 \n");
-//     freeMemory(ptr3);
-//     printf("Libero 3 \n");
-//     freeMemory(ptr3);
-//     ptr3 = dummy_malloc_with_blocks(10); // NO SE LIBERAN
-//     printf("Libero 3 DEVUELTA\n");
-//     freeMemory(ptr4);
-//     printf("Libero 4 \n");
-//     freeMemory(ptr5);
-//     printf("Libero 5 \n");
-//     printf("%d valor del ptr 6 sin mover \n", ptr6);
-//     freeMemory(ptr6);
-//     printf("LIBERO TODO MENOS 10 bloques que me pidio el ptr3\n");
-//     // //
-//     for (i = 0; i < CANTBLOCKS; i++)
-//     {
-//         printf("Is FREE= %d con ID: %d con start: %d \n", bitMapMemory[i].isFree, bitMapMemory[i].id_request, bitMapMemory[i].start);
-//     }
-//     // //
-//     // printf("Ya LIBERE toda la memoria \n");
-//     return 0;
-// }
+            //Libre
+            char auxFree[6];
+            numToStr(auxFree, getMemoryAvailable());
+            memcpy(buffer + j, auxFree, strlen(auxFree));
+            j += strlen(auxFree);
 
-// void *dummy_malloc_with_blocks(int requestedCantOfBlocks)
-// {
-//     memoryBlock mb;
-
-//     mb.cantOfBlocks = requestedCantOfBlocks;
-
-//     char *r;
-//     int t = 0;
-//     for (; t < indexMemoryAsigned; t++) // Busco una posicion en el arreglo para reutilizar
-//     {
-//         if (asignedMemory[t].isFree && asignedMemory[t].cantOfBlocks >= requestedCantOfBlocks)
-//         {
-//             printf("Reutilizo un bloque \n");
-//             mb.start = asignedMemory[t].start;
-//             asignedMemory[t] = mb;
-//             asignedMemory[t].isFree = 0;
-//             r = mb.start;
-//             return r;
-//         }
-//     }
-
-//     if (next - mb.start <= MEMORY_SIZE - (mb.cantOfBlocks * BLOCK)) //se fija si entra en la memoria a partir de next
-//     {
-//         mb.start = next;
-//         next += (mb.cantOfBlocks * BLOCK);
-
-//         mb.isFree = 0;
-//         asignedMemory[indexMemoryAsigned++] = mb;
-//         r = mb.start;
-
-//         return r;
-//     }
-//     else
-//     {
-//         return NULL; //NO encontro espacio liberado NI le entro en el espacio que quedaba en memoria
-//     }
-// }
-
-// void freeMemory(char *ptr)
-// {
-//     int index_of_block = indexOfMemoryBlock(ptr);
-//     if (index_of_block == -1 || asignedMemory[index_of_block].isFree)
-//     {
-//         return;
-//     }
-//     asignedMemory[index_of_block].isFree = 1; // Deja el espacio libre para escritura, no la limpia
-// }
-
-// int indexOfMemoryBlock(char *ptr)
-// {
-//     int i = 0;
-
-//     for (; i < indexMemoryAsigned; i++)
-//     {
-//         if (ptr >= asignedMemory[i].start && ptr < (asignedMemory[i].start + (asignedMemory[i].cantOfBlocks * BLOCK)))
-//         {
-//             return i;
-//         }
-//     }
-//     return -1;
-// }
+            memcpy(buffer + j, "\n", strlen("\n"));
+            j += strlen("\n");
+        
+    
+}
