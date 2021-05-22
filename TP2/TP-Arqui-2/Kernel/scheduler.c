@@ -149,7 +149,7 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[], i
     if (availableProcess < 0)
     {
         // ERROR --> No hay un lugar para el proceso nuevo
-        return;
+        return -1;
     }
 
     processes[availableProcess].function = func;

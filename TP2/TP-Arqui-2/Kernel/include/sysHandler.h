@@ -26,7 +26,7 @@
 //par3 --> RDX
 //sysCallDescryptor --> R10
 
-void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uint64_t *stackFrame, uint64_t *par5, uint64_t *par6);
+void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uint64_t *stackFrame, uint64_t *par5, uint64_t *par6 );
 void write(uint64_t *buffer, uint64_t fontColor, uint64_t background_color);
 void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd);
 void getDecimalTime(uint8_t *buff, uint64_t fd);

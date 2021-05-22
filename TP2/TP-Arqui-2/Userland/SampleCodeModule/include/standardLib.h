@@ -42,4 +42,10 @@ long getMillis();
 
 int createProcess(char *name, void *func, int argc, char *argv[], int isForeground);
 
+// https://www.techiedelight.com/implement-itoa-function-in-c/
+void swap(char *x, char *y);
+char *reverse(char *buffer, int i, int j);
+char *itoa(int value, char *buffer, int base);
+
+
 #endif

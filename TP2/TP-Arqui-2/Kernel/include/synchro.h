@@ -1,5 +1,7 @@
 #ifndef SEMAPHORES
 
+#include "lib.h"
+
 typedef struct
 {
     int semID;
@@ -16,7 +18,8 @@ int mySemPost(char *name);
 void initSemaphores();
 int strcmp(char *s1, char *s2);
 int getIndex();
-semT * semOpen(char * name,int initValue);
+semT * semOpen(char * name,int initValue,int * retValue);
+void getSemStatus(char * name, int * status);
 int semClose(char *name);
 semT * getSemByName(char * name);
 

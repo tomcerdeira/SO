@@ -5,7 +5,7 @@
 
 // System Calls --> casos y llamados a cada uno
 // https://stackoverflow.com/questions/37581530/passing-argument-from-c-to-assembly ( orden de los argumetos.)
-    //      rdi             rsi             rdx         rcx             r8                      //r9
+                 //      rdi             rsi             rdx         rcx             r8                      //r9
 void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uint64_t *stackFrame, uint64_t *par5, uint64_t *par6)
 {
 
@@ -104,7 +104,7 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (14):
     {
-        startProcess(par1, par6, par2, par5, par3); //REVISAR!!!!!!!!!!!!!!!!!!!!! //(nombre, funcion, argc, argv)
+         startProcess(par1, par6, par2, par5, par3); //REVISAR!!!!!!!!!!!!!!!!!!!!! //(nombre, funcion, argc, argv)
         timerTickInterrupt();
         break;
     }
@@ -175,26 +175,49 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (28):
     {
-        semOpen(par1, par2);
+        semOpen(par1, par2,par5);
+        break;
     }
     case (29):
     {
         semClose(par1);
+        break;
     }
     case (30):
     {
         mySemPost(par1);
+        break;
     }
     case (31):
     {
         mySemWait(par1);
+        break;
     }
     case (32):
     {
         pipesInfo(par1);
+        break;
     }
-
-
+    case (33):
+    {
+        *par1 = mallocNUESTRO(par2);
+        break;
+    }
+      case (34):
+    {
+        yield();
+        break;
+    }
+    case (35):
+    {
+        getSemStatus(par1, par5);
+        break;
+    }
+    case (36):
+    {
+         freeMemory(par1);
+         break;
+    }
     default:
         break;
     }

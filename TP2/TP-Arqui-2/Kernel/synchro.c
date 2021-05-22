@@ -16,6 +16,7 @@ int mySemWait(char * name){
     }
     while(_xadd(-1,&(sem->value)) <= 0){
         _xadd(1,&(sem->value));
+        timerTickInterrupt();
     }
 
     return 0;
@@ -71,11 +72,12 @@ int getIndex(){
     return -1;
 }
 
-semT * semOpen(char * name,int initValue){
+semT * semOpen(char * name,int initValue, int * retValue){
     int i = 0;
     for(;i<CANT_SEMAPHORES;i++){
         if(strcmp(name,semaphores[i].name) != 0){
             semaphores[i].cantGiven  += 1;
+            *retValue = 1;
             return &semaphores[i];
         }
     }
@@ -89,13 +91,16 @@ semT * semOpen(char * name,int initValue){
         int index = getIndex();
         semaphores[index] = nuevoSem;
         cantSemaphores++;
+        *retValue = 1;
         return &semaphores[index];
     }
     else
     {
+        *retValue = -1;
         return -1; //ERROR --> No se pudo crear el semaforo
     }
     print("__ACA NO DEBERIA ESTAR__",0x32,0xFE);
+    *retValue = -1;
     return -1;
 }
 
@@ -127,6 +132,65 @@ semT * getSemByName(char * name){
     return -1;
 }
 
+void getSemStatus(char * name, int * status)
+{
+    semT * sem = getSemByName(name);
+    *status = sem->value;
+}
 
 
+// HACER!!!!!
+// Ver como hacer con el tema de "los procesos bloqueados en cada uno"
+//
+// void semsInfo(char *buffer)
+// {
+//     int i = 0;
+//     int j = 0;
 
+//     char *header = "Name\tState\tFD\t\tCant. proc\n";
+
+//     memcpy(buffer, header, strlen(header));
+//     j = strlen(header);
+
+//     for (; i < CANT_SEMAPHORES; i++)
+//     {
+//         // if (!pipes[i].isFree)
+//         // {
+//         //     //Read
+//         //     char auxRead[1];
+//         //     numToStr(auxRead, pipes[i].readIndex);
+//         //     memcpy(buffer + j, auxRead, strlen(auxRead));
+//         //     j += strlen(auxRead);
+//         //     memcpy(buffer + j, "\t\t\t\t\t\t", strlen("\t\t\t\t\t\t"));
+//         //     j += strlen("\t\t\t\t");
+
+//         //     //Write
+//         //     char auxWrite[1];
+//         //     numToStr(auxWrite, pipes[i].writeIndex);
+//         //     memcpy(buffer + j, auxWrite, strlen(auxWrite));
+//         //     j += strlen(auxWrite);
+//         //     memcpy(buffer + j, "\t\t\t\t\t\t", strlen("\t\t\t\t\t\t"));
+//         //     j += strlen("\t\t\t\t\t\t");
+
+//         //     //FD
+//         //     char auxFD[2];
+//         //     numToStr(auxFD, pipes[i].fd);
+//         //     memcpy(buffer + j, auxFD, strlen(auxFD));
+//         //     j += strlen(auxFD);
+//         //     memcpy(buffer + j, "\t\t\t", strlen("\t\t\t"));
+//         //     j += strlen("\t\t\t");
+
+//         //     memcpy(buffer + j, "\t\t\t", strlen("\t\t\t"));
+//         //     j += strlen("\t\t\t");
+
+//         //     //Cant of processes
+//         //     char auxCant[10];
+//         //     numToStr(auxCant, pipes[i].cantOfProcessesConsuming);
+//         //     memcpy(buffer + j, auxCant, strlen(auxCant));
+//         //     j += strlen(auxCant);
+
+//         //     memcpy(buffer + j, "\n", strlen("\n"));
+//         //     j += strlen("\n");
+//         // }
+//     }
+// }

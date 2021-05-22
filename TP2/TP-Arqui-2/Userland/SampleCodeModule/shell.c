@@ -6,7 +6,7 @@
 
 static char user[20] = {0};
 static char userShell[30] = {0};
-
+extern int philosphers();
 typedef struct{
   char * name;
   void (*funcion) (int, char **) ;
@@ -292,6 +292,11 @@ void shellHandler()
       pipesInfo(buffer);
       printf(buffer);
     }
+     else if (strcmp(buff, "philo"))
+    {
+     createProcess("philos",&philosphers,0,0,FOREGROUND);
+    }
+
     //TODO agregar:
     // - help --> falta agregar todas las syscalls nuevas (los tests)
     // - MEM --> falta hacerla syscall
@@ -351,6 +356,10 @@ void cat()
       while(buffer[i] != 0){
         buffer[i++] = 0;
       }
+      // VER POR QUE LA QUEDA CUANDO HACEMOS ESTO
+      // char pipes[1024] = {0};
+      // pipesInfo(pipes);
+      // printf(pipes);
     }
     else
     {

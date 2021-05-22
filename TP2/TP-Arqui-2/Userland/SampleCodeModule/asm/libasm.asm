@@ -26,11 +26,15 @@ GLOBAL setNextProcessFd
 GLOBAL changeOutputFd
 GLOBAL getPidByName
 ; GLOBAL getBuffOf   
-; GLOBAL semWait
-; GLOBAL semClose
-; GLOBAL semOpen
-; GLOBAL semPost
+GLOBAL semWait
+GLOBAL semClose
+GLOBAL semOpen
+GLOBAL semPost
 GLOBAL pipesInfo
+GLOBAL yield
+GLOBAL mallocNUESTRO
+GLOBAL getSemStatus
+GLOBAL freeMemory
 
 ;  par1 --> buffer donde esta lo que quiero escribir
 ;  par2 --> fileDescrpitor
@@ -489,53 +493,56 @@ getPidByName:
     ret
 
 
-; semOpen: 
-;     push rbp
-;     mov rbp,rsp
-;     push rcx
-;     mov rcx, 28
+semOpen: 
+    push rbp
+    mov rbp,rsp
+    push rcx
+    push r9
+    mov r9,rdx
+    mov rcx, 28
 
-;     int 80h
-;     pop rcx
-;     mov rsp,rbp
-;     pop rbp
-;     ret
+    int 80h
+    pop r9
+    pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret
 
-; semClose: 
-;     push rbp
-;     mov rbp,rsp
-;     push rcx
-;     mov rcx, 29
+semClose: 
+    push rbp
+    mov rbp,rsp
+    push rcx
+    mov rcx, 29
 
-;     int 80h
-;     pop rcx
-;     mov rsp,rbp
-;     pop rbp
-;     ret
+    int 80h
+    pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret
 
-; semPost: 
-;     push rbp
-;     mov rbp,rsp
-;     push rcx
-;     mov rcx, 30
+semPost: 
+    push rbp
+    mov rbp,rsp
+    push rcx
+    mov rcx, 30
 
-;     int 80h
-;     pop rcx
-;     mov rsp,rbp
-;     pop rbp
-;     ret
+    int 80h
+    pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret
 
-; semWait: 
-;     push rbp
-;     mov rbp,rsp
-;     push rcx
-;     mov rcx, 31
+semWait: 
+    push rbp
+    mov rbp,rsp
+    push rcx
+    mov rcx, 31
 
-;     int 80h
-;     pop rcx
-;     mov rsp,rbp
-;     pop rbp
-;     ret
+    int 80h
+    pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret
 
 pipesInfo:
     push rbp
@@ -550,6 +557,69 @@ pipesInfo:
     int 80h
 
     pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret
+
+mallocNUESTRO:
+    push rbp
+    mov rbp,rsp   
+    push rcx
+    mov rcx, 33
+
+    int 80h
+
+    pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret
+
+yield:
+    push rbp
+    mov rbp,rsp  
+
+    push rcx
+    mov rcx, 34
+
+    int 80h
+
+    pop rcx
+
+    mov rsp,rbp
+    pop rbp
+    ret
+
+
+getSemStatus: 
+    push rbp
+    mov rbp,rsp
+
+    push rcx
+    push r9
+
+    mov r9,rsi
+    
+    mov rcx, 35
+
+    int 80h
+
+    pop r9
+    pop rcx
+    mov rsp,rbp
+    pop rbp
+    ret
+
+freeMemory:
+  push rbp
+    mov rbp,rsp  
+
+    push rcx
+    mov rcx, 36
+
+    int 80h
+
+    pop rcx
+
     mov rsp,rbp
     pop rbp
     ret

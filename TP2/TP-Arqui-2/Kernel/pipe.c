@@ -46,7 +46,8 @@ void createNewPipe(int *fd)
     newPipe.fd = globalFD++;
     newPipe.isFree = NOT_FREE;
     newPipe.cantOfProcessesConsuming++;
-    newPipe.sem = semOpen("prueba",1);
+    int * retValue = 0;
+    newPipe.sem = semOpen("prueba",1,retValue);
 
     pipes[index] = newPipe;
    

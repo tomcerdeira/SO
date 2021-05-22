@@ -28,12 +28,23 @@ void test_no_sync();
 void test_processes();
 void kill(int pid);
 void pipesInfo(char *buffer);
+void semWait(char * name);
+void semPost(char * name);
+void semClose(char* name);
+void semOpen(char * name,int initValue, int * retValue);
+void mallocNUESTRO(void * ptr, int size);
+void yield();
+void getSemStatus(char * name, int * status);
+void freeMemory(char * ptr);
+
+
+
 
 
 int getPipe(int *fd);
 
 void changeOutputFd(int pid, int fd);
 void setNextProcessFd(int fdInput, int fdOutPut);
-void getPidByName(char *name, int *fd);
+void getPidByName(char *name, int *pidPlaceHolder);
 
 #endif
