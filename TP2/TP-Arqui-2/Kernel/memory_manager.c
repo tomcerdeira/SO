@@ -8,7 +8,7 @@ int cantOfMemoryUsed = 0;
 
 static char *const start = (void *)0x600000; //
 
-char *next = &start; 
+char *next = (char *)&start; 
 // Inicializamos el bitMap
 void initializeMemory()
 {
@@ -173,7 +173,7 @@ int getMemoryUsed()
 
 void getMemoryInfo(char *buffer)
 {
-    int i = 0;
+ 
     int j = 0;
 
     char *header = "Total\t\tEn uso\tLibre\n";

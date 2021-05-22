@@ -66,6 +66,7 @@ void shellHandler()
     char param2[100] = {0};
 
     scanf("%s %s %s", buff, param1, param2);
+    
 
     if (strcmp(buff, "help"))
     {
@@ -417,10 +418,7 @@ void wc(){
   char in[100]={0};
   scanf("%s", in);
   while( strcmp(in,"/") ==0){
-      //if(in == '\n'){
         lines++;
-      //}
-      //printf("%s",in);
       cleanBuffer(in,100);
       scanf("%s", in);
   }
@@ -440,6 +438,8 @@ int isVowel(char input){
 
 void filter(){
   char buffer[100] = {0};
+  int index=0;
+  char toPrint[100] = {0};
   int cantVowels = 0;
   int exit = 0;
 
@@ -450,26 +450,16 @@ void filter(){
       for (; i<sizeof(buffer); i++){
         if(isVowel(buffer[i])){
           cantVowels++;
+          toPrint[index++] = buffer[i];
+        }
+        else if (buffer[i] ==' '){
+          toPrint[index++] = buffer[i];
         }
       }
     } else {
       exit = 1;
     }
   }
+  printf("%s\n", toPrint);
   printf("Cantidad de vocales: %d\n",cantVowels);
-
-
-  //}
-  // char in[100]={0};
-  // int cantVowels = 0;
-  // in=getChar();
-  // while( strcmp(in,"/") == 0 ){
-  //     if(isVowel(in)){
-  //       cantVowels++;
-  //       printf(in);
-  //     }
-  //     in=getChar();
-  // }
-  //printf("Cantidad de vocales: %d\n",cantVowels);
-
 }

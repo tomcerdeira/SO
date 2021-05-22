@@ -86,6 +86,9 @@ void unblockReaders()
     if (foregroundProcess.pid == processes[SHELL_POSITION].pid)
     {
         processes[SHELL_POSITION].state = ACTIVO;
+    }else
+    {
+        processes[getIndexOfPid(foregroundProcess.pid)].state = ACTIVO;
     }
   
 }
@@ -96,7 +99,10 @@ void blockReader(int pid)
     if (pid == processes[SHELL_POSITION].pid)
     {
         processes[SHELL_POSITION].state = BLOQUEADO;
-    } 
+    } else
+    {
+        processes[getIndexOfPid(pid)].state = BLOQUEADO;
+    }
     timerTickInterrupt();
 }
 
@@ -126,7 +132,7 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[], i
         halter.timeSlot = 1;
         halter.timeRunnig = 0;
         halter.memory = bufferHalter;
-        halter.stackPointer = initStack(halter.memory + STACK_SIZE, wrapper, halter.function, NULL, NULL, halter.pid);
+        halter.stackPointer = initStack(halter.memory + STACK_SIZE, wrapper, halter.function, 0, NULL, halter.pid);
         processes[HALTER_POSITION]= halter;
         currentProcessIndex = CANT_PROCESS-1;
     }
@@ -196,6 +202,7 @@ uint64_t *sched(uint64_t *rsp)
         for(;j<CANT_PROCESS;j++,i++){
             if(processes[i % CANT_PROCESS].state == ACTIVO){
                 currentProcessIndex =i % CANT_PROCESS;
+                processes[currentProcessIndex].timeRunnig = 0;
                 return processes[i % CANT_PROCESS].stackPointer;
             }
         }
@@ -213,7 +220,7 @@ void kill(int pid)
         if (processes[pos].pid == pid && !strcompare(processes[pos].name, "shell"))
         {
             processes[pos].state = MATADO;
-            freeMemory(processes[pos].memory);
+            freeMemory((char *) processes[pos].memory);
             processes[pos].pid = -1;
             processes[pos].function = 0;
             processes[pos].memory = 0;
@@ -370,7 +377,7 @@ int getFdOutput(int pid)
     int index = getIndexOfPid(pid);
     if (index < 0)
     {
-        return; //ERROR
+        return -1; //ERROR
     }
     return processes[index].fdOutput;
 }
@@ -380,7 +387,7 @@ int getFdInput(int pid)
     int index = getIndexOfPid(pid);
     if (index < 0)
     {
-        return; //ERROR
+        return -1; //ERROR
     }
     return processes[index].fdInput;
 }

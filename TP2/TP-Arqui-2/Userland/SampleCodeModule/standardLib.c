@@ -199,11 +199,10 @@ int scanf(const char *format, ...)
                 {
                     index++;
                 }
-
                 while (usrInput[index] != ' ' && usrInput[index] != 0)
-                {
-                    output[output_index++] = usrInput[index++];
-                }
+                    {
+                        output[output_index++] = usrInput[index++];
+                    }
                 output[output_index] = 0;
 
                 break;

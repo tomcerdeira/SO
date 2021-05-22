@@ -7,13 +7,12 @@ uint64_t *irqDispatcher(uint64_t irq, uint64_t *sp)
     {
     case 0:
         timerHandler();
-
         return sched(sp);
-
         break;
     case 1:
         readKeyboardBuffer();
         return sp;
         break;
     }
+    return 1;
 }

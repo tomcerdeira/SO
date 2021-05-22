@@ -79,13 +79,13 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (9):
     {
-        setCronometro(par1);
+        setCronometro(*par1);
         break;
     }
     case (10):
     {
         int aux = getSecondsCronometro();
-        par1 = &aux;
+        par1 = (uint64_t *) &aux;
         break;
     }
     case (11):
@@ -131,7 +131,7 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (19):
     {
-        ps(par1);
+        ps( (char *)par1);
         break;
     }
     case (20):
@@ -156,12 +156,12 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (24):
     {
-        createNewPipe(par1);
+        createNewPipe((int *)par1);
         break;
     }
     case (25):
     {
-        setFDNextNewProcess(par3,par2);
+        setFDNextNewProcess((int)par3,(int)par2);
         break;
     }
     case (26):
@@ -171,37 +171,37 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (27):
     {
-        getPidByName(par1, par5);
+        getPidByName((char*)par1, (int *)par5);
         break;
     }
     case (28):
     {
-        semOpen(par1, par2,par5);
+        semOpen((char *) par1, (int )par2, (int *)par5);
         break;
     }
     case (29):
     {
-        semClose(par1);
+        semClose((char *)par1);
         break;
     }
     case (30):
     {
-        mySemPost(par1);
+        mySemPost((char *)par1);
         break;
     }
     case (31):
     {
-        mySemWait(par1);
+        mySemWait((char *)par1);
         break;
     }
     case (32):
     {
-        pipesInfo(par1);
+        pipesInfo((char *)par1);
         break;
     }
     case (33):
     {
-        *par1 = mallocNUESTRO(par2);
+        *par1 =mallocNUESTRO((int)par2);
         break;
     }
       case (34):
@@ -211,22 +211,22 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (35):
     {
-        getSemStatus(par1, par5);
+        getSemStatus((char *)par1, (int *)par5);
         break;
     }
     case (36):
     {
-         freeMemory(par1);
+         freeMemory((char *)par1);
          break;
     }
     case (37):
     {
-         semsInfo(par1);
+         semsInfo((char *)par1);
          break;
     }
         case (38):
     {
-         getMemoryInfo(par1);
+         getMemoryInfo((char *)par1);
          break;
     }
      case (39):
@@ -260,11 +260,11 @@ void write(uint64_t *buffer, uint64_t fontColor, uint64_t fd)
         }
         else
         {
-            writePipe(fdCurrentOutput, buffer);
+            writePipe(fdCurrentOutput,(char *) buffer);
         }
         break;
     default:
-        writePipe(fd, buffer);
+        writePipe(fd,(char*) buffer);
         break;
     }
 }
@@ -275,20 +275,9 @@ void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
 {
 
     char *keyboardBuffer;
-    char *pipeBuffer;
     int sizeRead;
     int currentPID;
     int fdCurrentInput;
-
-    // char * name = "mutex";
-    // int * retValue;
-    // semOpen(name, 0, retValue);
-    // if (*retValue < 0)
-    // {
-    //     print("(sysHandler) ERROR AL ABRIR SEM", 0x000000,0xFFFFFF);
-    // }
-    // mySemWait(name);
-    //print("(sysHandler) ENTRO READ", 0x000000, 0xFFFFFF);
 
     switch (fd)
     {
@@ -319,31 +308,13 @@ void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
         fdCurrentInput = getFdInput(currentPID);
         if (fdCurrentInput == FD_STDIN)
         {
-            // DESCOMENTAR unblockreaders() (keyboardDriver.c KERNEL)
-            // VERSION 1:
-            // Hay que comentar el ciclo en getchar() (standardLib.c USERLAND)
-            //
-            // if (currentProcessIsForeground())
-            // {
+            
             char *keyboardBuffer ;
             while ((keyboardBuffer = getKeyboardBuffer())[0] == 0)
             {
-               // print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
                 blockReader(getPid());
             }
 
-            // VERSION 2:
-            // Hay q tener el ciclo en getChar() (standardLib.c USERLADN)
-            //
-            // print("DESBLOQUEO A LA SHELL", 0x000000, 0xFFFFFF);
-            // char keyboardBuffer = getKeyboardBuffer();
-            // if (keyboardBuffer[0] == 0)
-            // {
-            //     print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
-            //     blockReader(getPid());
-              keyboardBuffer = getKeyboardBuffer();
-            // }
-            //keyboardBuffer = getKeyboardBuffer();
             for (int i = 0; i < lengthBuffer && keyboardBuffer[i] != 0; i++)
             {
                 if (keyboardBuffer[i] == ESPACE)
@@ -365,12 +336,12 @@ void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
         }
         else
         {
-            readPipe(buffer, 1, fdCurrentInput);
+            readPipe((char *)buffer, 1, fdCurrentInput);
         }
         break;
 
     default:
-        sizeRead = readPipe(buffer, lengthBuffer, fd);
+        sizeRead = readPipe((char*)buffer, lengthBuffer, fd);
         if (sizeRead < 0)
         {
             print("(sysHandler.c) ERROR: readPipe", 0x000000, 0xFFFFFF);

@@ -59,4 +59,6 @@ int getIndexOfPid(int pid);
 int getFdInput(int pid);
 int getFdOutput(int pid);
 void unblockMultiple(int * pids, int cant);
+
+void setFDNextNewProcess(int fdInput, int fdOutPut);
 #endif

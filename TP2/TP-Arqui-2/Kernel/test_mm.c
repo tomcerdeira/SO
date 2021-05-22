@@ -45,8 +45,6 @@ void test_mm()
     // Set
     uint32_t i;
 
-    void *auxi;
-
     for (i = 0; i < rq; i++)
     {
       if (mm_rqs[i].address != 0)

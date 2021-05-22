@@ -14,6 +14,7 @@ extern void unblockMultiple(int* pids, int cant);
 extern void print(char * buffer, int fontColor,int backColor);
 extern void *memcpy(void *destination, const void *source, uint64_t length);
 extern int numToStr(char *str, int num);
+extern int strlen(char * buffer);
 
 
 typedef struct
@@ -38,5 +39,5 @@ semT * semOpen(char * name,int initValue,int * retValue);
 void getSemStatus(char * name, int * status);
 int semClose(char *name);
 semT * getSemByName(char * name);
-
+void semsInfo(char *buffer);
 #endif

@@ -16,6 +16,7 @@
 // #include <semaphore.h>
 // #include <math.h>
 #include <stdint.h>
+#include <libC.h>
 // #define NULL 0
 
 #define MEMORY_SIZE 4096 * 20

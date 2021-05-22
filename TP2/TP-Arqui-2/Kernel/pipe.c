@@ -39,7 +39,7 @@ void createNewPipe(int *fd)
     {
         print("ENTRO CASO ERROR", 0x000000, 0xFFFFFF);
         *fd = -1;
-        return index; // NO HAY PIPES
+        return ; // NO HAY PIPES
     }
     pipe newPipe;
     newPipe.buffer = mallocNUESTRO(SIZE_OF_PIPE);
