@@ -11,7 +11,7 @@ void endless_loop()
 
 uint32_t my_create_process_test(char *name)
 {
-  return startProcess(name, &endless_loop, 0, 0, 1);
+  return startProcess(name, (void *)&endless_loop, 0, 0, 1);
 }
 
 uint32_t my_kill(uint32_t pid)

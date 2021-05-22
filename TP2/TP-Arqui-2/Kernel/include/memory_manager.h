@@ -16,7 +16,8 @@
 // #include <semaphore.h>
 // #include <math.h>
 #include <stdint.h>
-#define NULL 0
+
+#define NULL 0 //WARNING: dice que ya esta definido en "stddef.h"
 
 #define MEMORY_SIZE 4096 * 20
 #define BLOCK 8
@@ -33,7 +34,7 @@ void *memsetNUESTRO(char *ptr, int toWrite, int size);
 int getMemoryAvailable();
 int getMemoryUsed();
 int getTotalMemorySize();
-void getMemoryInfo(char * buffer);
+void getMemoryInfo(char *buffer);
 
 typedef struct
 {

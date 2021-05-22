@@ -8,8 +8,8 @@ int cantOfMemoryUsed = 0;
 
 static char *const start = (void *)0x600000; //
 
-char *next = &start; //next siempre apunta a la última posición de memoria que se puede usar
-                     // ??????????? Es por el &
+char *next = (char *)&start; //next siempre apunta a la última posición de memoria que se puede usar
+                             // ??????????? Es por el &
 // Inicializamos el bitMap
 void initializeMemory()
 {
@@ -30,8 +30,6 @@ void *dummy_malloc_with_blocks(int requestedCantOfBlocks)
     int i = 0;
 
     int index = searchFreeBlocks(requestedCantOfBlocks);
-
-    
 
     if (index >= 0)
     {
@@ -57,11 +55,11 @@ int searchFreeBlocks(int requestedBlocks)
     {
         if (bitMapMemory[i].isFree == 1)
         {
-            
+
             int j = i + 1;
             for (; j < CANTBLOCKS && flag && j < i + requestedBlocks; j++)
             {
-                
+
                 if (!bitMapMemory[j].isFree)
                 {
                     flag = 0;
@@ -100,7 +98,7 @@ void freeMemory(char *ptr)
     int index_block = searchIndexBitMap(ptr);
     if (index_block < 0)
     {
-        
+
         return;
     }
     int id_find = bitMapMemory[index_block].id_request;
@@ -141,7 +139,7 @@ void *memsetNUESTRO(char *ptr, int toWrite, int size)
     {
         for (; j < BLOCK && size != 0; j++)
         {
-            
+
             bitMapMemory[i].start[j] = toWrite;
             size--;
         }
@@ -174,38 +172,35 @@ int getMemoryUsed()
 
 void getMemoryInfo(char *buffer)
 {
-    int i = 0;
     int j = 0;
 
     char *header = "Total\t\tEn uso\tLibre\n";
 
-    memcpy(buffer, header, strlen(header));
-    j = strlen(header);
+    memcpy(buffer, header, strlen(header)); //WARNING: "implicit declaration of memcpy"
+    j = strlen(header);                     //WARNING: "implicit declaration of srlen"
 
-            //Total
-            char auxTotal[6];
-            numToStr(auxTotal, getTotalMemorySize());
-            memcpy(buffer + j, auxTotal, strlen(auxTotal));
-            j += strlen(auxTotal);
-            memcpy(buffer + j, "\t\t\t", strlen("t\t\t"));
-            j += strlen("\t\t\t");
+    //Total
+    char auxTotal[6];
+    numToStr(auxTotal, getTotalMemorySize()); //WARNING: "implicit declaration of numToStr"
+    memcpy(buffer + j, auxTotal, strlen(auxTotal));
+    j += strlen(auxTotal);
+    memcpy(buffer + j, "\t\t\t", strlen("t\t\t"));
+    j += strlen("\t\t\t");
 
-            //En uso
-            char auxUsed[2];
-            numToStr(auxUsed, getMemoryUsed());
-            memcpy(buffer + j, auxUsed, strlen(auxUsed));
-            j += strlen(auxUsed);
-            memcpy(buffer + j, "\t\t\t", strlen("\t\t\t"));
-            j += strlen("\t\t\t");
+    //En uso
+    char auxUsed[2];
+    numToStr(auxUsed, getMemoryUsed());
+    memcpy(buffer + j, auxUsed, strlen(auxUsed));
+    j += strlen(auxUsed);
+    memcpy(buffer + j, "\t\t\t", strlen("\t\t\t"));
+    j += strlen("\t\t\t");
 
-            //Libre
-            char auxFree[6];
-            numToStr(auxFree, getMemoryAvailable());
-            memcpy(buffer + j, auxFree, strlen(auxFree));
-            j += strlen(auxFree);
+    //Libre
+    char auxFree[6];
+    numToStr(auxFree, getMemoryAvailable());
+    memcpy(buffer + j, auxFree, strlen(auxFree));
+    j += strlen(auxFree);
 
-            memcpy(buffer + j, "\n", strlen("\n"));
-            j += strlen("\n");
-        
-    
+    memcpy(buffer + j, "\n", strlen("\n"));
+    j += strlen("\n");
 }

@@ -1,12 +1,8 @@
 #include <scheduler.h>
 
-
-
 process processes[CANT_PROCESS] = {{0}};
 
-
 int currentProcessIndex = -1;
-
 
 //int firstTimeEntering = 1;
 int rspKernel = 0;
@@ -20,18 +16,17 @@ int fdOutputNextProcess = NOT_SETED;
 void halterProcess()
 {
     while (1)
-    { 
+    {
         _hlt();
     }
     // unblockReaders();
     // block(1);
     timerTickInterrupt();
 }
-char bufferHalter[STACK_SIZE]={0};
 
 void createprocesses()
 {
-   
+
     int p = 0;
     for (; p < CANT_PROCESS; p++)
     {
@@ -74,17 +69,18 @@ void block(int pid)
             timerTickInterrupt();
             return;
         }
-    } 
-}
-
-///////////////////////////////
-void unblockMultiple(int * pids, int cant){
-    int i=0;
-    for(;i<cant;i++){
-        processes[getIndexOfPid(pids[i])].state = ACTIVO;
     }
 }
 
+///////////////////////////////
+void unblockMultiple(int *pids, int cant)
+{
+    int i = 0;
+    for (; i < cant; i++)
+    {
+        processes[getIndexOfPid(pids[i])].state = ACTIVO;
+    }
+}
 
 ///////////////////////////////
 
@@ -95,7 +91,6 @@ void unblockReaders()
     {
         processes[SHELL_POSITION].state = ACTIVO;
     }
-  
 }
 void blockReader(int pid)
 {
@@ -104,7 +99,7 @@ void blockReader(int pid)
     if (pid == processes[SHELL_POSITION].pid)
     {
         processes[SHELL_POSITION].state = BLOQUEADO;
-    } 
+    }
     timerTickInterrupt();
 }
 
@@ -133,14 +128,14 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[], i
         halter.state = MATADO;
         halter.timeSlot = 1;
         halter.timeRunnig = 0;
-        halter.memory = bufferHalter;
+        halter.memory = mallocNUESTRO(STACK_SIZE);
         halter.stackPointer = initStack(halter.memory + STACK_SIZE, wrapper, halter.function, NULL, NULL, halter.pid);
-        processes[HALTER_POSITION]= halter;
-        currentProcessIndex = CANT_PROCESS-1;
+        processes[HALTER_POSITION] = halter;
+        currentProcessIndex = CANT_PROCESS - 1;
         //firstTimeEntering =0;
     }
-    
-    int availableProcess = getAvailableProcess(); 
+
+    int availableProcess = getAvailableProcess();
 
     if (availableProcess < 0)
     {
@@ -152,27 +147,26 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[], i
     processes[availableProcess].state = ACTIVO;
     processes[availableProcess].name = name;
     processes[availableProcess].pid = globalPid++;
-    if(fdInputNextProcess == NOT_SETED ){
+    if (fdInputNextProcess == NOT_SETED)
+    {
         processes[availableProcess].fdInput = FD_STDIN;
         processes[availableProcess].fdOutput = FD_STOUT;
-    }else{
+    }
+    else
+    {
         processes[availableProcess].fdInput = fdInputNextProcess;
         processes[availableProcess].fdOutput = fdOutputNextProcess;
         fdInputNextProcess = NOT_SETED; //Reseteo para el próximo proceso que se cree
         fdOutputNextProcess = NOT_SETED;
     }
 
-    
     processes[availableProcess].timeSlot = TIME_SLOT;
 
     processes[availableProcess].memory = mallocNUESTRO(STACK_SIZE);
 
     processes[availableProcess].stackPointer = initStack(processes[availableProcess].memory + STACK_SIZE,
                                                          wrapper, processes[availableProcess].function, argc, argv, processes[availableProcess].pid);
-    
 
-
-    
     if (isForeground)
     {
         foregroundProcess = processes[availableProcess];
@@ -183,6 +177,7 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[], i
 void wrapper(void *func(int, char **), int argc, char *argv[], int pid)
 {
     int retValue;
+    // WARNING: "cast from pointer to integer of different size"
     retValue = (int)(*func)(argc, argv); // --> return --> wrapper -->  kill (libere todo) --> return a shell
                                          // exit -->kill (libere todo) --> return a padre;
     exit(retValue);
@@ -190,29 +185,33 @@ void wrapper(void *func(int, char **), int argc, char *argv[], int pid)
 
 uint64_t *sched(uint64_t *rsp)
 {
-    if(currentProcessIndex == -1)
+    if (currentProcessIndex == -1)
     {
         return rsp;
-    }else{
+    }
+    else
+    {
         processes[currentProcessIndex].stackPointer = rsp;
 
-        if(processes[currentProcessIndex].state == ACTIVO && processes[currentProcessIndex].timeSlot > processes[currentProcessIndex].timeRunnig){
+        if (processes[currentProcessIndex].state == ACTIVO && processes[currentProcessIndex].timeSlot > processes[currentProcessIndex].timeRunnig)
+        {
             processes[currentProcessIndex].timeRunnig++;
             return processes[currentProcessIndex].stackPointer;
         }
-        
-         int i=currentProcessIndex + 1; 
-         int j =0;  
-        for(;j<CANT_PROCESS;j++,i++){
-            if(processes[i % CANT_PROCESS].state == ACTIVO){
-                currentProcessIndex =i % CANT_PROCESS;
+
+        int i = currentProcessIndex + 1;
+        int j = 0;
+        for (; j < CANT_PROCESS; j++, i++)
+        {
+            if (processes[i % CANT_PROCESS].state == ACTIVO)
+            {
+                currentProcessIndex = i % CANT_PROCESS;
                 return processes[i % CANT_PROCESS].stackPointer;
             }
         }
         currentProcessIndex = HALTER_POSITION;
         return processes[currentProcessIndex].stackPointer;
     }
-    
 }
 
 // void bar(){}
@@ -231,12 +230,12 @@ void kill(int pid)
             processes[pos].memory = 0;
             processes[pos].timeRunnig = 0;
             processes[pos].timeSlot = 0;
-    
+
             if (foregroundProcess.pid == pid)
             {
                 foregroundProcess = processes[SHELL_POSITION];
                 processes[SHELL_POSITION].state = ACTIVO;
-            }       
+            }
         }
     }
 }
@@ -314,8 +313,9 @@ void ps(char *buffer)
     }
 }
 
-void setFDNextNewProcess(int fdInput, int fdOutPut){
-    fdInputNextProcess  = fdInput;
+void setFDNextNewProcess(int fdInput, int fdOutPut)
+{
+    fdInputNextProcess = fdInput;
     fdOutputNextProcess = fdOutPut;
 }
 
