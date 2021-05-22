@@ -1,5 +1,7 @@
 
-#include "synchro.h"
+#include <synchro.h>
+
+
 
 ////////////
 #define CANT_SEMAPHORES 10
@@ -16,7 +18,9 @@ int mySemWait(char * name){
     }
     while(_xadd(-1,&(sem->value)) <= 0){
         _xadd(1,&(sem->value));
-        timerTickInterrupt();
+        int currentProcessPid = getPid();
+        sem->blockedPids[sem->cantBlockedPids++] = currentProcessPid;
+        block(currentProcessPid); //bloquea el proceso
     }
 
     return 0;
@@ -24,10 +28,23 @@ int mySemWait(char * name){
 
 int mySemPost(char * name){
     semT * sem = getSemByName(name);
+
+    //int i=0;
+     unblockMultiple(sem->blockedPids, sem->cantBlockedPids);
+     sem->cantBlockedPids = 0;
+    // for (; i < sem->cantBlockedPids ; i++)
+    // {
+    //     if(sem->blockedPids[i] != -1){
+    //         sem->cantBlockedPids--;
+    //         block(sem->blockedPids[i]);
+    //         sem->blockedPids[i] = -1;
+    //     }
+    // }
     if(sem == -1){
         return -1;
     }
     _xadd(1,&(sem->value));
+    //block(getPid()); //debloquea el proceso
     return 0;
 }
 
@@ -37,7 +54,9 @@ void initSemaphores(){
     newSem.semID= 0;
     newSem.value= 0;
     newSem.cantGiven= 0;
-    for(;i<CANT_SEMAPHORES;i++){
+    newSem.cantBlockedPids = 0;
+    for (; i < CANT_SEMAPHORES; i++)
+    {
         semaphores[i] = newSem;
     }
 }
@@ -87,7 +106,8 @@ semT * semOpen(char * name,int initValue, int * retValue){
         nuevoSem.name = name;
         nuevoSem.value = initValue;
         nuevoSem.semID = globalSemID++;
-        nuevoSem.cantGiven +=1;
+        nuevoSem.cantGiven =1;
+        nuevoSem.cantBlockedPids = 0;
         int index = getIndex();
         semaphores[index] = nuevoSem;
         cantSemaphores++;

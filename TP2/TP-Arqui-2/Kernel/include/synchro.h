@@ -1,6 +1,12 @@
-#ifndef SEMAPHORES
+#ifndef SYNCRO_H
+#define SYNCRO_H
+
 
 #include "lib.h"
+
+//////// VER DE BORRAR
+#define CANT_PROCESS 11
+////////
 
 typedef struct
 {
@@ -8,6 +14,8 @@ typedef struct
     char *name;
     int value;
     int cantGiven;
+    int cantBlockedPids;
+    int blockedPids[CANT_PROCESS];
 } semT;
 
 extern int _xadd(int inc, int *value);

@@ -65,8 +65,8 @@ void test(int i){
     ((i == 0)? state[cant -1] != EATING : state[i - 1] != EATING) &&
     ((i == cant - 1)? state[0] != EATING : state[i + 1] != EATING)) {    
         state[i] = EATING;
-        yield();
-        //printPhilos(i);
+       // yield();
+        printPhilos(i);
         semPost(names[i]);
     }
 }
@@ -77,7 +77,7 @@ void takeFork(int i){
     test(i);
     semPost(mutex);
     semWait(names[i]);
-    yield();
+   // yield();
 
     
     
@@ -90,21 +90,21 @@ void putFork(int i){
     else    test(i + 1);
     if (i == 0) test(cant - 1);
     else    test(i - 1);
-    yield();
+   // yield();
     semPost(mutex);
 }
 
 int philospher(int argc, char ** argv){
-    printf("FILOSOFO CREADO\n");
+    printf("Filosofo creado\n");
     if (argc != 0){
         printf("Error al iniciar filosofo");
         return -1;
     }
     int i = numPhil++;
     while (1) {
-        yield();
+       // yield();
         takeFork(i);
-        printPhilos(i);
+        //printPhilos(i);
         putFork(i);
     }
     return 0;
@@ -198,9 +198,9 @@ void exitPhilo(){
 int philosphers(){
     putNames();       
     printf("Problema de los filosofos comensales: \n");
-    printf("Para agregar filososfos, presione 'a' \n");
-    printf("Para remover filososfos, presione 'r' \n");
-    printf("Para terminar el programa, presione 'c' \n");
+    printf("a: agregar filososfos\n");
+    printf("r: remover filososfos\n");
+    printf("/: salir\n");
     int retSemOpen;
     mutex = "mutex";
     semOpen(mutex, 1, &retSemOpen); // ver si el 1 esta bien
@@ -213,7 +213,7 @@ int philosphers(){
         addPhiloinit(i);
     }
    semPost(mutex);
-    printf("Filosofos pensando...\n");
+    printf("Filosofos filosofando...\n");
 
     int flag = 1;
 
@@ -224,6 +224,9 @@ int philosphers(){
         case 'a':
             printf("ADD recibido \n");
             addPhilo(cant);
+            char bufferPS[1024] = {0};
+            ps(bufferPS);
+            printf(bufferPS);
             break;
         case 'r':
             printf("REMOVE recibido \n");

@@ -8,6 +8,17 @@
 #include <interrupts.h>
 #include <memory_manager.h>
 
+#define MATADO 0
+#define ACTIVO 1
+#define BLOQUEADO 2
+#define CANT_PROCESS 11
+#define STACK_SIZE 4096
+#define TIME_SLOT 3
+#define SHELL_POSITION 1
+#define HALTER_POSITION 0
+#define FD_STDIN 1
+#define FD_STOUT 2
+#define NOT_SETED -1
 typedef struct
 {
     char *name;
@@ -46,5 +57,5 @@ void changeInputFd(int pid, int fd);
 int getIndexOfPid(int pid);
 int getFdInput(int pid);
 int getFdOutput(int pid);
-
+void unblockMultiple(int * pids, int cant);
 #endif

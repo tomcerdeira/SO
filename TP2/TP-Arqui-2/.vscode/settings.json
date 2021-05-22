@@ -72,6 +72,9 @@
         "streambuf": "c",
         "thread": "c",
         "cinttypes": "c",
-        "cstdbool": "c"
+        "cstdbool": "c",
+        "keyboarddriver.h": "c",
+        "lib.h": "c",
+        "initstack.h": "c"
     }
 }

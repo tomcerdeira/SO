@@ -264,6 +264,16 @@ void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
     int currentPID;
     int fdCurrentInput;
 
+    // char * name = "mutex";
+    // int * retValue;
+    // semOpen(name, 0, retValue);
+    // if (*retValue < 0)
+    // {
+    //     print("(sysHandler) ERROR AL ABRIR SEM", 0x000000,0xFFFFFF);
+    // }
+    // mySemWait(name);
+    //print("(sysHandler) ENTRO READ", 0x000000, 0xFFFFFF);
+
     switch (fd)
     {
     case FD_STDIN:
@@ -300,11 +310,11 @@ void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
             // if (currentProcessIsForeground())
             // {
             char *keyboardBuffer ;
-            // while ((keyboardBuffer = getKeyboardBuffer())[0] == 0)
-            // {
-            //    // print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
-            //     blockReader(getPid());
-            // }
+            while ((keyboardBuffer = getKeyboardBuffer())[0] == 0)
+            {
+               // print("BLOQUEO A LA SHELL", 0xFFFFFF, 0x000000);
+                blockReader(getPid());
+            }
 
             // VERSION 2:
             // Hay q tener el ciclo en getChar() (standardLib.c USERLADN)

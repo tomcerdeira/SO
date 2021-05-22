@@ -110,6 +110,7 @@ void readKeyboardBuffer()
             }
         }
     }
+    unblockReaders();
 }
 
 char *getKeyboardBuffer()
