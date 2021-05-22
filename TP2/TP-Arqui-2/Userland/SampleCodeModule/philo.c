@@ -28,7 +28,6 @@ int philosphers();
 
 int state[N];
 char *mutex;
-//  char * S[N];
  char * names[N] = {0};
  int philPID[N];
  int cant = 0;
@@ -53,11 +52,9 @@ void printPhilos(int i){
         if (state[j] == EATING){
             printf(" E ");
         }
-        //if(j == i) printf(" E ");
         else printf(" . ");
     }
-
-    printf("cantidad de philos %d \n",cant);    
+    printf("\n");
 }
 
 void test(int i){
@@ -65,8 +62,7 @@ void test(int i){
     ((i == 0)? state[cant -1] != EATING : state[i - 1] != EATING) &&
     ((i == cant - 1)? state[0] != EATING : state[i + 1] != EATING)) {    
         state[i] = EATING;
-       // yield();
-        printPhilos(i);
+        yield();
         semPost(names[i]);
     }
 }
@@ -77,7 +73,7 @@ void takeFork(int i){
     test(i);
     semPost(mutex);
     semWait(names[i]);
-   // yield();
+    yield();
 
     
     
@@ -90,7 +86,7 @@ void putFork(int i){
     else    test(i + 1);
     if (i == 0) test(cant - 1);
     else    test(i - 1);
-   // yield();
+    yield();
     semPost(mutex);
 }
 
@@ -102,9 +98,9 @@ int philospher(int argc, char ** argv){
     }
     int i = numPhil++;
     while (1) {
-       // yield();
+        yield();
         takeFork(i);
-        //printPhilos(i);
+        printPhilos(i);
         putFork(i);
     }
     return 0;
@@ -166,7 +162,7 @@ void killPhil(int i){
     if (*status==1) {
         semWait(names[i]);
     } 
-    printf("PID A MATAR %d \n",philPID[i]);
+    //printf("PID A MATAR %d \n",philPID[i]);
     kill(philPID[i]);   
     // if (kill(philPID[i],0) == -1) {
     //     printf("Error al matar un filosofo");
@@ -178,7 +174,7 @@ void killPhil(int i){
     cant--;
     numPhil--;
     semPost(mutex);
-    printf("FILOSOFO APAGADO\n");
+    printf("Filosofo muer\n");
 }
 
 void exitPhilo(){
@@ -200,6 +196,7 @@ int philosphers(){
     printf("Problema de los filosofos comensales: \n");
     printf("a: agregar filososfos\n");
     printf("r: remover filososfos\n");
+    printf("p: ver los procesos \n");
     printf("/: salir\n");
     int retSemOpen;
     mutex = "mutex";
@@ -216,6 +213,7 @@ int philosphers(){
     printf("Filosofos filosofando...\n");
 
     int flag = 1;
+    char bufferPS[1024] = {0};
 
     while (flag) {
         int k = getChar();
@@ -224,9 +222,6 @@ int philosphers(){
         case 'a':
             printf("ADD recibido \n");
             addPhilo(cant);
-            char bufferPS[1024] = {0};
-            ps(bufferPS);
-            printf(bufferPS);
             break;
         case 'r':
             printf("REMOVE recibido \n");
@@ -235,6 +230,13 @@ int philosphers(){
                 killPhil(cant - 1);  
             }
             if (cant == 0) flag = 0;
+            break;
+        case 'p':
+            printf("\n");
+            cleanBuffer(bufferPS, 100);
+            ps(bufferPS);
+            printf(bufferPS);
+            printf("\n\n");
             break;
         case '/':
             printf("EXIT recibido \n");
@@ -246,5 +248,6 @@ int philosphers(){
             break;
         }
     }
+    printf("Saliendo de los filosos \n");
     return 0;
 }

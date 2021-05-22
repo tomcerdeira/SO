@@ -131,7 +131,7 @@ int semClose(char* name){
         if(strcmp(semaphores[i].name,name)!= 0)
         {
             semaphores[i].cantGiven -= 1;
-            if(semaphores[i].cantGiven ==0){
+            if(semaphores[i].cantGiven == 0){
                 cantSemaphores--;
                 return 0;
             }

@@ -236,6 +236,8 @@ void shellHandler()
           setNextProcessFd(*fdAux,2);
           createProcess(param2,pipeableProcesses[index].funcion,0,0,FOREGROUND); // 1= foreground 
         }
+      }else{
+         createProcess("loop", &endless_loop, 0, 0, FOREGROUND);
       }
     }
     else if (strcmp(buff, "ps"))
@@ -334,9 +336,12 @@ void shellManager()
 
 void endless_loop()
 { 
+ 
   while (1)
   {
     printf("%d \n", getPid());
+    
+    
   }
 }
 

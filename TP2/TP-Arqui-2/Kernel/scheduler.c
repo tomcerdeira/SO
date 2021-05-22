@@ -222,14 +222,21 @@ void kill(int pid)
     int pos = 0;
     for (; pos < CANT_PROCESS; pos++)
     {
-        if (processes[pos].state != MATADO && processes[pos].pid == pid && !strcompare(processes[pos].name, "shell"))
+        if (processes[pos].pid == pid && !strcompare(processes[pos].name, "shell"))
         {
             processes[pos].state = MATADO;
             freeMemory(processes[pos].memory);
-            foregroundProcess = processes[SHELL_POSITION];
-            processes[SHELL_POSITION].state = ACTIVO;
-
-        
+            processes[pos].pid = -1;
+            processes[pos].function = 0;
+            processes[pos].memory = 0;
+            processes[pos].timeRunnig = 0;
+            processes[pos].timeSlot = 0;
+    
+            if (foregroundProcess.pid == pid)
+            {
+                foregroundProcess = processes[SHELL_POSITION];
+                processes[SHELL_POSITION].state = ACTIVO;
+            }       
         }
     }
 }

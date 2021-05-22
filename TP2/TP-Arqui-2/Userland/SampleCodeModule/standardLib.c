@@ -489,9 +489,10 @@ int getPid()
 void cleanBuffer(char * buffer, int size)
 {
     int i = 0;
-    for (; i < size || buffer[i]!=0; i++)
+    for (; i < size && buffer[i]!=0; i++)
     {
         buffer[i] = 0;
+        printf("%d ",i);
     }
 }
 
