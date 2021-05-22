@@ -7,7 +7,7 @@
 #define MEMORY_SIZE 1024
 #define SMALLEST_BLOCK_SIZE 4
 // #define NULL 0
-#define CANT_NODES 511 // DESHARCODEAR
+#define MAX_BLOCKS 511 // DESHARCODEAR
 
 typedef struct
 {

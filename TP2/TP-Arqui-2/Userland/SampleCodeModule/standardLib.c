@@ -1,22 +1,20 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <standardLib.h>
 
 int fontColor[1] = {0};
-// int backgroundColor[1] = {0};
+
 
 void setFontColor(int color)
 {
     *fontColor = color;
 }
 
-// void setBackGroundColor(int color)
-// {
-//     *backgroundColor = color;
-// }
+
 
 void putChar(char str)
 {
-    // char buff[2] = {0};
-    // buff[0] = str;
+
     printf("%c", str);
 }
 
@@ -24,12 +22,9 @@ char getChar()
 {
 
     char res = 0;
-    // while (res == 0)
-    // // // -- > opcion comentada en syshandler va sin el while
-    // {
+
         readKeyBuff(&res, 1, 0);
-        //halt();
-    // }
+  
 
     return res;
 }
@@ -91,10 +86,6 @@ void printf(const char *format, ...) //... ya que los parametros son variables
             default:
                 /* should throw exception*/ //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-                //changeLetterColor(0xFF0000);
-                printf("Expresion %s is unsupported \n", format[i]);
-                //changeLetterColor(DEFAULT_LETTER_COLOR);
-                //expression not suported
                 break;
             }
         }
@@ -105,7 +96,7 @@ void printf(const char *format, ...) //... ya que los parametros son variables
     }
     va_end(valist);
     toRet[index] = 0;
-    // PARECE QUE VA A HABER QUE BORRAR EL 1000!!                           //fin del string
+                           //fin del string
     write(toRet, *fontColor, 0);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,9 +106,9 @@ int scanf(const char *format, ...)
     char usrInput[SCREEN_WIDTH];
 
     int index = 0;
-    ///printf("SCANF DEL CAT");
+  
     char in = getChar();
-   // printf("SALGO DEL SCANF CAT");
+   
     while (in != '\n')
     {
 
@@ -128,7 +119,7 @@ int scanf(const char *format, ...)
 
                 index--;
                 usrInput[index] = 0;
-                deleteN(1); // TOMAR DECICISION REPESCTO AL 1 SI CORRESPONDE QUE PUEDA HACER MAS DE 1 O NO !!!!!!!!!!!!!
+                deleteN(1);
             }
         }
         else //Sino, lo carga al arreglo
@@ -138,7 +129,7 @@ int scanf(const char *format, ...)
             
         }
         //
-        // printf("%s|| %d",usrInput,index);
+     
         in = getChar(); //Y espera al proximo caracter
     }
     putChar('\n');
@@ -209,11 +200,7 @@ int scanf(const char *format, ...)
             }
 
             default:
-                /* should throw exception*/
-                //changeLetterColor(0xFF0000);
-                printf("Expresion %s is unsupported \n", format[i]);
-                //changeLetterColor(DEFAULT_LETTER_COLOR);
-                //expression not suported
+         
                 va_end(valist); // a chequear
                 return -1;
             }

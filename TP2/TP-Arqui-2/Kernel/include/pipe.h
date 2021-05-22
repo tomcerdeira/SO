@@ -1,7 +1,8 @@
 #ifndef PIPE
 #define PIPE
 
-#include <memory_manager.h>
+//#include <memory_manager.h>
+#include <buddy_system2.h>
 #include <lib.h>
 #include <synchro.h>
 

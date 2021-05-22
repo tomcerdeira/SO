@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <shell.h>
 
 #define CANT_OF_PIPEABLE_PROCESS 5
@@ -11,11 +13,10 @@ static char userShell[30] = {0};
 extern int philosphers();
 typedef struct{
   char * name;
-  void (*funcion) (int, char **) ;
+  void (*funcion); // (int, char **) 
 }pipeableProcess;
 
-static pipeableProcess pipeableProcesses[CANT_OF_PIPEABLE_PROCESS] = {{"loop", &endless_loop}, {"cat", &cat},
-                        {"wc",&wc}, {"filter", &filter}, {"phylo", &philosphers}};
+static pipeableProcess pipeableProcesses[CANT_OF_PIPEABLE_PROCESS] = {{"loop", &endless_loop}, {"cat", &cat}, {"wc",&wc}, {"filter", &filter}, {"phylo", &philosphers}};
 
 
 static int isInitialized = 0;
@@ -70,16 +71,16 @@ void shellHandler()
 
     if (strcmp(buff, "help"))
     {
-      printf("\n");
-      setFontColor(MODULE_COLOR);
-      printf("help: ");
-      setFontColor(DEFAULT_FONT_COLOR);
-      printf("Muestra los distintos modulos disponibles y una descripcion de su uso.\n");
-      printf("\n");
+      
       setFontColor(MODULE_COLOR);
       printf("printmem: ");
       setFontColor(DEFAULT_FONT_COLOR);
       printf("Recibe como argumento un puntero y realiza un volcado de memoria de 32 bytes a partir de ella.\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("mem: ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Imprime el estado actual de la memoria\n");
       printf("\n");
       setFontColor(MODULE_COLOR);
       printf("inforeg: ");
@@ -96,15 +97,20 @@ void shellHandler()
       setFontColor(DEFAULT_FONT_COLOR);
       printf("Despliega el dia y la hora del sistema.\n");
       printf("\n");
-      //setFontColor(MODULE_COLOR);
-      //printf("chess: ");
-      //setFontColor(DEFAULT_FONT_COLOR);
-      //printf("Despliega un juego de ajedrez en formato grafico.\n");
-      //printf("\n");
       setFontColor(MODULE_COLOR);
       printf("ps: ");
       setFontColor(DEFAULT_FONT_COLOR);
       printf("Imprime la lista de todos los procesos con sus propiedades: PID, prioridad, nombre, stack y estado.\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("pipe: ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Imprime la lista de todos los pipes con su informacion: indices de read y write, fileDescriptor y Cant. proc.\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("sem: ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Imprime la lista de todos los semaforos con su informacion: nombre, ID, valor, cantidad de procesos usandolo y cantidad de procesos bloqueados.\n");
       printf("\n");
       setFontColor(MODULE_COLOR);
       printf("loop: ");
@@ -129,7 +135,22 @@ void shellHandler()
       setFontColor(MODULE_COLOR);
       printf("cat: ");
       setFontColor(DEFAULT_FONT_COLOR);
-      printf("Imprime el stdin tal como lo recibe (pulsar / para salir).\n");
+      printf("Imprime el stdin tal como lo recibe (pulsar / para salir). NO DETECTA ESPACIOS\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("wc: ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Cuenta la cantidad de lineas del input (pulsar / para salir).\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("filter: ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Cuenta e imprime la vocales en el input (pulsar / para salir). NO DETECTA ESPACIOS\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("phylo: ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Inicia el \"Problema de los filosofos\" \n");
       printf("\n");
       setFontColor(MODULE_COLOR);
       printf("testnosync: ");
@@ -146,7 +167,16 @@ void shellHandler()
       setFontColor(DEFAULT_FONT_COLOR);
       printf("Ejecuta el test de procesos.\n");
       printf("\n");
-      //
+      setFontColor(MODULE_COLOR);
+      printf("testmem: ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Ejecuta el test de memoria.\n");
+      printf("\n");
+      setFontColor(MODULE_COLOR);
+      printf("testprio: ");
+      setFontColor(DEFAULT_FONT_COLOR);
+      printf("Ejecuta el test de prioridades.\n");
+      printf("\n");
       setFontColor(ERROR_COLOR);
       printf("exceptionZero: ");
       setFontColor(DEFAULT_FONT_COLOR);
@@ -331,6 +361,10 @@ void shellHandler()
     {
      testMem();
     }
+      else if (strcmp(buff, "testprio"))
+    {
+     testPrio();
+    }
 
 
 
@@ -384,7 +418,7 @@ void cat()
     if (!strcmp(buffer, "/"))
     {
       printf("%s",buffer);
-      //printf("\n");
+      printf("\n");
       int i =0;
       while(buffer[i] != 0){
         buffer[i++] = 0;

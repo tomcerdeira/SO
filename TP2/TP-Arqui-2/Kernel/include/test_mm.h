@@ -2,9 +2,12 @@
 #define TEST_MM
 
 #include <memory_manager.h>
+#include <buddy_system2.h>
 #include "test_util.h"
-#define MAX_BLOCKS (int)MAX_MEMORY / BLOCK
-#define MAX_MEMORY 4096 * 10
+#include <libC.h>
+// #define MAX_BLOCKS (int)MAX_MEMORY / BLOCK --> memory manager descomentar
+
+#define MAX_MEMORY 4096 * 5
 
 typedef struct MM_rq
 {

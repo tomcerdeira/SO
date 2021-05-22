@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <scheduler.h>
 
 
@@ -131,7 +133,7 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[], i
         halter.state = MATADO;
         halter.timeSlot = 1;
         halter.timeRunnig = 0;
-        halter.memory = bufferHalter;
+        halter.memory = (uint64_t *) bufferHalter;
         halter.stackPointer = initStack(halter.memory + STACK_SIZE, wrapper, halter.function, 0, NULL, halter.pid);
         processes[HALTER_POSITION]= halter;
         currentProcessIndex = CANT_PROCESS-1;
@@ -180,7 +182,7 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[], i
 void wrapper(void *func(int, char **), int argc, char *argv[], int pid)
 {
     int retValue;
-    retValue = (int)(*func)(argc, argv);
+    retValue = (uintptr_t)(*func)(argc, argv);
     exit(retValue);
 }
 

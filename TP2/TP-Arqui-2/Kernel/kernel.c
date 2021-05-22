@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdint.h>
 #include <lib.h>
 #include <libC.h>
@@ -6,7 +8,8 @@
 #include <consoleManager.h>
 #include <idt.h>
 #include <pipe.h>
-
+#include <buddy_system2.h>
+//#include <memory_manager.h>
 #include <videoDriver.h>
 
 
@@ -58,8 +61,6 @@ int main()
 {
 	
 	initScreen();
-	
-
 
 	initializeMemory();
 	initPipes();

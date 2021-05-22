@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include <test_mm.h>
 
@@ -28,8 +30,9 @@ void test_mm()
 
       if (mm_rqs[rq].address == 0)
       {
-        print("ERROR EN MALLOC \n",0xffffff,0x000000);
-        exit(1);
+        print("No hay memoria para: ",0xffffff,0x000000);
+        printBase((int)mm_rqs[rq].size,10);
+        print("\n",0xffffff,0x000000);
       }
     print("Total memory USED:",0xFFFFFF,0x000000);
     printBase(getMemoryUsed(),10);
@@ -61,7 +64,6 @@ void test_mm()
         if (!memcheck(mm_rqs[i].address, i, mm_rqs[i].size))
         {
          print("ERROR! \n",0xffffff,0x000000);
-          exit(1);
         }
       }
     }

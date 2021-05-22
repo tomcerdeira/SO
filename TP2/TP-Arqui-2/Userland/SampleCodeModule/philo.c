@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <libasm.h>
 #include <standardLib.h>
 
@@ -118,19 +120,17 @@ int addPhiloinit(int i){
     int waited[2]={0};
     int * status = 0;
     getSemStatus(names[0],status);
-     if (*status==1) {
+    
+     if (status != 0 && *status==1) {
          semWait(names[0]);
          waited[0]++;
      }
-    //  *status = 0;
-    //  getSemStatus(names[i-1],status);
-    //  if (*status==1) {
-    //      semWait(names[i-1]);
-    //      waited[1]++;
-    // }
-     *status = 0;
+     if(status !=0){
+           *status = 0;
+     }
+   
      getSemStatus(names[cant-1],status);
-     if (*status==1) {
+     if (status != 0 && *status==1) {
          semWait(names[cant-1]);
          waited[1]++;
     }
@@ -157,7 +157,7 @@ int addPhilo(int i){
 
 void killPhil(int i){
     semWait(mutex);
-     int * status;
+     int * status = 0;
     getSemStatus(names[i],status);
     if (*status==1) {
         semWait(names[i]);

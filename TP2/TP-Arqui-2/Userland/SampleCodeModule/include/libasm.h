@@ -39,6 +39,7 @@ void freeMemory(char * ptr);
 void getSemInfo(char * buffer);
 void memInfo(char * buffer);
 void testMem();
+void testPrio();
 
 
 

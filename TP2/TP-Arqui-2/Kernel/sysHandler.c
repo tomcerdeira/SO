@@ -1,5 +1,8 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <sysHandler.h>
 #include <test_mm.h>
+#include <test_prio.h>
 
 #define FD_STDIN 1
 #define FD_STOUT 2
@@ -105,7 +108,7 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (14):
     {
-         startProcess(par1, par6, par2, par5, par3); //REVISAR!!!!!!!!!!!!!!!!!!!!! //(nombre, funcion, argc, argv)
+         startProcess((char *)par1, par6,(int) par2,(char **) par5, (int)par3); //REVISAR!!!!!!!!!!!!!!!!!!!!! //(nombre, funcion, argc, argv)
         timerTickInterrupt();
         break;
     }
@@ -136,17 +139,17 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (20):
     {
-        startProcess("test_sync", &test_sync, NULL, NULL, par3);
+        startProcess("test_sync", &test_sync, 0, NULL,0);
         break;
     }
     case (21):
     {
-        startProcess("test_no_sync", &test_no_sync, NULL, NULL, par3);
+        startProcess("test_no_sync", &test_no_sync, 0, NULL,0);
         break;
     }
     case (22):
     {
-        startProcess("test_processes", &test_processes, NULL, NULL, par3);
+        startProcess("test_processes", &test_processes, 0, NULL,0);
         break;
     }
     case (23):
@@ -201,7 +204,7 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (33):
     {
-        *par1 =mallocNUESTRO((int)par2);
+        *par1 = mallocNUESTRO((int) par2);
         break;
     }
       case (34):
@@ -231,7 +234,12 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
      case (39):
     {
-        startProcess("test_mm", &test_mm, NULL, NULL, par3);
+        startProcess("test_mm", &test_mm, 0, NULL, 0);
+        break;
+    }
+    case (40):
+    {
+        startProcess("test_prio", &test_prio, 0, NULL, 0);
         break;
     }
     default:
@@ -274,7 +282,7 @@ void write(uint64_t *buffer, uint64_t fontColor, uint64_t fd)
 void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
 {
 
-    char *keyboardBuffer;
+    char *keyboardBuffer = {0};
     int sizeRead;
     int currentPID;
     int fdCurrentInput;

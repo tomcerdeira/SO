@@ -7,7 +7,7 @@ int initialized = 0;
 
 
 
-node auxMemoryForNodes[CANT_NODES] = {{0}};
+node auxMemoryForNodes[MAX_BLOCKS] = {{0}};
 int index = 0;
 
 

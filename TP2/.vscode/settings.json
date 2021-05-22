@@ -26,6 +26,7 @@
         "limits": "c",
         "exceptionsmanager.h": "c",
         "*.tcc": "c",
-        "cstring": "c"
+        "cstring": "c",
+        "test_mm.h": "c"
     }
 }
