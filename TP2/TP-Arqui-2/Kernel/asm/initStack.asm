@@ -55,7 +55,7 @@ initStack:
    push 0x8
    push rsi     ;main
  
-   ; push ; REGS
+   
    push 1
    push 2
  

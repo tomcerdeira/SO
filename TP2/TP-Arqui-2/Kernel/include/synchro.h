@@ -4,7 +4,6 @@
 
 #include "lib.h"
 
-//////// VER DE BORRAR
 #define CANT_PROCESS 11
 ////////
 

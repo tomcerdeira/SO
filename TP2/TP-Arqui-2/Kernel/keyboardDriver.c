@@ -1,8 +1,5 @@
 #include <keyboardDriver.h>
 
-// extern uint8_t readKeyboard(); // fun hecha en asm
-
-// cambiar este comentario
 
 // https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html pagina de los scancodes
 static const char keyCodes[KEYS][2] = {
@@ -77,8 +74,6 @@ void readKeyboardBuffer()
             default:
                 if ((shift || capitalLetters != 0) && (!(R_SHIFT == key || L_SHIFT == key || R_SHIFT_RELEASED == key || L_SHIFT_RELEASED == key)))
                 {
-                    //  print("llego al switch 1",0xba,0x12);
-                    //  printBase(key,16);
                     buffer[currentPos++] = keyCodes[key][1];
                 }
                 else
@@ -90,7 +85,6 @@ void readKeyboardBuffer()
         else if (key >= 0x81)
         {
             key -= 0x80;
-            // print("llego al switch 3 ",0xde,0xed);
 
             switch (key)
             {

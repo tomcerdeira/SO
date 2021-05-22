@@ -186,22 +186,6 @@ getSeconds:
 
 
 readKeyboard:
-; 	push rbp
-; 	mov rbp,rsp
-
-; 	mov rax,0
-; loop:
-	; in al,0x64 ; --> Escucha del puerto 0x64 indica si hay tecla apretada
-	; mov cl,al
-	; and al,0x01 ;--> limpia los 7 bits mas significativos
-
-	; cmp al,0	;--> si es cero se queda esperando
-	; je loop
-	; in al,0x60 ;--> envia lo que esta en el puerto a al (0x60 buffer del teclado)
-
-	; mov rsp,rbp
-	; pop rbp
-	; ret
 	xor rax, rax
 	in al, 64h
 	and al, 1 ;Me quedo con el ultimo bit
@@ -212,8 +196,6 @@ readKeyboard:
 	ret
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; hace falta armado de stackFrame?;;;;;;;;;;;;;;;;;
 getMemory:
 	mov rax,rsi
 	ret

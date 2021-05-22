@@ -24,7 +24,7 @@ void disableCursor()
 void initScreen()
 {
     int y = screenHeight();
-    myScreen.currentY = y - CHAR_HEIGHT; //el 2 (NO ESTA) es por que el draw letter tiene el 2
+    myScreen.currentY = y - CHAR_HEIGHT; 
 }
 
 void print(char *string, int font_color, int background_color)
@@ -61,7 +61,7 @@ void print(char *string, int font_color, int background_color)
         }
     }
     return;
-    //newLine();
+    
 }
 
 // Salto de linea
@@ -147,14 +147,14 @@ screen_info getScreenInfo()
 }
 void clearConsole()
 {
-    //  char buff[screenWidth()];
+    
     for (int i = 0; i < screenWidth() / 2; i++)
     {
         for (int j = myScreen.currentY; j > 0; j--)
         {
             drawPixel(i, j, 0x000000);
             drawPixel(screenWidth() - i, j, 0x000000);
-            // print(buff, myScreen.backgroundColor, myScreen.backgroundColor);
+            
         }
     }
     int y = screenHeight();
@@ -197,12 +197,12 @@ void clearConsoleIn(int seconds)
 void printFigure(unsigned char *code, int x, int y, int width, int height, int color, int background_color)
 {
     int *posX = &myScreen.currentX;
-    // int *posY = &myScreen.currentY;
+   
     if (*posX == screenWidth()) //si se introdujo un \n o se llego al final de la pantalla
     {
         newLine(width, height, color, background_color); //sigue en una nueva linea --> mueve lo anterior para arriba
     }
-    //drawFigure(pieceBitmap(34),8,16,color,background_color);
+    
     drawFigure(code, myScreen.currentX, myScreen.currentY, 8, 16, 0x0000000, 0xFFFFFF);
     *posX += width;
 }

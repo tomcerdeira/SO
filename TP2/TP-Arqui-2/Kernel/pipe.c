@@ -98,17 +98,15 @@ void writePipe(int fd, char *buffer)
 
     int buffLength = strlen(buffer);
 
-    // print(buffer,0x000000,0xC0DE);
-
     if (buffLength > SIZE_OF_PIPE) //Como el buffer es circular, si se escribe algo más grande se escribe el final
     {
         int diff = buffLength - SIZE_OF_PIPE;
         buffLength = SIZE_OF_PIPE;
         buffer += diff;
     }
-    // print("WAIT WRITE",0xDEAD,0xC0DE);
+
     mySemWait(pipes[index].sem->name);
-    // print("Salgo wait WRITE",0xDEAD,0xC0DE);
+
 
     if (pipes[index].writeIndex + buffLength > SIZE_OF_PIPE)
     {
@@ -126,7 +124,7 @@ void writePipe(int fd, char *buffer)
         pipes[index].writeIndex += buffLength;
     }
     mySemPost(pipes[index].sem->name);
-    //print(pipes[index].buffer, 0xFF0000, 0x000000);
+
 }
 
 int readPipe(char *buffer, int size, int fd)
@@ -137,11 +135,10 @@ int readPipe(char *buffer, int size, int fd)
     {
         return -1;
     }   
-    // print(buffer,0x3232,0xFFFFF);
+  
     int i = 0;
-    // if(pipes[index].readIndex == pipes[index].writeIndex){
+
     mySemWait(pipes[index].sem->name);
-    //print("Salgo wait read",0xDEAD,0xC0DE);
     for (; i < SIZE_OF_PIPE && i<size && pipes[index].buffer[i]!=0; i++)
     {
         if (pipes[index].readIndex == pipes[index].writeIndex )
@@ -154,12 +151,7 @@ int readPipe(char *buffer, int size, int fd)
         pipes[index].readIndex++;
         pipes[index].readIndex %= SIZE_OF_PIPE;
     }
-    //buffer[i+1] = 0;
-    // memcpy(buffer, pipes[i].buffer, 256);
-    // print(buffer, 0x000000, 0xFFFFFF);
     mySemPost(pipes[index].sem->name);
-   // print("POST READ", 0xCAFE, 0xC0DE);
-    // }
     return i;
 }
 
@@ -215,19 +207,3 @@ void pipesInfo(char *buffer)
         }
     }
 }
-//// FUNCION AUX BORRAR /////
-
-// char * getBuffOf(char * buff, int fd){
-//     int i=0;
-//     for(;i<CANT_OF_PIPES;i++)
-//     {
-//         if(pipes[i].fd==fd)
-//         {
-//             //buff = pipes[i].buffer;
-//             memcpy(buff, pipes[i].buffer, 256);
-//             //print(buff, 0x000000, 0xFFFFFF);
-//         }
-//     }
-//     return -1;
-
-// }

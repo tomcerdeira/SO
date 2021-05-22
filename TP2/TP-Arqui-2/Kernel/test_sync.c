@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
-// #include "synchro.h"
+#include "synchro.h"
 #include "scheduler.h"
 
 uint64_t my_create_process(char *name, void *func(int, char **), int argc, char *argv[])
@@ -39,14 +39,6 @@ void slowInc(int64_t *p, int64_t inc)
 {
   int64_t aux = *p;
   aux += inc;
-  // if(aux < 0 ){
-  //   print("(slowInc) value negativo: ", 0x32, 0xFE);
-  //   int aux2 = aux * -1;
-  //   printBase(aux2,10);
-  // }else{
-  //   print("(slowInc) value: ", 0x32, 0xFE);
-  //   printBase(aux,10);
-  // }
   yield();
   *p = aux;
 }
@@ -79,7 +71,7 @@ void incNUESTROCONSEM(int value)
     print("ERROR OPENING SEM\n", 0xFFFFFF, 0x000000);
     return;
   }
-  int64_t N = 100000;
+  int64_t N = 1000000;
   int i;
 
   for (i = 0; i < N; i++)
@@ -104,25 +96,6 @@ void incNUESTROCONSEM(int value)
   }
 }
 
-// void inc(uint64_t sem, int64_t value, uint64_t N){
-//   uint64_t i;
-
-//   if (sem && !my_sem_open(SEM_ID, 1)){
-//     printf("ERROR OPENING SEM\n");
-//     return;
-//   }
-
-//   for (i = 0; i < N; i++){
-//     if (sem) my_sem_wait(SEM_ID);
-//     slowInc(&global, value);
-//     if (sem) my_sem_post(SEM_ID);
-//   }
-
-//   if (sem) my_sem_close(SEM_ID);
-
-//   printf("Final value: %d\n", global);
-// }
-
 void test_sync()
 {
   uint64_t i;
@@ -135,8 +108,6 @@ void test_sync()
   {
     my_create_process("incNUESTRO", &incNUESTROCONSEM, 1, NULL);
     my_create_process("incNUESTRO", &incNUESTROCONSEM, -1, NULL);
-    // my_create_process("inc", 1, 1, 1000000);
-    // my_create_process("inc", 1, -1, 1000000);
   }
 }
 
@@ -150,20 +121,8 @@ void test_no_sync()
 
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
   {
-    //print("Antes de creaer el 1/3 value: ", 0x32, 0xFE);
-    // printBase(global,10);
+   
     my_create_process("incNUESTRO", &incNUESTROSINSEM, 1, NULL);
-
-    // print("Antes de creaer el 2/4 value: ", 0x32, 0xFE);
-    // printBase(global,10);
-
     my_create_process("incNUESTRO", &incNUESTROSINSEM, -1, NULL);
-    //my_create_process("inc", 0, 1, 1000000);
-    //my_create_process("inc", 0, -1, 1000000);
   }
 }
-
-// int main(){
-//   test_sync();
-//   return 0;
-// }

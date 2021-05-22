@@ -1,121 +1,100 @@
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <string.h>
-// #include "buddy_system2.h"
-// // #include <memory_manager.>
-// #include "test_util.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-// #define MAX_BLOCKS 128
-// #define MAX_MEMORY 1024 //Should be around 80% of memory managed by the MM
+#include <memory_manager.h>
+#include "test_util.h"
 
-// typedef struct MM_rq
-// {
-//   void *address;
-//   uint32_t size;
-// } mm_rq;
+#define MAX_BLOCKS (int)MAX_MEMORY / BLOCK
+#define MAX_MEMORY 4096 * 10
 
-// void test_mm()
-// {
-//   mm_rq mm_rqs[MAX_BLOCKS];
-//   uint8_t rq;
-//   uint32_t total;
+typedef struct MM_rq
+{
+  void *address;
+  uint32_t size;
+} mm_rq;
 
-//   //initialize(); /////////////////////////////////////////////////
+void test_mm()
+{
+  mm_rq mm_rqs[MAX_BLOCKS];
+  uint8_t rq;
+  uint32_t total;
+  while (1)
+  {
+    rq = 0;
+    total = 0;
 
-//   while (1)
-//   {
-//     rq = 0;
-//     total = 0;
+    print("Total memory USED:",0xFFFFFF,0x000000);
+    printBase(getMemoryUsed(),10);
+    print("Total memory AVAILABLE:",0xffffff,0x000000);
+    printBase( getMemoryAvailable(),10);
+    print("\n",0xffffff,0x000000);
+    print("------------------------------------------------\n",0xffffff,0x000000);
 
-//     printf("Total memory USED: %d - Total memory AVAILABLE: %d\n", getMemoryUsed(), getMemoryAvailable());
-//     printf("------------------------------------------------\n");
+    // Request as many blocks as we can
+    while (rq < MAX_BLOCKS && total < MAX_MEMORY)
+    {
+      mm_rqs[rq].size = GetUniform(MAX_MEMORY - total - 1) + 1;
 
-//     // Request as many blocks as we can
-//     while (rq < MAX_BLOCKS && total < MAX_MEMORY)
-//     {
-//       mm_rqs[rq].size = GetUniform(MAX_MEMORY - total - 1) + 1;
-//       //printf("%d\n", mm_rqs[rq].size);
-//       mm_rqs[rq].address = mallocNUESTRO(mm_rqs[rq].size); // TODO: Port this call as required
-//                                                            //TODO: check if NULL
+      mm_rqs[rq].address = mallocNUESTRO(mm_rqs[rq].size);
 
-//       ///////////////////////////////
+      if (mm_rqs[rq].address == NULL)
+      {
+        print("ERROR EN MALLOC \n",0xffffff,0x000000);
+        exit(1);
+      }
+    print("Total memory USED:",0xFFFFFF,0x000000);
+    printBase(getMemoryUsed(),10);
+    print("Total memory AVAILABLE:",0xffffff,0x000000);
+    printBase( getMemoryAvailable(),10);
+    print("\n",0xffffff,0x000000);
+    print("------------------------------------------------\n",0xffffff,0x000000);
 
-//       if (mm_rqs[rq].address == NULL)
-//       {
-//         printf("ERROR EN MALLOC \n");
-//         exit(1);
-//       }
+      total += mm_rqs[rq].size;
+      rq++;
+    }
 
-//       printf("Total memory USED: %d - Total memory AVAILABLE: %d\n", getMemoryUsed(), getMemoryAvailable());
-//       printf("------------------------------------------------\n");
+    // Set
+    uint32_t i;
 
-//       //////////////////////////////
+    void *auxi;
 
-//       total += mm_rqs[rq].size;
-//       rq++;
-//     }
+    for (i = 0; i < rq; i++)
+    {
+      if (mm_rqs[i].address != NULL)
+      {
+        memsetNUESTRO(mm_rqs[i].address, i, mm_rqs[i].size); 
+       
+      }
+    }
+    //Check
+    for (i = 0; i < rq; i++)
+    {
+      if (mm_rqs[i].address != NULL)
+      {
+        if (!memcheck(mm_rqs[i].address, i, mm_rqs[i].size))
+        {
+         print("ERROR! \n",0xffffff,0x000000);
+          exit(1);
+        }
+      }
+    }
+    // Free
+    for (i = 0; i < rq; i++)
+    {
 
-//     // Set
-//     uint32_t i;
+      if (mm_rqs[i].address != NULL)
+      {
+        freeMemory(mm_rqs[i].address);
+      }
+    }
 
-//     void *auxi;
+     print("Total memory USED:",0xFFFFFF,0x000000);
+    printBase(getMemoryUsed(),10);
+    print("Total memory AVAILABLE:",0xffffff,0x000000);
+    printBase( getMemoryAvailable(),10);
+    print("\n",0xffffff,0x000000);
+    print("------------------------------------------------\n",0xffffff,0x000000);
+  }
+}
 
-//     for (i = 0; i < rq; i++)
-//     {
-//       if (mm_rqs[i].address != NULL)
-//       {
-//         auxi = memsetNUESTRO(mm_rqs[i].address, i, mm_rqs[i].size); // TODO: Port this call as required
-//         if (auxi == NULL)
-//         {
-//           printf("ERROR EN MEMSET \n");
-//           exit(1);
-//         }
-//       }
-//     }
-//     //Check
-//     for (i = 0; i < rq; i++)
-//     {
-//       if (mm_rqs[i].address != NULL)
-//       {
-//         ////////
-//         // uint8_t *p = (uint8_t *)mm_rqs[i].address;
-//         // int h = 0;
-
-//         // for (; h < mm_rqs[i].size; h++, p++)
-//         //   printf("EN MEMORIA: %d - DEBERIA SER: %d \n", *(p), i);
-//         // printf("------------------------------------------------\n");
-
-//         //////////
-//         if (!memcheck(mm_rqs[i].address, i, mm_rqs[i].size))
-//         {
-//           printf("ERROR!\n"); // TODO: Port this call as required
-//           exit(1);
-//         }
-//       }
-//     }
-//     // Free
-//     for (i = 0; i < rq; i++)
-//     {
-//       //printf("VALOR RQ: %d \n", rq);
-
-//       if (mm_rqs[i].address != NULL)
-//       {
-//         freeMemory(mm_rqs[i].address);
-//         //printf("VALOR i: %d \n", i);
-//         //exit(1);
-//       }
-//     }
-
-//     printf("Total memory USED: %d - Total memory AVAILABLE: %d\n", getMemoryUsed(), getMemoryAvailable());
-//     printf("------------------------------------------------\n");
-
-//     //free(mm_rqs[i].address); // TODO: Port this call as required
-//     ////////// USAR free DESPUES!!!
-//   }
-// }
-
-// int main()
-// {
-//   test_mm();
-//   return 0;
-// }

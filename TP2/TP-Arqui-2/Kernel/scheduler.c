@@ -6,16 +6,11 @@ process processes[CANT_PROCESS] = {{0}};
 
 
 int currentProcessIndex = -1;
-
-
-//int firstTimeEntering = 1;
-int rspKernel = 0;
 int globalPid = 0;
 process foregroundProcess = {0};
 int fdInputNextProcess = NOT_SETED;
 int fdOutputNextProcess = NOT_SETED;
 
-// Version 1.0 de manejo de procesos
 
 void halterProcess()
 {
@@ -23,8 +18,6 @@ void halterProcess()
     { 
         _hlt();
     }
-    // unblockReaders();
-    // block(1);
     timerTickInterrupt();
 }
 char bufferHalter[STACK_SIZE]={0};
@@ -37,7 +30,6 @@ void createprocesses()
     {
         process proc;
         proc.pid = -1;
-        //proc.memory = processMemory[prio][p];
         proc.memory = 0;
         proc.state = MATADO;
         proc.timeRunnig = 0;
@@ -64,7 +56,7 @@ void block(int pid)
     for (; i < CANT_PROCESS; i++)
     {
         if ((processes[i].state != MATADO) && processes[i].pid == pid && !strcompare(processes[i].name, "shell"))
-        { //sacar lo de la shell
+        {
             if (processes[i].state == BLOQUEADO)
             {
                 processes[i].state = ACTIVO;
@@ -137,7 +129,6 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[], i
         halter.stackPointer = initStack(halter.memory + STACK_SIZE, wrapper, halter.function, NULL, NULL, halter.pid);
         processes[HALTER_POSITION]= halter;
         currentProcessIndex = CANT_PROCESS-1;
-        //firstTimeEntering =0;
     }
     
     int availableProcess = getAvailableProcess(); 
@@ -183,8 +174,7 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[], i
 void wrapper(void *func(int, char **), int argc, char *argv[], int pid)
 {
     int retValue;
-    retValue = (int)(*func)(argc, argv); // --> return --> wrapper -->  kill (libere todo) --> return a shell
-                                         // exit -->kill (libere todo) --> return a padre;
+    retValue = (int)(*func)(argc, argv);
     exit(retValue);
 }
 
@@ -214,8 +204,6 @@ uint64_t *sched(uint64_t *rsp)
     }
     
 }
-
-// void bar(){}
 
 void kill(int pid)
 {

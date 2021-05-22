@@ -93,8 +93,7 @@ _picSlaveMask:
 %macro irqHandlerMaster 1
 
 	pushState
-	; push rbp
-	; mov rbp,rsp
+
 
 	mov rdi, %1 ; pasaje de parametro
 	mov rsi, rsp 
@@ -107,9 +106,7 @@ _picSlaveMask:
 	out 20h, al
 
 	
-	; mov rsp,rbp
-	; pop rbp
-
+	
 	popState
 	iretq
 %endmacro
@@ -136,8 +133,7 @@ _picSlaveMask:
 %macro exceptionHandlerMaster 1
 
 	pushState
-	;push rbp
-	;mov rbp,rsp
+	
 
 	mov rdi, %1 ; pasaje de parametro del numero de la excepcion
 	mov rsi, rsp ; pasaje de parametro del puntero al stack
@@ -149,8 +145,7 @@ _picSlaveMask:
 	mov al, 20h
 	out 20h, al
 	
-	;mov rsp,rbp
-	;pop rbp
+	
 	popState
 	iretq
 	

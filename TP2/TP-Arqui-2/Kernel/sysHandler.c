@@ -1,4 +1,5 @@
 #include <sysHandler.h>
+#include <test_mm.h>
 
 #define FD_STDIN 1
 #define FD_STOUT 2
@@ -227,6 +228,11 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     {
          getMemoryInfo(par1);
          break;
+    }
+     case (39):
+    {
+        startProcess("test_mm", &test_mm, NULL, NULL, par3);
+        break;
     }
     default:
         break;

@@ -154,11 +154,29 @@ uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base)
 	return digits;
 }
 
+int strcmp(char *s1, char *s2)
+{
+    int cmp = 1;
+    int i;
+    for (i = 0; s1[i] != 0 && s2[i] != 0 && cmp; i++)
+    {
+        if (s1[i] != s2[i])
+        {
+            cmp = 0;
+        }
+    }
+
+    if ((s1[i] == 0 && s2[i] != 0) || (s1[i] != 0 && s2[i] == 0))
+    {
+        cmp = 0;
+    }
+    return cmp;
+}
 // provisto por la catedra
 void printBase(uint64_t value, uint_least32_t base)
 {
 	uintToBase(value, buffer, base);
-	print(buffer, 0xFF0000, 0x000000);
+	print(buffer, 0xFFFFFF, 0x000000);
 }
 
 void printRegisters(uint64_t *stackFrame)

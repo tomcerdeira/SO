@@ -17,5 +17,6 @@ uint64_t *getMemory(uint64_t init);
 uint64_t *getSP();
 void snapShotRegister();
 void timerTickInterrupt();
+int strcmp(char *s1, char *s2);
 
 #endif

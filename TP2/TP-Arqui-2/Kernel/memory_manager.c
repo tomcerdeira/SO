@@ -8,8 +8,7 @@ int cantOfMemoryUsed = 0;
 
 static char *const start = (void *)0x600000; //
 
-char *next = &start; //next siempre apunta a la última posición de memoria que se puede usar
-                     // ??????????? Es por el &
+char *next = &start; 
 // Inicializamos el bitMap
 void initializeMemory()
 {

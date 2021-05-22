@@ -75,6 +75,9 @@
         "cstdbool": "c",
         "keyboarddriver.h": "c",
         "lib.h": "c",
-        "initstack.h": "c"
+        "initstack.h": "c",
+        "stdio.h": "c",
+        "string.h": "c",
+        "registers.h": "c"
     }
 }

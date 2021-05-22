@@ -30,7 +30,7 @@ static void setup_IDT_entry(int index, uint64_t offset)
 // Esta funcion va a ser llamada desde el kernel al iniciar el sistema
 void configureIDT()
 {
-  // print("configurando idts...",0xff,0xde);
+
   _cli();
 
   setup_IDT_entry(0x20, (uint64_t)&_irq0Handler);
@@ -45,6 +45,5 @@ void configureIDT()
   _picSlaveMask(0xFF);
 
   _sti();
-  // print("salgo idtsqwewqe...",0xff,0xde);
   return;
 }

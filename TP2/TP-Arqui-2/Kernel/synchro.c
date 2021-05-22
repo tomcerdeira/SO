@@ -1,8 +1,4 @@
-
 #include <synchro.h>
-
-
-
 ////////////
 #define CANT_SEMAPHORES 10
 
@@ -29,22 +25,14 @@ int mySemWait(char * name){
 int mySemPost(char * name){
     semT * sem = getSemByName(name);
 
-    //int i=0;
+    
      unblockMultiple(sem->blockedPids, sem->cantBlockedPids);
      sem->cantBlockedPids = 0;
-    // for (; i < sem->cantBlockedPids ; i++)
-    // {
-    //     if(sem->blockedPids[i] != -1){
-    //         sem->cantBlockedPids--;
-    //         block(sem->blockedPids[i]);
-    //         sem->blockedPids[i] = -1;
-    //     }
-    // }
     if(sem == -1){
         return -1;
     }
     _xadd(1,&(sem->value));
-    //block(getPid()); //debloquea el proceso
+ 
     return 0;
 }
 
@@ -61,25 +49,6 @@ void initSemaphores(){
     }
 }
 
-/////////////sacar de aka
-int strcmp(char *s1, char *s2)
-{
-    int cmp = 1;
-    int i;
-    for (i = 0; s1[i] != 0 && s2[i] != 0 && cmp; i++)
-    {
-        if (s1[i] != s2[i])
-        {
-            cmp = 0;
-        }
-    }
-
-    if ((s1[i] == 0 && s2[i] != 0) || (s1[i] != 0 && s2[i] == 0))
-    {
-        cmp = 0;
-    }
-    return cmp;
-}
 
 int getIndex(){
     int j=0;
@@ -159,9 +128,6 @@ void getSemStatus(char * name, int * status)
 }
 
 
-// HACER!!!!!
-// Ver como hacer con el tema de "los procesos bloqueados en cada uno"
-//
 void semsInfo(char *buffer)
 {
     int i = 0;

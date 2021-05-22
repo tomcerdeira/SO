@@ -329,6 +329,11 @@ void shellHandler()
       memInfo(buffer);
       printf(buffer);
     }
+      else if (strcmp(buff, "testmem"))
+    {
+     testMem();
+    }
+
 
 
     //TODO agregar:

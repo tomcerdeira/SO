@@ -7,7 +7,7 @@
 #include <time.h> // ????????????????
 #include <timer.h>
 
-#include <scheduler2.h>
+#include <scheduler.h>
 
 uint64_t *irqDispatcher(uint64_t irq, uint64_t *sp);
 #endif

@@ -13,7 +13,7 @@ void saveSnapShotRegister(uint64_t * stackFrame){
     for(int i=0; i<CANT_REGISTERS;i++){
         registers[i]=stackFrame[i];
     }
-    //registers[CANT_REGISTERS-1]=stackFrame[15];// Posicion del ip que dejo la interrupcion
+    
 }
 
 
