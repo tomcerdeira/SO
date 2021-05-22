@@ -47,6 +47,7 @@ int getPid();
 void block(int pid);
 void halterProcess();
 void ps(char *buffer);
+void nice(int pid, int newTimeSlot);
 void yield();
 int currentProcessIsForeground();
 void unblockReaders();

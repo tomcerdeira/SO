@@ -6,12 +6,14 @@
 uint64_t my_create_process(char *name, void *func(int, char **), int argc, char *argv[])
 {
   startProcess(name, func, argc, NULL, 1);
+  return 1;
 }
 
 uint64_t my_sem_open(char *name, uint64_t initialValue)
 {
   int * retValue =0;
-  return semOpen(name, initialValue,retValue);
+   semOpen(name, initialValue,retValue);
+   return *retValue;
 }
 
 uint64_t my_sem_wait(char *name)

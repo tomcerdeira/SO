@@ -1,6 +1,5 @@
 #include <synchro.h>
 ////////////
-#define CANT_SEMAPHORES 10
 
 int cantSemaphores = 0;
 

@@ -41,6 +41,7 @@ void printTime();
 long getMillis();
 
 int createProcess(char *name, void *func, int argc, char *argv[], int isForeground);
+int getPid();
 
 // https://www.techiedelight.com/implement-itoa-function-in-c/
 void swap(char *x, char *y);

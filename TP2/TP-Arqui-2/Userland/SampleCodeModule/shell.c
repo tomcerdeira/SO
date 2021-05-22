@@ -1,6 +1,6 @@
 #include <shell.h>
 
-#define CANT_OF_PIPEABLE_PROCESS 3
+#define CANT_OF_PIPEABLE_PROCESS 5
 #define BACKGROUND 0
 #define FOREGROUND 1
 #define FD_STDIN 1
@@ -16,17 +16,14 @@ typedef struct{
 
 static pipeableProcess pipeableProcesses[CANT_OF_PIPEABLE_PROCESS] = {{"loop", &endless_loop}, {"cat", &cat},
                         {"wc",&wc}, {"filter", &filter}, {"phylo", &philosphers}};
-//COMPLETAR
+
 
 static int isInitialized = 0;
-int * fdAux ; // BORRAR ES SOLO PARA PRUEBAS
+int * fdAux ; 
 
 void init()
 {
-  // if (isInitialized)
-  // {
-  //   shell();
-  // }
+
   isInitialized = 1;
   setFontColor(MODULE_COLOR);
   printf("TP-SO 2021 V1\n");

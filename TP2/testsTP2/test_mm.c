@@ -41,7 +41,7 @@ void test_mm()
 
       ///////////////////////////////
 
-      if (mm_rqs[rq].address == NULL)
+      if (mm_rqs[rq].address == 0)
       {
         printf("No hay memoria suficiente para %d\n", mm_rqs[rq].size);
         //exit(1);
@@ -63,10 +63,10 @@ void test_mm()
 
     for (i = 0; i < rq; i++)
     {
-      if (mm_rqs[i].address != NULL)
+      if (mm_rqs[i].address != 0)
       {
         auxi = memsetNUESTRO(mm_rqs[i].address, i, mm_rqs[i].size); // TODO: Port this call as required
-        if (auxi == NULL)
+        if (auxi == 0)
         {
           printf("ERROR EN MEMSET \n");
           exit(1);
@@ -76,7 +76,7 @@ void test_mm()
     //Check
     for (i = 0; i < rq; i++)
     {
-      if (mm_rqs[i].address != NULL)
+      if (mm_rqs[i].address != 0)
       {
         ////////
         // uint8_t *p = (uint8_t *)mm_rqs[i].address;
@@ -101,7 +101,7 @@ void test_mm()
     {
       //printf("VALOR RQ: %d \n", rq);
 
-      if (mm_rqs[i].address != NULL)
+      if (mm_rqs[i].address != 0)
       {
         freeMemory(mm_rqs[i].address);
         //printf("VALOR i: %d \n", i);

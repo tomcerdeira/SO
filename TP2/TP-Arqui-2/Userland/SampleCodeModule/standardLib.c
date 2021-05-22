@@ -470,6 +470,7 @@ long getMillis()
     getTime(&seconds, 2);
 
     long millis = 3600000 * hour + 60000 * minutes + seconds * 1000;
+    return millis;
 }
 
 //////////////////////////////// REV (si corresponde que este definida aca) y su funcionamiento

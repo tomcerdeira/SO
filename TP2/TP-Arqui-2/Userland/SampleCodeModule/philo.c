@@ -197,7 +197,7 @@ int philosphers(){
     semOpen(mutex, 1, &retSemOpen); // ver si el 1 esta bien
     if(retSemOpen < 0){
         printf("No se pudo abrir el semaforo\n");
-        return;
+        return -1;
     }
    semWait(mutex);
     for (int i = 0; i < 5; i++) {

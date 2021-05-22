@@ -5,6 +5,8 @@
 #include "lib.h"
 
 #define CANT_PROCESS 11
+#define CANT_SEMAPHORES 10
+
 ////////
 
 typedef struct
