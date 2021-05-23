@@ -2,31 +2,27 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <scheduler.h>
 
-
-
 process processes[CANT_PROCESS] = {{0}};
-
 
 int currentProcessIndex = -1;
 int globalPid = 0;
 process foregroundProcess = {0};
 int fdInputNextProcess = NOT_SETED;
 int fdOutputNextProcess = NOT_SETED;
-
-
+char bufferHalter[STACK_HALTER_SIZE] = {0};
 void halterProcess()
 {
     while (1)
-    { 
+    {
         _hlt();
     }
     timerTickInterrupt();
 }
-char bufferHalter[STACK_SIZE]={0};
+//char bufferHalter[STACK_SIZE] = {0};
 
 void createprocesses()
 {
-   
+
     int p = 0;
     for (; p < CANT_PROCESS; p++)
     {
@@ -68,17 +64,18 @@ void block(int pid)
             timerTickInterrupt();
             return;
         }
-    } 
-}
-
-///////////////////////////////
-void unblockMultiple(int * pids, int cant){
-    int i=0;
-    for(;i<cant;i++){
-        processes[getIndexOfPid(pids[i])].state = ACTIVO;
     }
 }
 
+///////////////////////////////
+void unblockMultiple(int *pids, int cant)
+{
+    int i = 0;
+    for (; i < cant; i++)
+    {
+        processes[getIndexOfPid(pids[i])].state = ACTIVO;
+    }
+}
 
 ///////////////////////////////
 
@@ -88,11 +85,11 @@ void unblockReaders()
     if (foregroundProcess.pid == processes[SHELL_POSITION].pid)
     {
         processes[SHELL_POSITION].state = ACTIVO;
-    }else
+    }
+    else
     {
         processes[getIndexOfPid(foregroundProcess.pid)].state = ACTIVO;
     }
-  
 }
 void blockReader(int pid)
 {
@@ -101,7 +98,8 @@ void blockReader(int pid)
     if (pid == processes[SHELL_POSITION].pid)
     {
         processes[SHELL_POSITION].state = BLOQUEADO;
-    } else
+    }
+    else
     {
         processes[getIndexOfPid(pid)].state = BLOQUEADO;
     }
@@ -133,13 +131,13 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[], i
         halter.state = MATADO;
         halter.timeSlot = 1;
         halter.timeRunnig = 0;
-        halter.memory = (uint64_t *) bufferHalter;
+        halter.memory = (uint64_t *)bufferHalter;
         halter.stackPointer = initStack(halter.memory + STACK_SIZE, wrapper, halter.function, 0, NULL, halter.pid);
-        processes[HALTER_POSITION]= halter;
-        currentProcessIndex = CANT_PROCESS-1;
+        processes[HALTER_POSITION] = halter;
+        currentProcessIndex = CANT_PROCESS - 1;
     }
-    
-    int availableProcess = getAvailableProcess(); 
+
+    int availableProcess = getAvailableProcess();
 
     if (availableProcess < 0)
     {
@@ -151,27 +149,26 @@ int startProcess(char *name, void *func(int, char **), int argc, char *argv[], i
     processes[availableProcess].state = ACTIVO;
     processes[availableProcess].name = name;
     processes[availableProcess].pid = globalPid++;
-    if(fdInputNextProcess == NOT_SETED ){
+    if (fdInputNextProcess == NOT_SETED)
+    {
         processes[availableProcess].fdInput = FD_STDIN;
         processes[availableProcess].fdOutput = FD_STOUT;
-    }else{
+    }
+    else
+    {
         processes[availableProcess].fdInput = fdInputNextProcess;
         processes[availableProcess].fdOutput = fdOutputNextProcess;
         fdInputNextProcess = NOT_SETED; //Reseteo para el próximo proceso que se cree
         fdOutputNextProcess = NOT_SETED;
     }
 
-    
     processes[availableProcess].timeSlot = TIME_SLOT;
 
     processes[availableProcess].memory = mallocNUESTRO(STACK_SIZE);
 
     processes[availableProcess].stackPointer = initStack(processes[availableProcess].memory + STACK_SIZE,
                                                          wrapper, processes[availableProcess].function, argc, argv, processes[availableProcess].pid);
-    
 
-
-    
     if (isForeground)
     {
         foregroundProcess = processes[availableProcess];
@@ -188,22 +185,27 @@ void wrapper(void *func(int, char **), int argc, char *argv[], int pid)
 
 uint64_t *sched(uint64_t *rsp)
 {
-    if(currentProcessIndex == -1)
+    if (currentProcessIndex == -1)
     {
         return rsp;
-    }else{
+    }
+    else
+    {
         processes[currentProcessIndex].stackPointer = rsp;
 
-        if(processes[currentProcessIndex].state == ACTIVO && processes[currentProcessIndex].timeSlot > processes[currentProcessIndex].timeRunnig){
+        if (processes[currentProcessIndex].state == ACTIVO && processes[currentProcessIndex].timeSlot > processes[currentProcessIndex].timeRunnig)
+        {
             processes[currentProcessIndex].timeRunnig++;
             return processes[currentProcessIndex].stackPointer;
         }
-        
-         int i=currentProcessIndex + 1; 
-         int j =0;  
-        for(;j<CANT_PROCESS;j++,i++){
-            if(processes[i % CANT_PROCESS].state == ACTIVO){
-                currentProcessIndex =i % CANT_PROCESS;
+
+        int i = currentProcessIndex + 1;
+        int j = 0;
+        for (; j < CANT_PROCESS; j++, i++)
+        {
+            if (processes[i % CANT_PROCESS].state == ACTIVO)
+            {
+                currentProcessIndex = i % CANT_PROCESS;
                 processes[currentProcessIndex].timeRunnig = 0;
                 return processes[i % CANT_PROCESS].stackPointer;
             }
@@ -211,7 +213,6 @@ uint64_t *sched(uint64_t *rsp)
         currentProcessIndex = HALTER_POSITION;
         return processes[currentProcessIndex].stackPointer;
     }
-    
 }
 
 void kill(int pid)
@@ -222,18 +223,18 @@ void kill(int pid)
         if (processes[pos].pid == pid && !strcompare(processes[pos].name, "shell"))
         {
             processes[pos].state = MATADO;
-            freeMemory((char *) processes[pos].memory);
+            freeMemory((char *)processes[pos].memory);
             processes[pos].pid = -1;
             processes[pos].function = 0;
             processes[pos].memory = 0;
             processes[pos].timeRunnig = 0;
             processes[pos].timeSlot = 0;
-    
+
             if (foregroundProcess.pid == pid)
             {
                 foregroundProcess = processes[SHELL_POSITION];
                 processes[SHELL_POSITION].state = ACTIVO;
-            }       
+            }
         }
     }
 }
@@ -311,8 +312,9 @@ void ps(char *buffer)
     }
 }
 
-void setFDNextNewProcess(int fdInput, int fdOutPut){
-    fdInputNextProcess  = fdInput;
+void setFDNextNewProcess(int fdInput, int fdOutPut)
+{
+    fdInputNextProcess = fdInput;
     fdOutputNextProcess = fdOutPut;
 }
 

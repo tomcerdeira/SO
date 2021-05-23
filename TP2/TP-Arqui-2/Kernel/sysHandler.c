@@ -9,7 +9,7 @@
 
 // System Calls --> casos y llamados a cada uno
 // https://stackoverflow.com/questions/37581530/passing-argument-from-c-to-assembly ( orden de los argumetos.)
-                 //      rdi             rsi             rdx         rcx             r8                      //r9
+//      rdi             rsi             rdx         rcx             r8                      //r9
 void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uint64_t *stackFrame, uint64_t *par5, uint64_t *par6)
 {
 
@@ -88,7 +88,7 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     case (10):
     {
         int aux = getSecondsCronometro();
-        par1 = (uint64_t *) &aux;
+        par1 = (uint64_t *)&aux;
         break;
     }
     case (11):
@@ -108,7 +108,7 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (14):
     {
-         startProcess((char *)par1, par6,(int) par2,(char **) par5, (int)par3); //REVISAR!!!!!!!!!!!!!!!!!!!!! //(nombre, funcion, argc, argv)
+        startProcess((char *)par1, (void *)par6, (int)par2, (char **)par5, (int)par3); //(nombre, funcion, argc, argv,isForeground)
         timerTickInterrupt();
         break;
     }
@@ -134,22 +134,22 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (19):
     {
-        ps( (char *)par1);
+        ps((char *)par1);
         break;
     }
     case (20):
     {
-        startProcess("test_sync", &test_sync, 0, NULL,0);
+        startProcess("test_sync", (void *)&test_sync, 0, NULL, 0);
         break;
     }
     case (21):
     {
-        startProcess("test_no_sync", &test_no_sync, 0, NULL,0);
+        startProcess("test_no_sync", (void *)&test_no_sync, 0, NULL, 0);
         break;
     }
     case (22):
     {
-        startProcess("test_processes", &test_processes, 0, NULL,0);
+        startProcess("test_processes", (void *)&test_processes, 0, NULL, 0);
         break;
     }
     case (23):
@@ -164,7 +164,7 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (25):
     {
-        setFDNextNewProcess((int)par3,(int)par2);
+        setFDNextNewProcess((int)par3, (int)par2);
         break;
     }
     case (26):
@@ -174,12 +174,12 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (27):
     {
-        getPidByName((char*)par1, (int *)par5);
+        getPidByName((char *)par1, (int *)par5);
         break;
     }
     case (28):
     {
-        semOpen((char *) par1, (int )par2, (int *)par5);
+        semOpen((char *)par1, (int)par2, (int *)par5);
         break;
     }
     case (29):
@@ -204,10 +204,10 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (33):
     {
-        *par1 = mallocNUESTRO((int) par2);
+        *par1 = mallocNUESTRO((int)par2);
         break;
     }
-      case (34):
+    case (34):
     {
         yield();
         break;
@@ -219,27 +219,27 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
     }
     case (36):
     {
-         freeMemory((char *)par1);
-         break;
+        freeMemory((char *)par1);
+        break;
     }
     case (37):
     {
-         semsInfo((char *)par1);
-         break;
+        semsInfo((char *)par1);
+        break;
     }
-        case (38):
+    case (38):
     {
-         getMemoryInfo((char *)par1);
-         break;
+        getMemoryInfo((char *)par1);
+        break;
     }
-     case (39):
+    case (39):
     {
-        startProcess("test_mm", &test_mm, 0, NULL, 0);
+        startProcess("test_mm", (void *)&test_mm, 0, NULL, 0);
         break;
     }
     case (40):
     {
-        startProcess("test_prio", &test_prio, 0, NULL, 0);
+        startProcess("test_prio", (void *)&test_prio, 0, NULL, 0);
         break;
     }
     default:
@@ -268,11 +268,11 @@ void write(uint64_t *buffer, uint64_t fontColor, uint64_t fd)
         }
         else
         {
-            writePipe(fdCurrentOutput,(char *) buffer);
+            writePipe(fdCurrentOutput, (char *)buffer);
         }
         break;
     default:
-        writePipe(fd,(char*) buffer);
+        writePipe(fd, (char *)buffer);
         break;
     }
 }
@@ -316,8 +316,8 @@ void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
         fdCurrentInput = getFdInput(currentPID);
         if (fdCurrentInput == FD_STDIN)
         {
-            
-            char *keyboardBuffer ;
+
+            char *keyboardBuffer;
             while ((keyboardBuffer = getKeyboardBuffer())[0] == 0)
             {
                 blockReader(getPid());
@@ -349,7 +349,7 @@ void read(uint64_t *buffer, uint64_t lengthBuffer, uint64_t fd)
         break;
 
     default:
-        sizeRead = readPipe((char*)buffer, lengthBuffer, fd);
+        sizeRead = readPipe((char *)buffer, lengthBuffer, fd);
         if (sizeRead < 0)
         {
             print("(sysHandler.c) ERROR: readPipe", 0x000000, 0xFFFFFF);

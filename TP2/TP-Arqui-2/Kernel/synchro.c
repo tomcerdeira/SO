@@ -8,13 +8,16 @@ int cantSemaphores = 0;
 semT semaphores[CANT_SEMAPHORES];
 int globalSemID = 0;
 
-int mySemWait(char * name){
-    semT * sem = getSemByName(name);
-    if(sem ==  (semT*) 0){
+int mySemWait(char *name)
+{
+    semT *sem = getSemByName(name);
+    if (sem == (semT *)0)
+    {
         return -1;
     }
-    while(_xadd(-1,&(sem->value)) <= 0){
-        _xadd(1,&(sem->value));
+    while (_xadd(-1, &(sem->value)) <= 0)
+    {
+        _xadd(1, &(sem->value));
         int currentProcessPid = getPid();
         sem->blockedPids[sem->cantBlockedPids++] = currentProcessPid;
         block(currentProcessPid); //bloquea el proceso
@@ -23,26 +26,29 @@ int mySemWait(char * name){
     return 0;
 }
 
-int mySemPost(char * name){
-    semT * sem = getSemByName(name);
-
-    
-     unblockMultiple(sem->blockedPids, sem->cantBlockedPids);
-     sem->cantBlockedPids = 0;
-    if(sem ==  (semT*) 0){
+int mySemPost(char *name)
+{
+    semT *sem = getSemByName(name);
+    if (sem == (semT *)0)
+    {
         return -1;
     }
-    _xadd(1,&(sem->value));
- 
+
+    unblockMultiple(sem->blockedPids, sem->cantBlockedPids);
+    sem->cantBlockedPids = 0;
+
+    _xadd(1, &(sem->value));
+
     return 0;
 }
 
-void initSemaphores(){
-    int i=0;
+void initSemaphores()
+{
+    int i = 0;
     semT newSem;
-    newSem.semID= 0;
-    newSem.value= 0;
-    newSem.cantGiven= 0;
+    newSem.semID = 0;
+    newSem.value = 0;
+    newSem.cantGiven = 0;
     newSem.cantBlockedPids = 0;
     for (; i < CANT_SEMAPHORES; i++)
     {
@@ -50,33 +56,39 @@ void initSemaphores(){
     }
 }
 
-
-int getIndex(){
-    int j=0;
-    for(;j<CANT_SEMAPHORES;j++){
-        if(semaphores[j].cantGiven == 0){
+int getIndex()
+{
+    int j = 0;
+    for (; j < CANT_SEMAPHORES; j++)
+    {
+        if (semaphores[j].cantGiven == 0)
+        {
             return j;
         }
     }
     return -1;
 }
 
-semT * semOpen(char * name,int initValue, int * retValue){
+semT *semOpen(char *name, int initValue, int *retValue)
+{
     int i = 0;
-    for(;i<CANT_SEMAPHORES;i++){
-        if(strcmp(name,semaphores[i].name) != 0){
-            semaphores[i].cantGiven  += 1;
+    for (; i < CANT_SEMAPHORES; i++)
+    {
+        if (strcmp(name, semaphores[i].name) != 0)
+        {
+            semaphores[i].cantGiven += 1;
             *retValue = 1;
             return &semaphores[i];
         }
     }
     // No encontro el semaforo, por que no esta creado --> debe crearlo
-    if(cantSemaphores < CANT_SEMAPHORES){
+    if (cantSemaphores < CANT_SEMAPHORES)
+    {
         semT nuevoSem;
         nuevoSem.name = name;
         nuevoSem.value = initValue;
         nuevoSem.semID = globalSemID++;
-        nuevoSem.cantGiven =1;
+        nuevoSem.cantGiven = 1;
         nuevoSem.cantBlockedPids = 0;
         int index = getIndex();
         semaphores[index] = nuevoSem;
@@ -89,29 +101,32 @@ semT * semOpen(char * name,int initValue, int * retValue){
         *retValue = -1;
         return (semT *)-1; //ERROR --> No se pudo crear el semaforo
     }
-    print("__ACA NO DEBERIA ESTAR__",0x32,0xFE);
+    print("__ACA NO DEBERIA ESTAR__", 0x32, 0xFE);
     *retValue = -1;
-    return (semT *) -1;
+    return (semT *)-1;
 }
 
-int semClose(char* name){
+int semClose(char *name)
+{
     int i = 0;
     for (; i < CANT_SEMAPHORES; i++)
     {
-        if(strcmp(semaphores[i].name,name)!= 0)
+        if (strcmp(semaphores[i].name, name) != 0)
         {
             semaphores[i].cantGiven -= 1;
-            if(semaphores[i].cantGiven == 0){
+            if (semaphores[i].cantGiven == 0)
+            {
                 cantSemaphores--;
                 return 0;
             }
         }
-    }   
+    }
     return -1;
 }
 
-semT * getSemByName(char * name){
-    int i =0;
+semT *getSemByName(char *name)
+{
+    int i = 0;
     for (; i < CANT_SEMAPHORES; i++)
     {
         if (strcmp(name, semaphores[i].name) != 0)
@@ -119,15 +134,14 @@ semT * getSemByName(char * name){
             return &semaphores[i];
         }
     }
-    return (semT*) 0;
+    return (semT *)0;
 }
 
-void getSemStatus(char * name, int * status)
+void getSemStatus(char *name, int *status)
 {
-    semT * sem = getSemByName(name);
+    semT *sem = getSemByName(name);
     *status = sem->value;
 }
-
 
 void semsInfo(char *buffer)
 {
@@ -141,17 +155,17 @@ void semsInfo(char *buffer)
 
     for (; i < CANT_SEMAPHORES; i++)
     {
-        if(semaphores[i].cantGiven > 0)
+        if (semaphores[i].cantGiven > 0)
         {
             //Name
             memcpy(buffer + j, semaphores[i].name, strlen(semaphores[i].name));
             j += strlen(semaphores[i].name);
-            memcpy(buffer + j, "\t\t\t\t", strlen( "\t\t\t\t"));
+            memcpy(buffer + j, "\t\t\t\t", strlen("\t\t\t\t"));
             j += strlen("\t\t\t\t");
 
             //ID
             char auxId[1];
-            numToStr(auxId,semaphores[i].semID);
+            numToStr(auxId, semaphores[i].semID);
             memcpy(buffer + j, auxId, strlen(auxId));
             j += strlen(auxId);
             memcpy(buffer + j, "\t\t\t\t\t\t", strlen("\t\t\t\t\t\t"));
@@ -176,7 +190,7 @@ void semsInfo(char *buffer)
             memcpy(buffer + j, "\t\t\t", strlen("\t\t\t"));
             j += strlen("\t\t\t");
 
-             //CantPidBlockeds
+            //CantPidBlockeds
             char auxPidBlockeds[2];
             numToStr(auxPidBlockeds, semaphores[i].cantBlockedPids);
             memcpy(buffer + j, auxPidBlockeds, strlen(auxPidBlockeds));
@@ -185,8 +199,8 @@ void semsInfo(char *buffer)
             j += strlen("\t\t\t");
 
             //Blocked PIDs
-            int k =0;
-            for(;k<semaphores[i].cantBlockedPids;k++)
+            int k = 0;
+            for (; k < semaphores[i].cantBlockedPids; k++)
             {
                 char auxPid[2];
                 numToStr(auxPid, semaphores[i].blockedPids[k]);
@@ -201,4 +215,3 @@ void semsInfo(char *buffer)
         }
     }
 }
-

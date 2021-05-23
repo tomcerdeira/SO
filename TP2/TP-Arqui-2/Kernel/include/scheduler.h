@@ -7,6 +7,7 @@
 #include <initStack.h>
 #include <interrupts.h>
 #include <memory_manager.h>
+//#include <buddy_system2.h>
 
 #define MATADO 0
 #define ACTIVO 1
@@ -19,6 +20,7 @@
 #define FD_STDIN 1
 #define FD_STOUT 2
 #define NOT_SETED -1
+#define STACK_HALTER_SIZE 128
 typedef struct
 {
     char *name;
@@ -58,7 +60,7 @@ void changeInputFd(int pid, int fd);
 int getIndexOfPid(int pid);
 int getFdInput(int pid);
 int getFdOutput(int pid);
-void unblockMultiple(int * pids, int cant);
+void unblockMultiple(int *pids, int cant);
 
 void setFDNextNewProcess(int fdInput, int fdOutPut);
 #endif

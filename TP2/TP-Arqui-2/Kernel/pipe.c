@@ -41,18 +41,18 @@ void createNewPipe(int *fd)
     {
         print("ENTRO CASO ERROR", 0x000000, 0xFFFFFF);
         *fd = -1;
-        return ; // NO HAY PIPES
+        return; // NO HAY PIPES
     }
-    pipe newPipe;
-    newPipe.buffer = mallocNUESTRO(SIZE_OF_PIPE);
-    newPipe.fd = globalFD++;
-    newPipe.isFree = NOT_FREE;
-    newPipe.cantOfProcessesConsuming++;
-    int * retValue = 0;
-    newPipe.sem = semOpen("prueba",1,retValue);
+    // pipe newPipe;
+    pipes[index].buffer = mallocNUESTRO(SIZE_OF_PIPE);
+    pipes[index].fd = globalFD++;
+    pipes[index].isFree = NOT_FREE;
+    pipes[index].cantOfProcessesConsuming++;
+    int *retValue = 0;
+    pipes[index].sem = semOpen("prueba", 1, retValue);
 
-    pipes[index] = newPipe;
-   
+    // pipes[index] = newPipe;
+
     *fd = pipes[index].fd;
 }
 
@@ -97,7 +97,6 @@ void writePipe(int fd, char *buffer)
         return; //ERROR : fd NO existe
     }
 
-
     int buffLength = strlen(buffer);
 
     if (buffLength > SIZE_OF_PIPE) //Como el buffer es circular, si se escribe algo más grande se escribe el final
@@ -108,7 +107,6 @@ void writePipe(int fd, char *buffer)
     }
 
     mySemWait(pipes[index].sem->name);
-
 
     if (pipes[index].writeIndex + buffLength > SIZE_OF_PIPE)
     {
@@ -126,7 +124,6 @@ void writePipe(int fd, char *buffer)
         pipes[index].writeIndex += buffLength;
     }
     mySemPost(pipes[index].sem->name);
-
 }
 
 int readPipe(char *buffer, int size, int fd)
@@ -136,17 +133,17 @@ int readPipe(char *buffer, int size, int fd)
     if (index < 0)
     {
         return -1;
-    }   
-  
+    }
+
     int i = 0;
 
     mySemWait(pipes[index].sem->name);
-    for (; i < SIZE_OF_PIPE && i<size && pipes[index].buffer[i]!=0; i++)
+    for (; i < SIZE_OF_PIPE && i < size && pipes[index].buffer[i] != 0; i++)
     {
-        if (pipes[index].readIndex == pipes[index].writeIndex )
+        if (pipes[index].readIndex == pipes[index].writeIndex)
         {
-           
-             mySemPost(pipes[index].sem->name);
+
+            mySemPost(pipes[index].sem->name);
             return i; // Aca termina
         }
         buffer[i] = pipes[index].buffer[pipes[index].readIndex];

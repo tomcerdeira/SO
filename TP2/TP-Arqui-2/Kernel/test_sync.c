@@ -7,15 +7,22 @@
 
 uint64_t my_create_process(char *name, void *func(int, char **), int argc, char *argv[])
 {
-  startProcess(name, func, argc, NULL, 1);
+  startProcess(name, (void *)func, argc, NULL, 1);
   return 1;
 }
 
 uint64_t my_sem_open(char *name, uint64_t initialValue)
 {
-  int * retValue =0;
-   semOpen(name, initialValue,retValue);
-   return *retValue;
+  int *retValue = 0;
+  semOpen(name, initialValue, retValue);
+  if (retValue != 0)
+  {
+    return *retValue;
+  }
+  else
+  {
+    return (uint64_t)-1;
+  }
 }
 
 uint64_t my_sem_wait(char *name)
@@ -110,8 +117,8 @@ void test_sync()
 
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
   {
-    my_create_process("incNUESTRO", &incNUESTROCONSEM, 1, NULL);
-    my_create_process("incNUESTRO", &incNUESTROCONSEM, -1, NULL);
+    my_create_process("incNUESTRO", (void *)&incNUESTROCONSEM, 1, NULL);
+    my_create_process("incNUESTRO", (void *)&incNUESTROCONSEM, -1, NULL);
   }
 }
 
@@ -125,8 +132,8 @@ void test_no_sync()
 
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
   {
-   
-    my_create_process("incNUESTRO", &incNUESTROSINSEM, 1, NULL);
-    my_create_process("incNUESTRO", &incNUESTROSINSEM, -1, NULL);
+
+    my_create_process("incNUESTRO", (void *)&incNUESTROSINSEM, 1, NULL);
+    my_create_process("incNUESTRO", (void *)&incNUESTROSINSEM, -1, NULL);
   }
 }

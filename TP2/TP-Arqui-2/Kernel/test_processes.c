@@ -4,7 +4,6 @@
 #include <test_util.h>
 #include <scheduler.h>
 
-
 void endless_loop()
 {
   while (1)
@@ -13,7 +12,7 @@ void endless_loop()
 
 uint32_t my_create_process_test(char *name)
 {
-  return startProcess(name, &endless_loop, 0, 0, 1);
+  return startProcess(name, (void *)&endless_loop, 0, 0, 1);
 }
 
 uint32_t my_kill(uint32_t pid)
@@ -34,11 +33,11 @@ uint32_t my_unblock(uint32_t pid)
   return 0;
 }
 
-#define MAX_PROCESSES 7 
+#define MAX_PROCESSES 7
 
 enum State
 {
-  ERROR_P, 
+  ERROR_P,
   RUNNING,
   BLOCKED,
   KILLED

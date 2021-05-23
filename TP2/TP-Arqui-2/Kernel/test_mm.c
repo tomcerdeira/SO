@@ -3,7 +3,6 @@
 
 #include <test_mm.h>
 
-
 void test_mm()
 {
   mm_rq mm_rqs[MAX_BLOCKS];
@@ -14,12 +13,12 @@ void test_mm()
     rq = 0;
     total = 0;
 
-    print("Total memory USED:",0xFFFFFF,0x000000);
-    printBase(getMemoryUsed(),10);
-    print("Total memory AVAILABLE:",0xffffff,0x000000);
-    printBase( getMemoryAvailable(),10);
-    print("\n",0xffffff,0x000000);
-    print("------------------------------------------------\n",0xffffff,0x000000);
+    print("Total memory USED:", 0xFFFFFF, 0x000000);
+    printBase(getMemoryUsed(), 10);
+    print(" || Total memory AVAILABLE:", 0xffffff, 0x000000);
+    printBase(getMemoryAvailable(), 10);
+    print("\n", 0xffffff, 0x000000);
+    print("------------------------------------------------\n", 0xffffff, 0x000000);
 
     // Request as many blocks as we can
     while (rq < MAX_BLOCKS && total < MAX_MEMORY)
@@ -30,16 +29,16 @@ void test_mm()
 
       if (mm_rqs[rq].address == 0)
       {
-        print("No hay memoria para: ",0xffffff,0x000000);
-        printBase((int)mm_rqs[rq].size,10);
-        print("\n",0xffffff,0x000000);
+        print("No hay memoria para: ", 0xffffff, 0x000000);
+        printBase((int)mm_rqs[rq].size, 10);
+        print("\n", 0xffffff, 0x000000);
       }
-    print("Total memory USED:",0xFFFFFF,0x000000);
-    printBase(getMemoryUsed(),10);
-    print("Total memory AVAILABLE:",0xffffff,0x000000);
-    printBase( getMemoryAvailable(),10);
-    print("\n",0xffffff,0x000000);
-    print("------------------------------------------------\n",0xffffff,0x000000);
+      print("Total memory USED:", 0xFFFFFF, 0x000000);
+      printBase(getMemoryUsed(), 10);
+      print(" || Total memory AVAILABLE:", 0xffffff, 0x000000);
+      printBase(getMemoryAvailable(), 10);
+      print("\n", 0xffffff, 0x000000);
+      print("------------------------------------------------\n", 0xffffff, 0x000000);
 
       total += mm_rqs[rq].size;
       rq++;
@@ -52,8 +51,7 @@ void test_mm()
     {
       if (mm_rqs[i].address != 0)
       {
-        memsetNUESTRO(mm_rqs[i].address, i, mm_rqs[i].size); 
-       
+        memsetNUESTRO(mm_rqs[i].address, i, mm_rqs[i].size);
       }
     }
     //Check
@@ -63,7 +61,7 @@ void test_mm()
       {
         if (!memcheck(mm_rqs[i].address, i, mm_rqs[i].size))
         {
-         print("ERROR! \n",0xffffff,0x000000);
+          print("ERROR! \n", 0xffffff, 0x000000);
         }
       }
     }
@@ -77,12 +75,11 @@ void test_mm()
       }
     }
 
-     print("Total memory USED:",0xFFFFFF,0x000000);
-    printBase(getMemoryUsed(),10);
-    print("Total memory AVAILABLE:",0xffffff,0x000000);
-    printBase( getMemoryAvailable(),10);
-    print("\n",0xffffff,0x000000);
-    print("------------------------------------------------\n",0xffffff,0x000000);
+    print("Total memory USED:", 0xFFFFFF, 0x000000);
+    printBase(getMemoryUsed(), 10);
+    print(" || Total memory AVAILABLE:", 0xffffff, 0x000000);
+    printBase(getMemoryAvailable(), 10);
+    print("\n", 0xffffff, 0x000000);
+    print("------------------------------------------------\n", 0xffffff, 0x000000);
   }
 }
-

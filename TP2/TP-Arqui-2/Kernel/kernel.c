@@ -8,10 +8,9 @@
 #include <consoleManager.h>
 #include <idt.h>
 #include <pipe.h>
-#include <buddy_system2.h>
-//#include <memory_manager.h>
+//#include <buddy_system2.h>
+#include <memory_manager.h>
 #include <videoDriver.h>
-
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -21,8 +20,6 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 extern uint64_t *getSP();
-
-
 
 static const uint64_t PageSize = 0x1000;
 
@@ -59,21 +56,17 @@ void *initializeKernelBinary()
 
 int main()
 {
-	
+
 	initScreen();
 
 	initializeMemory();
 	initPipes();
 	createprocesses();
 
-
 	configureIDT();
 	setReturns(sampleCodeModuleAddress, getSP()); //Seteado de IP y SP
 
-
 	((EntryPoint)sampleCodeModuleAddress)();
-
 
 	return 0;
 }
-

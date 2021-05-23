@@ -2,7 +2,7 @@
 #define TEST_MM
 
 #include <memory_manager.h>
-#include <buddy_system2.h>
+//#include <buddy_system2.h>
 #include "test_util.h"
 #include <libC.h>
 // #define MAX_BLOCKS (int)MAX_MEMORY / BLOCK --> memory manager descomentar

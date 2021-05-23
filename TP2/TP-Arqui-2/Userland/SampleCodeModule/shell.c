@@ -11,16 +11,16 @@
 static char user[20] = {0};
 static char userShell[30] = {0};
 extern int philosphers();
-typedef struct{
-  char * name;
-  void (*funcion); // (int, char **) 
-}pipeableProcess;
+typedef struct
+{
+  char *name;
+  void(*funcion); // (int, char **)
+} pipeableProcess;
 
-static pipeableProcess pipeableProcesses[CANT_OF_PIPEABLE_PROCESS] = {{"loop", &endless_loop}, {"cat", &cat}, {"wc",&wc}, {"filter", &filter}, {"phylo", &philosphers}};
-
+static pipeableProcess pipeableProcesses[CANT_OF_PIPEABLE_PROCESS] = {{"loop", &endless_loop}, {"cat", &cat}, {"wc", &wc}, {"filter", &filter}, {"phylo", &philosphers}};
 
 static int isInitialized = 0;
-int * fdAux ; 
+int *fdAux;
 
 void init()
 {
@@ -67,11 +67,10 @@ void shellHandler()
     char param2[100] = {0};
 
     scanf("%s %s %s", buff, param1, param2);
-    
 
     if (strcmp(buff, "help"))
     {
-      
+
       setFontColor(MODULE_COLOR);
       printf("printmem: ");
       setFontColor(DEFAULT_FONT_COLOR);
@@ -256,19 +255,23 @@ void shellHandler()
       {
         isForeground = 0;
         createProcess("loop", &endless_loop, 0, 0, isForeground);
-      }else if(strcmp(param1, "|"))
-      {   
+      }
+      else if (strcmp(param1, "|"))
+      {
         getPipe(fdAux);
-        setNextProcessFd(*fdAux,*fdAux);
+        setNextProcessFd(*fdAux, *fdAux);
         createProcess("loop", &endless_loop, 0, 0, BACKGROUND); //0= background
-       
+
         int index = isAPipeableProcess(param2);
-        if(index > 0){
-          setNextProcessFd(*fdAux,2);
-          createProcess(param2,pipeableProcesses[index].funcion,0,0,FOREGROUND); // 1= foreground 
+        if (index > 0)
+        {
+          setNextProcessFd(*fdAux, 2);
+          createProcess(param2, pipeableProcesses[index].funcion, 0, 0, FOREGROUND); // 1= foreground
         }
-      }else{
-         createProcess("loop", &endless_loop, 0, 0, FOREGROUND);
+      }
+      else
+      {
+        createProcess("loop", &endless_loop, 0, 0, FOREGROUND);
       }
     }
     else if (strcmp(buff, "ps"))
@@ -294,13 +297,13 @@ void shellHandler()
     {
       test_sync();
     }
-    
+
     else if (strcmp(buff, "testnosync"))
     {
       test_no_sync();
     }
     else if (strcmp(buff, "cat"))
-    { 
+    {
       createProcess("cat", &cat, 0, 0, FOREGROUND);
     }
     else if (strcmp(buff, "testprocesses"))
@@ -313,11 +316,11 @@ void shellHandler()
     }
     else if (strcmp(buff, "wc"))
     {
-      createProcess("wc",&wc,0,0,FOREGROUND);
+      createProcess("wc", &wc, 0, 0, FOREGROUND);
     }
     else if (strcmp(buff, "filter"))
     {
-     createProcess("filter",&filter,0,0,FOREGROUND);
+      createProcess("filter", &filter, 0, 0, FOREGROUND);
     }
     else if (strcmp(buff, "pipe"))
     {
@@ -325,57 +328,72 @@ void shellHandler()
       pipesInfo(buffer);
       printf(buffer);
     }
-     else if (strcmp(buff, "phylo"))
+    else if (strcmp(buff, "phylo"))
     {
       if (strcmp(param1, "&"))
       {
-        createProcess("phylo",&philosphers,0,0,BACKGROUND);
-      }else if(strcmp(param1, "|")){
-         getPipe(fdAux);
-        setNextProcessFd(FD_STDIN,*fdAux);
+        createProcess("phylo", &philosphers, 0, 0, BACKGROUND);
+      }
+      else if (strcmp(param1, "|"))
+      {
+        getPipe(fdAux);
+        setNextProcessFd(FD_STDIN, *fdAux);
         createProcess("phylo", &philosphers, 0, 0, BACKGROUND); //0= background
-       
+
         int index = isAPipeableProcess(param2);
-        if(index > 0){
-          setNextProcessFd(*fdAux,FD_STOUT);
-          createProcess(param2,pipeableProcesses[index].funcion,0,0,FOREGROUND); // 1= foreground 
+        if (index > 0)
+        {
+          setNextProcessFd(*fdAux, FD_STOUT);
+          createProcess(param2, pipeableProcesses[index].funcion, 0, 0, FOREGROUND); // 1= foreground
         }
-      
-      }else{
-        createProcess("phylo",&philosphers,0,0,FOREGROUND);
+      }
+      else
+      {
+        createProcess("phylo", &philosphers, 0, 0, FOREGROUND);
       }
     }
-     else if (strcmp(buff, "sem"))
+    else if (strcmp(buff, "sem"))
     {
       char buffer[1024] = {0};
       getSemInfo(buffer);
       printf(buffer);
     }
-     else if (strcmp(buff, "mem"))
+    else if (strcmp(buff, "mem"))
     {
       char buffer[1024] = {0};
       memInfo(buffer);
       printf(buffer);
     }
-      else if (strcmp(buff, "testmem"))
+    else if (strcmp(buff, "testmem"))
     {
-     testMem();
+      testMem();
     }
-      else if (strcmp(buff, "testprio"))
+    else if (strcmp(buff, "testprio"))
     {
-     testPrio();
+      testPrio();
     }
+    else if (strcmp(buff, "man") && strcmp(param1, "phylo"))
+    {
+      printf("\n\n");
+      printf("  ||||            ====            ||||  \n");
+      printf("  ||||         ==      ==         ||||  \n");
+      printf("  \\__/       ==          ==       \\__/  \n");
+      printf("   ||       ==            ==       ||   \n");
+      printf("   ||        ==           ==       ||   \n");
+      printf("   ||         ==        ==         ||   \n");
+      printf("   ||             ====             ||   \n");
 
-
-
-    //TODO agregar:
-    // - help --> falta agregar todas las syscalls nuevas (los tests)
-    // - Cat (stdin) --> Imprime el stdin pasado como param
-    // - WC (input)--> Cuenta la cantidad de lineas del input
-    // - Filter (input) --> Filtra las vocales del input
-    // - Pipe --> Imprime la lista de todos los pipes con sus propiedades
-    // - Phylo --> Implementar el problema de los filosofos
-    // Implementar foreground y background
+      printf("\n");
+      printf("Cinco filosofos se sientan alrededor de una mesa y pasan su vida cenando y pensando. Cada filosofo tiene un plato de fideos y un tenedor a la izquierda de su plato. Para comer los fideos son necesarios dos tenedores y cada filosofo solo puede tomar los que estan a su izquierda y derecha. Si cualquier filosofo toma un tenedor y el otro esta ocupado, se quedara esperando, con el tenedor en la mano, hasta que pueda tomar el otro tenedor, para luego empezar a comer.\n Si dos filosofos adyacentes intentan tomar el mismo tenedor a una vez, se produce una condicion de carrera: ambos compiten por tomar el mismo tenedor, y uno de ellos se queda sin comer.\n Si todos los filosofos toman el tenedor que esta a su derecha al mismo tiempo, entonces todos se quedaran esperando eternamente, porque alguien debe liberar el tenedor que les falta. Nadie lo hara porque todos se encuentran en la misma situacion (esperando que alguno deje sus tenedores). Entonces los filosofos se moriran de hambre. Este bloqueo mutuo se denomina interbloqueo o deadlock.\n");
+      printf("El problema consiste en encontrar un algoritmo que permita que los filosofos nunca se mueran de hambre.\n");
+      printf("\n\n");
+      printf("Comandos:\n");
+      printf("\ta: agrega un filosofo\n");
+      printf("\tr: remueve un filosofo\n");
+      printf("\tp: imprime el estado de los procesos\n");
+      printf("\t/: salir\n");
+      printf("\n\n");
+    }
     else
     {
       printf("\n");
@@ -392,18 +410,16 @@ void shellHandler()
 void shellManager()
 {
   setFontColor(DEFAULT_FONT_COLOR);
-  
+
   init();
 }
 
 void endless_loop()
-{ 
- 
+{
+
   while (1)
   {
     printf("%d \n", getPid());
-    
-    
   }
 }
 
@@ -414,13 +430,14 @@ void cat()
 
   while (!exit)
   {
-    scanf("%s",buffer);
+    scanf("%s", buffer);
     if (!strcmp(buffer, "/"))
     {
-      printf("%s",buffer);
+      printf("%s", buffer);
       printf("\n");
-      int i =0;
-      while(buffer[i] != 0){
+      int i = 0;
+      while (buffer[i] != 0)
+      {
         buffer[i++] = 0;
       }
       // VER POR QUE LA QUEDA CUANDO HACEMOS ESTO
@@ -435,65 +452,81 @@ void cat()
   }
 }
 
-int isAPipeableProcess(char * name){
-  int i=0;
-  for(;i<CANT_OF_PIPEABLE_PROCESS;i++){
-      if(strcmp(pipeableProcesses[i].name,name)){
-        return i;
-      }
-  } 
+int isAPipeableProcess(char *name)
+{
+  int i = 0;
+  for (; i < CANT_OF_PIPEABLE_PROCESS; i++)
+  {
+    if (strcmp(pipeableProcesses[i].name, name))
+    {
+      return i;
+    }
+  }
   return -1;
 }
 
 int lines;
-void wc(){
+void wc()
+{
   //int lines;
   lines = 0;
-  char in[100]={0};
+  char in[100] = {0};
   scanf("%s", in);
-  while( strcmp(in,"/") ==0){
-        lines++;
-      cleanBuffer(in,100);
-      scanf("%s", in);
+  while (strcmp(in, "/") == 0)
+  {
+    lines++;
+    cleanBuffer(in, 100);
+    scanf("%s", in);
   }
   printf("Cantidad de lineas: %d\n", lines);
 }
 
-int isVowel(char input){
-  char vowels[] = {'a','e','i','o','u'};
-  int i=0;
-  for(;i<5;i++){
-    if(input == vowels[i]){
+int isVowel(char input)
+{
+  char vowels[] = {'a', 'e', 'i', 'o', 'u'};
+  int i = 0;
+  for (; i < 5; i++)
+  {
+    if (input == vowels[i])
+    {
       return 1;
     }
   }
   return 0;
 }
 
-void filter(){
+void filter()
+{
   char buffer[100] = {0};
-  int index=0;
+  int index = 0;
   char toPrint[100] = {0};
   int cantVowels = 0;
   int exit = 0;
 
-  while( !exit ){
-    scanf("%s",buffer);
-    if (!strcmp(buffer, "/")){
-      int i= 0;
-      for (; i<sizeof(buffer); i++){
-        if(isVowel(buffer[i])){
+  while (!exit)
+  {
+    scanf("%s", buffer);
+    if (!strcmp(buffer, "/"))
+    {
+      int i = 0;
+      for (; i < sizeof(buffer); i++)
+      {
+        if (isVowel(buffer[i]))
+        {
           cantVowels++;
           toPrint[index++] = buffer[i];
         }
-        else if (buffer[i] ==' '){
+        else if (buffer[i] == ' ')
+        {
           toPrint[index++] = buffer[i];
         }
       }
-    } else {
+    }
+    else
+    {
       exit = 1;
     }
   }
   printf("%s\n", toPrint);
-  printf("Cantidad de vocales: %d\n",cantVowels);
+  printf("Cantidad de vocales: %d\n", cantVowels);
 }

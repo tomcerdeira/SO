@@ -1,8 +1,8 @@
 #ifndef PIPE
 #define PIPE
 
-//#include <memory_manager.h>
-#include <buddy_system2.h>
+#include <memory_manager.h>
+//#include <buddy_system2.h>
 #include <lib.h>
 #include <synchro.h>
 
@@ -19,7 +19,7 @@ typedef struct
     int fd;
     int isFree;
     int cantOfProcessesConsuming;
-    semT * sem;
+    semT *sem;
 } pipe;
 
 void initPipes();

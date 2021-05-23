@@ -27,6 +27,7 @@
         "exceptionsmanager.h": "c",
         "*.tcc": "c",
         "cstring": "c",
-        "test_mm.h": "c"
+        "test_mm.h": "c",
+        "lib.h": "c"
     }
 }
