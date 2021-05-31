@@ -206,3 +206,4 @@ void pipesInfo(char *buffer)
         }
     }
 }
+l

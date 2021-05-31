@@ -21,6 +21,7 @@ static pipeableProcess pipeableProcesses[CANT_OF_PIPEABLE_PROCESS] = {{"loop", &
 
 static int isInitialized = 0;
 int *fdAux;
+extern testSh();
 
 void init()
 {
@@ -327,6 +328,9 @@ void shellHandler()
       char buffer[1024] = {0};
       pipesInfo(buffer);
       printf(buffer);
+    }
+    else if(strcmp(buff, "sh")){
+      testSh();
     }
     else if (strcmp(buff, "phylo"))
     {
