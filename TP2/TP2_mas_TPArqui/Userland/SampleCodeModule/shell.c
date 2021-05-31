@@ -329,7 +329,8 @@ void shellHandler()
       pipesInfo(buffer);
       printf(buffer);
     }
-    else if(strcmp(buff, "sh")){
+    else if (strcmp(buff, "sh"))
+    {
       testSh();
     }
     else if (strcmp(buff, "phylo"))
@@ -397,9 +398,6 @@ void shellHandler()
       printf("\tp: imprime el estado de los procesos\n");
       printf("\t/: salir\n");
       printf("\n\n");
-    } else if (strcmp(buff, "testSh"))
-    {
-      //createProcess("tesdt")
     }
     else
     {
@@ -537,4 +535,3 @@ void filter()
   printf("%s\n", toPrint);
   printf("Cantidad de vocales: %d\n", cantVowels);
 }
-
