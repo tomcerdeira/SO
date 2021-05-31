@@ -15,7 +15,7 @@ void initSharedMemory(){
     }    
 }
 
-char * shm_open(int index, int size){
+void * shm_open(int index, int size){
 
     if (index < 0 || index > CANT_BLOCKS_SHARED_MEMORY){
         return 0; // NULL
@@ -28,10 +28,10 @@ char * shm_open(int index, int size){
         }
         sharedBlocks[index].ptr = mallocNUESTRO(size);
         sharedBlocks[index].size = size;
-        sharedBlocks[index].isFree = NOT_FREE;
-        sharedBlocks[index].beingUsedBy++;
-        
+        sharedBlocks[index].isFree = NOT_FREE;        
     }
+    
+    sharedBlocks[index].beingUsedBy++;
     return sharedBlocks[index].ptr;  
 }
 
@@ -41,11 +41,12 @@ void shm_close(int index){
         return -1;
     }
     
-    sharedBlocks[index].beingUsedBy --;
+    sharedBlocks[index].beingUsedBy--;
     
     if (sharedBlocks[index].beingUsedBy == 0){
         sharedBlocks[index].isFree = FREE;
         sharedBlocks[index].size = 0;
         freeMemory(sharedBlocks[index].ptr);
+        sharedBlocks[index].ptr = 0;
     }
 }

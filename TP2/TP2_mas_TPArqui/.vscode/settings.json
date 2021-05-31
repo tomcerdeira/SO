@@ -78,6 +78,7 @@
         "initstack.h": "c",
         "stdio.h": "c",
         "string.h": "c",
-        "registers.h": "c"
+        "registers.h": "c",
+        "sharedmemory.h": "c"
     }
 }

@@ -716,6 +716,7 @@ shClose:
 
     int 80h
 
+    mov rdi,rsi
     pop rsi
     pop rcx
 

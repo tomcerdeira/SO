@@ -13,12 +13,12 @@ typedef struct{
     char * name;
     int size;
     int isFree;
-    char * ptr;
+    uint64_t * ptr;
     int beingUsedBy;
 }shared_block;
 
 void initSharedMemory();
-char *  shm_open(int index, int size);
+void * shm_open(int index, int size);
 void shm_close(int index);
 
 
