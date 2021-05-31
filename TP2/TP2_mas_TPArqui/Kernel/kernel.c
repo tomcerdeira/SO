@@ -11,6 +11,7 @@
 //#include <buddy_system2.h>
 #include <memory_manager.h>
 #include <videoDriver.h>
+#include <sharedMemory.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -62,6 +63,7 @@ int main()
 	initializeMemory();
 	initPipes();
 	createprocesses();
+	initSharedMemory();
 
 	configureIDT();
 	setReturns(sampleCodeModuleAddress, getSP()); //Seteado de IP y SP

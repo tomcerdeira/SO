@@ -12,6 +12,7 @@
 #include <test_sync.h>
 #include <test_processes.h>
 #include <pipe.h>
+#include <sharedMemory.h>
 
 #define MEMORY_REQUIRED 32
 // Tomamos como modelo las de linux

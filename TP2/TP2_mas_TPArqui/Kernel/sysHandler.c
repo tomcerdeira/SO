@@ -242,6 +242,16 @@ void sysHandler(uint64_t *par1, uint64_t par2, uint64_t par3, int sysCallID, uin
         startProcess("test_prio", (void *)&test_prio, 0, NULL, 0);
         break;
     }
+    case (41):
+    {
+        (*par1) = shm_open(par2, par3); //par2 = index, par3 = size
+        break;
+    }
+    case (42):
+    {
+        shm_close(par2); //par2 = index
+        break;
+    }
     default:
         break;
     }

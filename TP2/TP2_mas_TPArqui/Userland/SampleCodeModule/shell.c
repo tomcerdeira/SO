@@ -393,6 +393,9 @@ void shellHandler()
       printf("\tp: imprime el estado de los procesos\n");
       printf("\t/: salir\n");
       printf("\n\n");
+    } else if (strcmp(buff, "testSh"))
+    {
+      //createProcess("tesdt")
     }
     else
     {
@@ -530,3 +533,4 @@ void filter()
   printf("%s\n", toPrint);
   printf("Cantidad de vocales: %d\n", cantVowels);
 }
+

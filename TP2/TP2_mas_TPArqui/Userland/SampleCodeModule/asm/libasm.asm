@@ -39,6 +39,8 @@ GLOBAL getSemInfo
 GLOBAL memInfo
 GLOBAL testMem
 GLOBAL testPrio
+GLOBAL shOpen
+GLOBAL shClose
 ;  par1 --> buffer donde esta lo que quiero escribir
 ;  par2 --> fileDescrpitor
 ;  par3 --> long del buffer
@@ -687,3 +689,36 @@ testPrio:
     pop rbp
     ret
 
+shOpen:
+    push rbp
+    mov rbp,rsp
+
+    push rcx
+    mov rcx, 41
+
+    int 80h
+
+    pop rcx
+
+    mov rsp,rbp
+    pop rbp
+    ret
+
+shClose:
+    push rbp
+    mov rbp,rsp
+
+    push rcx
+    push rsi
+
+    mov rsi, rdi
+    mov rcx, 42
+
+    int 80h
+
+    pop rsi
+    pop rcx
+
+    mov rsp,rbp
+    pop rbp
+    ret
