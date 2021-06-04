@@ -14,7 +14,7 @@
 
 //void *connection_handler(void *);
 
-#define PORT 8080
+#define PORT 8081
 //#define ENTENDIDO "entendido\n"
 #define ENTENDIDO_SIZE 10
 #define CANT_DESAFIOS 12
