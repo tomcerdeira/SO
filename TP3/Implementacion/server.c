@@ -17,11 +17,11 @@
 
 //void *connection_handler(void *);
 
-#define PORT 8081
+#define PORT 8080
 //#define ENTENDIDO "entendido\n"
 #define ENTENDIDO_SIZE 10
 #define CANT_DESAFIOS 12
-#define CANT_CHARACTER_USED 2
+#define CANT_CHARACTER_USED 123
 
 int compare(char *str1, char *str2);
 void desafio2();
@@ -78,12 +78,13 @@ int main(int argc, char *argv[])
 
 	while ((new_socket = accept(socket_desc, (struct sockaddr *)&client, (socklen_t *)&c)))
 	{
+			system("clear");
 		puts("------------- DESAFIO -------------");
 
 		//Reply to the client
 		puts("Bienvenidos al TP3 y felicitaciones, ya resolvieron el primer acertijo.\n\nEn este TP deberán finalizar el juego que ya comenzaron resolviendo los desafíos de cada nivel.\nAdemás tendrán que investigar otras preguntas para responder durante la defensa.\nEl desafío final consiste en crear un programa que se comporte igual que yo, es decir, que provea los mismos desafíos y que sea necesario hacer lo mismo para resolverlos. No basta con esperar la respuesta.\nAdemás, deberán implementar otro programa para comunicarse conmigo.\n\n\n\nDeberán estar atentos a los easter eggs.\n\n\n\nPara verificar que sus respuestas tienen el formato correcto respondan a este desafío con la palabra 'entendido\\n'\n");
 		puts("¿Cómo descubrieron el protocolo, la dirección y el puerto para conectarse?");
-		numero_desafio = 0;
+		numero_desafio = 8;
 
 		while ((read_size = read(new_socket, client_message, 2000) > 0))
 		{
@@ -91,13 +92,13 @@ int main(int argc, char *argv[])
 			system("clear");
 			(*desafios[numero_desafio])();
 			if (strcmp(client_message, respuestas[numero_desafio]) == 0)
-			{
+			{	
 				numero_desafio++;
 			}
-			else if (strcmp(client_message, "\n") == 0) // Para reintentarlo en aquellos que lo requieren
-			{
-				(*desafios[numero_desafio])();
-			}
+			// else if (strcmp(client_message, "\n") == 0) // Para reintentarlo en aquellos que lo requieren
+			// {
+			// 	(*desafios[numero_desafio])();
+			// }
 			else
 			{
 				char buffer[100] = {0};
@@ -194,14 +195,15 @@ void desafio7()
 	int randNumber = 0;
 	while (k < i)
 	{
-		randNumber = rand() % 5;
+		randNumber = rand() % 7;
 		if (randNumber == 0)
 		{
-			write(STDOUT_FILENO, toPrint[k++], 1);
+			write(STDOUT_FILENO, toPrint+k++, 1);
 		}
 		else
 		{
-			write(STDEER_FILE, (rand() + 33) % CANT_CHARACTER_USED, 1);
+			char toP = (char )(rand() % CANT_CHARACTER_USED+ 32);
+			write(STDERR_FILENO,&toP, 1);
 			// + 33 es por que los primeros 32 ascii no son caracters https://elcodigoascii.com.ar/
 		}
 	}
@@ -216,7 +218,9 @@ void desafio8()
 	puts("¿?\n");
 	/// lo de seleccionar y que muestre la respuesta
 	// https://www.programmersought.com/article/2256659653/
-	printf("\40[background color; m La respuesta es: BUmyYq5XxXGt \40[0m");
+	printf("\033[0;30m"); //\033[0;30m
+	printf("La respuesta es: BUmyYq5XxXGt \n");
+	printf("\033[0m");
 	// \033[background color; font color m represents a color font of a certain background color that you choose to output from here.
 	// \033[0m represents the end of the custom color, restore the system default
 
@@ -240,9 +244,17 @@ void desafio10()
 	puts("quine\n\n");
 
 	// Intento compilar el quine.c
-	char *args[] = {"./gcc -Wall -o quine quine.c", NULL};
-	execvp(args[0], args);
-
+	// int pid2=1;
+	// if((pid2=fork()) == 0){
+	// 		char *args[] = {"./gcc -Wall -o quine quine.c", NULL};
+				
+	// 		if (system(args[0], args) < 0)
+	// 		{
+	// 			perror("ERROR en Execv (desafio10)");
+	// 			return;
+	// 		}
+	// 	}
+	system("gcc -Wall -o quine quine.c");
 	// Busco en el PWD si esta el archivo
 	DIR *dp;
 	struct dirent *entry;
@@ -283,43 +295,60 @@ void desafio10()
 			perror("ERROR al crear pipe (desafio10)");
 			return;
 		}
-		dup2(STDOUT_FILENO, fd[0]); //redirecciono la salida del STDOUT al pipe (eso intento)
-		char *quine[] = {"./quine", NULL};
-		int resExec = execvp(quine[0], quine);
-		if (resExec < 0)
-		{
-			perror("ERROR en Execv (desafio10)");
-			return;
+		
+		int pid = -1;
+		if((pid=fork()) == 0){
+			if(dup2(fd[1],STDOUT_FILENO)<0)//redirecciono la salida del STDOUT al pipe (eso intento)
+			{
+				perror("Error al supear la salida");
+			} 
+			char *quine[] = {"./quine", NULL};  //antes del exec hay que forkear si no te pisa la imagen del server
+			int resExec = execvp(quine[0], quine);
+			if (resExec < 0)
+			{
+				perror("ERROR en Execv (desafio10)");
+				return;
+			}
 		}
+	
+		
 
-		//Ahora deberia ver si lo que se escribio en el fd es igual al programa en si
+		char buffer[1024]={0};
+		read(fd[0],buffer,1024);
+	
+		
+		// //Ahora deberia ver si lo que se escribio en el fd es igual al programa en si
 		char chSalida;
-		char chFd;
+		int bufferIndex = 0;
 		FILE *fp;
 
 		int different = 0;
 
 		fp = fopen("quine.c", "r"); // read mode
-
-		while ((ch = fgetc(fp)) != EOF && (chFd = fgetc(fd[1])) != EOF)
+	
+		while ((chSalida= (char)fgetc(fp)) != EOF && (buffer[bufferIndex]) != EOF && bufferIndex<1024)
 		{
-			if (strcmp(chSalida, chFd) != 0)
+			if (chSalida !=buffer[bufferIndex++])
 			{
+				printf("Leido del file: %c Leido del pipe: %c",chSalida,buffer[bufferIndex-1]);
 				different = 1;
 			}
 		}
 		fclose(fp);
 
+		if(!different){
+			puts("La respuesta es chin_chu_lan_cha\n");		
+		}
+
 		//Habria que hacer la logica ahora de si son distinto o no
 	}
 
 	//SI HACE LO QUE TIENE QUE HACER
-	puts("La respuesta es chin_chu_lan_cha\n");
 
 	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
 	puts("¿Cuáles son las características del protocolo SCTP?\n");
-	// hacer programa quine.c
-	//chin_chu_lan_cha
+	// // hacer programa quine.c
+	// //chin_chu_lan_cha
 }
 
 void desafio11()
