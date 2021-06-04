@@ -163,6 +163,7 @@ void desafio4()
 {
 	puts(DESAFIO);
 	puts("EBADF...\nwrite: Bad file descriptor\n");
+	write(13,".................................................................La respuesta es: fk3wfLCm3QvS",strlen(".................................................................La respuesta es: fk3wfLCm3QvS"));
 	puts(PREGUNTA);
 	puts("¿Qué útil abstracción es utilizada para comunicarse con sockets? ¿se puede utilizar read(2) y write(2) para operar?\n");
 	//fk3wfLCm3QvS
