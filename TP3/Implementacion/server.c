@@ -7,6 +7,9 @@
 #include <unistd.h>	   //write
 #include <stdlib.h>
 #include <errno.h>
+#include <dirent.h>
+#include <sys/stat.h>
+
 // #include <windows.h>
 //#include<conio.h> //clear// console
 
@@ -18,6 +21,7 @@
 //#define ENTENDIDO "entendido\n"
 #define ENTENDIDO_SIZE 10
 #define CANT_DESAFIOS 12
+#define CANT_CHARACTER_USED 2
 
 int compare(char *str1, char *str2);
 void desafio2();
@@ -89,6 +93,10 @@ int main(int argc, char *argv[])
 			if (strcmp(client_message, respuestas[numero_desafio]) == 0)
 			{
 				numero_desafio++;
+			}
+			else if (strcmp(client_message, "\n") == 0) // Para reintentarlo en aquellos que lo requieren
+			{
+				(*desafios[numero_desafio])();
 			}
 			else
 			{
@@ -179,7 +187,24 @@ void desafio7()
 {
 	puts("------------- DESAFIO -------------\n");
 	puts("Filter error\n");
-	/// MEZCLAR STDOUT CON STDIN
+	int k = 0;
+	int i = strlen("La respuesta es: K5n2UFfpFMUN");
+	char *toPrint = "La respuesta es: K5n2UFfpFMUN";
+	srand(time(NULL));
+	int randNumber = 0;
+	while (k < i)
+	{
+		randNumber = rand() % 5;
+		if (randNumber == 0)
+		{
+			write(STDOUT_FILENO, toPrint[k++], 1);
+		}
+		else
+		{
+			write(STDEER_FILE, (rand() + 33) % CANT_CHARACTER_USED, 1);
+			// + 33 es por que los primeros 32 ascii no son caracters https://elcodigoascii.com.ar/
+		}
+	}
 	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
 	puts("¿Cómo se puede implementar un servidor que atienda muchas conexiones sin usar procesos ni threads?\n");
 	//K5n2UFfpFMUN
@@ -190,6 +215,11 @@ void desafio8()
 	puts("------------- DESAFIO -------------\n");
 	puts("¿?\n");
 	/// lo de seleccionar y que muestre la respuesta
+	// https://www.programmersought.com/article/2256659653/
+	printf("\40[background color; m La respuesta es: BUmyYq5XxXGt \40[0m");
+	// \033[background color; font color m represents a color font of a certain background color that you choose to output from here.
+	// \033[0m represents the end of the custom color, restore the system default
+
 	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
 	puts("¿Qué aplicaciones se pueden utilizar para ver el tráfico por la red?\n");
 	//BUmyYq5XxXGt
@@ -207,7 +237,85 @@ void desafio9()
 void desafio10()
 {
 	puts("------------- DESAFIO -------------\n");
-	puts("quine\n¡Genial!, ya lograron meter un programa en quine.c, veamos si hace lo que corresponde.\nLa respuesta es chin_chu_lan_cha\n");
+	puts("quine\n\n");
+
+	// Intento compilar el quine.c
+	char *args[] = {"./gcc -Wall -o quine quine.c", NULL};
+	execvp(args[0], args);
+
+	// Busco en el PWD si esta el archivo
+	DIR *dp;
+	struct dirent *entry;
+	struct stat statbuf;
+	if ((dp = opendir(".")) == NULL)
+	{
+		printf("cannot open directory\n");
+		return;
+	}
+	int found = 0;
+	while ((entry = readdir(dp)) != NULL)
+	{
+		lstat(entry->d_name, &statbuf);
+		if (S_ISREG(statbuf.st_mode))
+		{
+			if (strcmp("quine.c", entry->d_name) == 0)
+			{
+				found = 1;
+			}
+		}
+	}
+	closedir(dp);
+
+	// Si el archivo NO esta, imprimo y corto
+	if (!found)
+	{
+		puts("\n");
+		puts("ENTER para reintentar\n");
+	}
+	else
+	{
+		// Si el archivo esta, tengo que ver si hace lo que tiene que hacer
+		puts("quine\n¡Genial!, ya lograron meter un programa en quine.c, veamos si hace lo que corresponde.\n");
+
+		int fd[2];
+		if (pipe(fd) < 0)
+		{
+			perror("ERROR al crear pipe (desafio10)");
+			return;
+		}
+		dup2(STDOUT_FILENO, fd[0]); //redirecciono la salida del STDOUT al pipe (eso intento)
+		char *quine[] = {"./quine", NULL};
+		int resExec = execvp(quine[0], quine);
+		if (resExec < 0)
+		{
+			perror("ERROR en Execv (desafio10)");
+			return;
+		}
+
+		//Ahora deberia ver si lo que se escribio en el fd es igual al programa en si
+		char chSalida;
+		char chFd;
+		FILE *fp;
+
+		int different = 0;
+
+		fp = fopen("quine.c", "r"); // read mode
+
+		while ((ch = fgetc(fp)) != EOF && (chFd = fgetc(fd[1])) != EOF)
+		{
+			if (strcmp(chSalida, chFd) != 0)
+			{
+				different = 1;
+			}
+		}
+		fclose(fp);
+
+		//Habria que hacer la logica ahora de si son distinto o no
+	}
+
+	//SI HACE LO QUE TIENE QUE HACER
+	puts("La respuesta es chin_chu_lan_cha\n");
+
 	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
 	puts("¿Cuáles son las características del protocolo SCTP?\n");
 	// hacer programa quine.c
