@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <math.h>
 
 // #include <windows.h>
 //#include<conio.h> //clear// console
@@ -20,10 +21,14 @@
 #define PORT 8080
 //#define ENTENDIDO "entendido\n"
 #define ENTENDIDO_SIZE 10
-#define CANT_DESAFIOS 12
+#define CANT_DESAFIOS 13
 #define CANT_CHARACTER_USED 123
+#define DESAFIO "------------- DESAFIO -------------\n"
+#define PREGUNTA "----- PREGUNTA PARA INVESTIGAR -----\n"
+#define PI 3.14159265358979323846
 
 int compare(char *str1, char *str2);
+void desafio1();
 void desafio2();
 void desafio3();
 void desafio4();
@@ -36,8 +41,9 @@ void desafio10();
 void desafio11();
 void desafio12();
 void finDesafios();
+double gauss(void);
 
-void (*desafios[CANT_DESAFIOS])() = {desafio2, desafio3, desafio4, desafio5, desafio6, desafio7, desafio8, desafio9, desafio10, desafio11, desafio12, finDesafios};
+void (*desafios[CANT_DESAFIOS])() = {desafio1,desafio2, desafio3, desafio4, desafio5, desafio6, desafio7, desafio8, desafio9, desafio10, desafio11, desafio12, finDesafios};
 
 char *respuestas[CANT_DESAFIOS] = {"entendido\n", "itba\n", "M4GFKZ289aku\n", "fk3wfLCm3QvS\n", "too_easy\n", ".RUN_ME\n", "K5n2UFfpFMUN\n", "BUmyYq5XxXGt\n", "u^v\\cdot \\left(v'\\cdot \\ln \\left(u\right)+v\\cdot \frac{u'}{u}\right)\\cdot y\n", "chin_chu_lan_cha\n", "gdb_rules\n", "normal\n"};
 
@@ -78,14 +84,9 @@ int main(int argc, char *argv[])
 
 	while ((new_socket = accept(socket_desc, (struct sockaddr *)&client, (socklen_t *)&c)))
 	{
-			system("clear");
-		puts("------------- DESAFIO -------------");
-
-		//Reply to the client
-		puts("Bienvenidos al TP3 y felicitaciones, ya resolvieron el primer acertijo.\n\nEn este TP deberán finalizar el juego que ya comenzaron resolviendo los desafíos de cada nivel.\nAdemás tendrán que investigar otras preguntas para responder durante la defensa.\nEl desafío final consiste en crear un programa que se comporte igual que yo, es decir, que provea los mismos desafíos y que sea necesario hacer lo mismo para resolverlos. No basta con esperar la respuesta.\nAdemás, deberán implementar otro programa para comunicarse conmigo.\n\n\n\nDeberán estar atentos a los easter eggs.\n\n\n\nPara verificar que sus respuestas tienen el formato correcto respondan a este desafío con la palabra 'entendido\\n'\n");
-		puts("¿Cómo descubrieron el protocolo, la dirección y el puerto para conectarse?");
-		numero_desafio = 8;
-
+		system("clear");
+		numero_desafio = 0;
+		(*desafios[numero_desafio])();
 		while ((read_size = read(new_socket, client_message, 2000) > 0))
 		{
 			//clrscr();
@@ -94,6 +95,8 @@ int main(int argc, char *argv[])
 			if (strcmp(client_message, respuestas[numero_desafio]) == 0)
 			{	
 				numero_desafio++;
+				system("clear");
+				(*desafios[numero_desafio])();
 			}
 			// else if (strcmp(client_message, "\n") == 0) // Para reintentarlo en aquellos que lo requieren
 			// {
@@ -113,6 +116,7 @@ int main(int argc, char *argv[])
 					buffer[k1++] = 0;
 				}
 			}
+		
 			int k = 0;
 			while (client_message[k] != 0)
 			{
@@ -129,64 +133,61 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-// int compare(char* str1, char* str2)
-// {
-//     int i= 0;
-//     for(; i< strlen(ENTENDIDO); i++){
-//         if(str1[i] != str2[i]){
-//             return 0;
-//         }
-//     }
-//     return 1;
-// }
+void desafio1(){
+	puts(DESAFIO);
+
+	//Reply to the client
+	puts("Bienvenidos al TP3 y felicitaciones, ya resolvieron el primer acertijo.\n\nEn este TP deberán finalizar el juego que ya comenzaron resolviendo los desafíos de cada nivel.\nAdemás tendrán que investigar otras preguntas para responder durante la defensa.\nEl desafío final consiste en crear un programa que se comporte igual que yo, es decir, que provea los mismos desafíos y que sea necesario hacer lo mismo para resolverlos. No basta con esperar la respuesta.\nAdemás, deberán implementar otro programa para comunicarse conmigo.\n\n\n\nDeberán estar atentos a los easter eggs.\n\n\n\nPara verificar que sus respuestas tienen el formato correcto respondan a este desafío con la palabra 'entendido\\n'\n");
+	puts("¿Cómo descubrieron el protocolo, la dirección y el puerto para conectarse?");
+}
 
 void desafio2()
 {
-	puts("------------- DESAFIO -------------\n");
+	puts(DESAFIO);
 	puts("The Wire S1E5 5295 888 6288\n");
-	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
+	puts(PREGUNTA);
 	puts("¿Qué diferencias hay entre TCP y UDP y en qué casos conviene usar cada uno?\n");
 	/// respuesta : itba
 }
 
 void desafio3()
 {
-	puts("------------- DESAFIO -------------\n");
+	puts(DESAFIO);
 	puts("https://ibb.co/tc0Hb6w\n");
-	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
+	puts(PREGUNTA);
 	puts("¿El puerto que usaron para conectarse al server es el mismo que usan para mandar las respuestas? ¿Por qué?\n");
 	// M4GFKZ289aku
 }
 
 void desafio4()
 {
-	puts("------------- DESAFIO -------------\n");
+	puts(DESAFIO);
 	puts("EBADF...\nwrite: Bad file descriptor\n");
-	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
+	puts(PREGUNTA);
 	puts("¿Qué útil abstracción es utilizada para comunicarse con sockets? ¿se puede utilizar read(2) y write(2) para operar?\n");
 	//fk3wfLCm3QvS
 }
 void desafio5()
 {
-	puts("------------- DESAFIO -------------\n");
-	puts("respuesta = strings:277\n");
+	puts(DESAFIO);
+	puts("respuesta = strings:37\n");
 	//too_easy
-	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
+	puts(PREGUNTA);
 	puts("¿Cómo garantiza TCP que los paquetes llegan en orden y no se pierden?\n");
 }
 
 void desafio6()
 {
-	puts("------------- DESAFIO -------------\n");
+	puts(DESAFIO);
 	puts(".data .bss .comment ? .shstrtab .symtab .strtab\n");
 	//.RUN_ME
-	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
+	puts(PREGUNTA);
 	puts("Un servidor suele crear un nuevo proceso o thread para atender las conexiones entrantes. ¿Qué conviene más?\n");
 }
 
 void desafio7()
 {
-	puts("------------- DESAFIO -------------\n");
+	puts(DESAFIO);
 	puts("Filter error\n");
 	int k = 0;
 	int i = strlen("La respuesta es: K5n2UFfpFMUN");
@@ -207,14 +208,14 @@ void desafio7()
 			// + 33 es por que los primeros 32 ascii no son caracters https://elcodigoascii.com.ar/
 		}
 	}
-	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
+	puts(PREGUNTA);
 	puts("¿Cómo se puede implementar un servidor que atienda muchas conexiones sin usar procesos ni threads?\n");
 	//K5n2UFfpFMUN
 }
 
 void desafio8()
 {
-	puts("------------- DESAFIO -------------\n");
+	puts(DESAFIO);
 	puts("¿?\n");
 	/// lo de seleccionar y que muestre la respuesta
 	// https://www.programmersought.com/article/2256659653/
@@ -224,36 +225,26 @@ void desafio8()
 	// \033[background color; font color m represents a color font of a certain background color that you choose to output from here.
 	// \033[0m represents the end of the custom color, restore the system default
 
-	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
+	puts(PREGUNTA);
 	puts("¿Qué aplicaciones se pueden utilizar para ver el tráfico por la red?\n");
 	//BUmyYq5XxXGt
 }
 
 void desafio9()
 {
-	puts("------------- DESAFIO -------------\n");
+	puts(DESAFIO);
 	puts("Latexme\nSi\n\\mathrm{d}y = u^v{\\cdot}(v'{\\cdot}\\ln{(u)}+v{\\cdot}\frac{u'}{u})\nentonces\n y=\n");
-	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
+	puts(PREGUNTA);
 	puts("sockets es un mecanismo de IPC. ¿Qué es más eficiente entre sockets y pipes?\n");
 	//u^v\cdot \left(v'\cdot \ln \left(u\right)+v\cdot \frac{u'}{u}\right)\cdot y
 }
 
 void desafio10()
 {
-	puts("------------- DESAFIO -------------\n");
+	puts(DESAFIO);
 	puts("quine\n\n");
 
-	// Intento compilar el quine.c
-	// int pid2=1;
-	// if((pid2=fork()) == 0){
-	// 		char *args[] = {"./gcc -Wall -o quine quine.c", NULL};
-				
-	// 		if (system(args[0], args) < 0)
-	// 		{
-	// 			perror("ERROR en Execv (desafio10)");
-	// 			return;
-	// 		}
-	// 	}
+	//Compilar el quine.c
 	system("gcc -Wall -o quine quine.c");
 	// Busco en el PWD si esta el archivo
 	DIR *dp;
@@ -345,7 +336,7 @@ void desafio10()
 
 	//SI HACE LO QUE TIENE QUE HACER
 
-	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
+	puts(PREGUNTA);
 	puts("¿Cuáles son las características del protocolo SCTP?\n");
 	// // hacer programa quine.c
 	// //chin_chu_lan_cha
@@ -353,21 +344,40 @@ void desafio10()
 
 void desafio11()
 {
-	puts("------------- DESAFIO -------------\n");
+	puts(DESAFIO);
 	puts("b gdbme y encontrá el valor mágico\n");
 	// SI FALLA
 	//puts("ENTER para reintentar\n");
-	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
-	puts("\n");
+	puts(PREGUNTA);
+	puts("¿Qué es un RFC?\n");
 	//gdb_rules
+}
+
+double drand()   /* uniform distribution, (0..1] */
+{
+  return (rand()+1.0)/(RAND_MAX+1.0);
+}
+
+double random_normal() 
+ /* normal distribution, centered on 0, std dev 1 */
+{
+  return sqrt(-2*log(drand())) * cos(2*PI*drand());
 }
 
 void desafio12()
 {
-	puts("------------- DESAFIO -------------\n");
+	puts(DESAFIO);
 	puts("Me conoces\n");
+	double rands[1000];
+	int i=0;
+  	for (i=0; i<1000; i++){
+		rands[i] = 1.0 + 0.5*random_normal();
+		printf("%g ",rands[i]);
+	}
+ 
 	// imprimir valors para una distribucion normal
-	puts("----- PREGUNTA PARA INVESTIGAR -----\n");
+	puts("\n");
+	puts(PREGUNTA);
 	puts("¿Fue divertido?\n");
 	//normal
 }
