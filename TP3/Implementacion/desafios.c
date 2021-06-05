@@ -1,10 +1,9 @@
 
 #include "desafios.h"
+
 void desafio1()
 {
     puts(DESAFIO);
-
-    //Reply to the client
     puts("Bienvenidos al TP3 y felicitaciones, ya resolvieron el primer acertijo.\n\nEn este TP deberán finalizar el juego que ya comenzaron resolviendo los desafíos de cada nivel.\nAdemás tendrán que investigar otras preguntas para responder durante la defensa.\nEl desafío final consiste en crear un programa que se comporte igual que yo, es decir, que provea los mismos desafíos y que sea necesario hacer lo mismo para resolverlos. No basta con esperar la respuesta.\nAdemás, deberán implementar otro programa para comunicarse conmigo.\n\n\n\nDeberán estar atentos a los easter eggs.\n\n\n\nPara verificar que sus respuestas tienen el formato correcto respondan a este desafío con la palabra 'entendido\\n'\n");
     puts(PREGUNTA);
     puts("¿Cómo descubrieron el protocolo, la dirección y el puerto para conectarse?");
@@ -25,7 +24,7 @@ void desafio3()
     puts("https://ibb.co/tc0Hb6w\n");
     puts(PREGUNTA);
     puts("¿El puerto que usaron para conectarse al server es el mismo que usan para mandar las respuestas? ¿Por qué?\n");
-    // M4GFKZ289aku
+    // respuesta : M4GFKZ289aku
 }
 
 void desafio4()
@@ -35,15 +34,15 @@ void desafio4()
     write(WRITE_EBADF, ".................................................................La respuesta es: fk3wfLCm3QvS", strlen(".................................................................La respuesta es: fk3wfLCm3QvS"));
     puts(PREGUNTA);
     puts("¿Qué útil abstracción es utilizada para comunicarse con sockets? ¿se puede utilizar read(2) y write(2) para operar?\n");
-    //fk3wfLCm3QvS
+    // respuesta :fk3wfLCm3QvS
 }
 void desafio5()
 {
     puts(DESAFIO);
-    puts("respuesta = strings:37\n");
-    //too_easy
+    puts("respuesta = strings: 37\n");
     puts(PREGUNTA);
     puts("¿Cómo garantiza TCP que los paquetes llegan en orden y no se pierden?\n");
+    //respuesta :too_easy
 }
 
 void desafio6()
@@ -71,8 +70,8 @@ void desafio6()
             kill(pidTracer, 0);
         }
     }
-    // system("rm -f killP.txt");
-    //.RUN_ME
+    system("rm -f killP.txt");
+    //respuesta : .RUN_ME
     puts(PREGUNTA);
     puts("Un servidor suele crear un nuevo proceso o thread para atender las conexiones entrantes. ¿Qué conviene más?\n");
 }
@@ -95,34 +94,27 @@ void desafio7()
         }
         else
         {
-            char toP = (char)(rand() % CANT_CHARACTER_USED + 32);
+            char toP = (char)(rand() % CANT_CHARACTER_USED + ASCII_NO_REPRESENTABLES);
             write(STDERR_FILENO, &toP, 1);
-            // + 33 es por que los primeros 32 ascii no son caracters https://elcodigoascii.com.ar/
         }
     }
     puts("\n\n");
     puts(PREGUNTA);
     puts("¿Cómo se puede implementar un servidor que atienda muchas conexiones sin usar procesos ni threads?\n");
-    //K5n2UFfpFMUN
+    //respuesta :K5n2UFfpFMUN
 }
 
+// https://www.programmersought.com/article/2256659653/
 void desafio8()
 {
     puts(DESAFIO);
     puts("¿?\n");
-    /// lo de seleccionar y que muestre la respuesta
-    // https://www.programmersought.com/article/2256659653/
-
-    printf("\033[0;30m"); //\033[0;30m
+    printf("\033[0;30m"); // Seteado el color
     printf("La respuesta es: BUmyYq5XxXGt \n");
-    printf("\033[0m");
-
-    // \033[background color; font color m represents a color font of a certain background color that you choose to output from here.
-    // \033[0m represents the end of the custom color, restore the system default
-
+    printf("\033[0m"); // Se resetea al valor default
     puts(PREGUNTA);
     puts("¿Qué aplicaciones se pueden utilizar para ver el tráfico por la red?\n");
-    //BUmyYq5XxXGt
+    //respuesta :BUmyYq5XxXGt
 }
 
 void desafio9()
@@ -131,7 +123,7 @@ void desafio9()
     puts("Latexme\nSi\n\\mathrm{d}y = u^v{\\cdot}(v'{\\cdot}\\ln{(u)}+v{\\cdot}\\frac{u'}{u})\nentonces\n y=\n");
     puts(PREGUNTA);
     puts("sockets es un mecanismo de IPC. ¿Qué es más eficiente entre sockets y pipes?\n");
-    //u^v\cdot \left(v'\cdot \ln \left(u\right)+v\cdot \frac{u'}{u}\right)\cdot y
+    // respuesta :u^v
 }
 
 void desafio10()
@@ -149,7 +141,7 @@ void desafio10()
     struct stat statbuf;
     if ((dp = opendir(".")) == NULL)
     {
-        printf("cannot open directory\n");
+        printf("Cannot open directory\n");
         return;
     }
     int found = 0;
@@ -210,13 +202,12 @@ void desafio10()
 
         int different = 0;
 
-        fp = fopen("quine.c", "r"); // read mode
+        fp = fopen("quine.c", "r");
 
         while ((chSalida = (char)fgetc(fp)) != EOF && (buffer[bufferIndex]) != EOF && bufferIndex < 1024)
         {
             if (chSalida != buffer[bufferIndex++])
             {
-                //printf("Leido del file: %c Leido del pipe: %c", chSalida, buffer[bufferIndex - 1]);
                 different = 1;
             }
         }
@@ -249,8 +240,6 @@ void desafio10()
         {
             waitpid(pid, NULL, 0);
         }
-
-        //Habria que hacer la logica ahora de si son distinto o no
     }
 
     puts(PREGUNTA);
@@ -260,8 +249,8 @@ void desafio10()
         close(fd[0]);
     }
 
-    // // hacer programa quine.c
-    // //chin_chu_lan_cha
+    // hacer programa quine.c
+    // respuesta :chin_chu_lan_cha
 }
 
 int gdbme()
@@ -273,8 +262,8 @@ void desafio11()
 {
     puts(DESAFIO);
     puts("b gdbme y encontrá el valor mágico\n");
-    // SI FALLA
-    if (gdbme() != 0x12345678)
+
+    if (gdbme() != 0x12345678) // Deberia cambiarse el valor de retorno usando el gdb!
     {
         puts("ENTER para reintentar\n");
     }
@@ -285,7 +274,7 @@ void desafio11()
 
     puts(PREGUNTA);
     puts("¿Qué es un RFC?\n");
-    //gdb_rules
+    //respuesta :gdb_rules
 }
 
 double drand() /* uniform distribution, (0..1] */
@@ -310,12 +299,10 @@ void desafio12()
         rands[i] = 1.0 + 0.5 * randomNormal();
         printf("%g ", rands[i]);
     }
-
-    // imprimir valors para una distribucion normal
     puts("\n");
     puts(PREGUNTA);
     puts("¿Fue divertido?\n");
-    //normal
+    //respuesta :normal
 }
 
 void finDesafios()

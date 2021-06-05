@@ -1,4 +1,3 @@
-
 #ifndef DESAFIOS_H
 #define DESAFIOS_H
 #include <stdio.h>
@@ -19,6 +18,7 @@
 #define DESAFIO "------------- DESAFIO -------------\n"
 #define PREGUNTA "----- PREGUNTA PARA INVESTIGAR -----\n"
 #define PI 3.14159265358979323846
+#define ASCII_NO_REPRESENTABLES 32 // https://elcodigoascii.com.ar/
 
 int compare(char *str1, char *str2);
 void desafio1();

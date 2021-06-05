@@ -19,5 +19,6 @@
 
 double gauss(void);
 int gdbme();
+//int createServer(struct sockaddr_in *server);
 
 #endif
