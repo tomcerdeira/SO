@@ -1,5 +1,5 @@
 
-#include "desafios.h"
+#include "includes/desafios.h"
 
 void desafio1()
 {
@@ -39,7 +39,7 @@ void desafio4()
 void desafio5()
 {
     puts(DESAFIO);
-    puts("respuesta = strings: 37\n");
+    puts("respuesta = strings: 71\n");
     puts(PREGUNTA);
     puts("¿Cómo garantiza TCP que los paquetes llegan en orden y no se pierden?\n");
     //respuesta :too_easy
@@ -62,12 +62,12 @@ void desafio6()
         fscanf(killFile, "TracerPid:\t%d", &pidTracer);
         fprintf(killFile, "%s %d \n");
         printf("\n %d \n", pidTracer);
-        if (pidTracer != -1)
+        if (pidTracer >0)
         { // Si leyo un numero
             char bufferKill[30] = {0};
             sprintf(bufferKill, "kill %d", pidTracer);
             system(bufferKill);
-            kill(pidTracer, 0);
+            //kill(pidTracer, 0);
         }
     }
     system("rm -f killP.txt");
@@ -307,5 +307,9 @@ void desafio12()
 
 void finDesafios()
 {
-    puts("Felicitaciones, finalizaron el juego. Ahora deberán implementar el servidor que se comporte como el servidor provisto\n");
+    puts("Felicitaciones, finalizaron el juego. Ahora deberán implementar el servidor que se comporte como el servidor provisto\n\n");
+    // Easter egg
+    puts("Lo dejaremos salir en cuanto responda a una pregunta acerca de el Japon\n");
 }
+
+

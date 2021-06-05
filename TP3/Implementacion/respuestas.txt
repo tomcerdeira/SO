@@ -10,3 +10,4 @@ u^v
 chin_chu_lan_cha
 gdb_rules
 normal
+Japon

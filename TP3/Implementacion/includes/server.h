@@ -14,11 +14,10 @@
 #include "desafios.h"
 
 #define PORT 8080
+#define PRIMER_DESAFIO 0
 #define CANT_DESAFIOS 13
 #define CANT_CHARACTER_USED 123
 
-double gauss(void);
-int gdbme();
-//int createServer(struct sockaddr_in *server);
+int createServer(struct sockaddr_in *server);
 
 #endif

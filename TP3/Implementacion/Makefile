@@ -6,7 +6,7 @@ server: server.o desafios.o
 client: client.o
 	gcc -o  client client.o -Wall
 
-client.o: 
+client.o:
 	gcc -c client.c -lm
 
 desafios.o: 

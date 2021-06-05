@@ -1,4 +1,4 @@
-#include "client.h"
+#include "includes/client.h"
 
 // Idea sacada de https://www.geeksforgeeks.org/socket-programming-cc/
 int main()
@@ -43,7 +43,7 @@ int main()
             exit = 1;
             continue;
         }
-        ////////////////////////////////////////////////////
+       
 
         scanf("%s", bufferSTDIN);
         if (strcmp(bufferSTDIN, "EXIT") == 0)
