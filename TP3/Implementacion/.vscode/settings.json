@@ -9,6 +9,7 @@
         "stdio.h": "c",
         "inet.h": "c",
         "socket.h": "c",
-        "server.h": "c"
+        "server.h": "c",
+        "desafios.h": "c"
     }
 }
