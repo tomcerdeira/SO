@@ -333,7 +333,7 @@ void desafio10()
 	// //chin_chu_lan_cha
 }
 
-int changeRetValue()
+int gdbme()
 {
 	return 0;
 }
@@ -343,7 +343,7 @@ void desafio11()
 	puts(DESAFIO);
 	puts("b gdbme y encontrá el valor mágico\n");
 	// SI FALLA
-	if (changeRetValue() != 0x12345678)
+	if (gdbme() != 0x12345678)
 	{
 		puts("ENTER para reintentar\n");
 	}

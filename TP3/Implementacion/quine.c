@@ -8,7 +8,7 @@ int main()
    fp = fopen("quine.c", "r"); // read mode
 
    while ((ch = fgetc(fp)) != EOF)
-      printf("%c ppp", ch);
+      printf("%c", ch);
 
    fclose(fp);
    return 0;

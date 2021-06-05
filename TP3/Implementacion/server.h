@@ -35,6 +35,6 @@ void desafio11();
 void desafio12();
 void finDesafios();
 double gauss(void);
-int changeRetValue();
+int gdbme();
 
 #endif
