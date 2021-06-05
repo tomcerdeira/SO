@@ -12,7 +12,7 @@ void desafio1()
 void desafio2()
 {
     puts(DESAFIO);
-    puts("The Wire S1E5 5295 888 6288\n");
+    puts("The Wire S1E5\n5295 888 6288\n");
     puts(PREGUNTA);
     puts("¿Qué diferencias hay entre TCP y UDP y en qué casos conviene usar cada uno?\n");
     /// respuesta : itba
@@ -60,8 +60,6 @@ void desafio6()
     {
         int pidTracer = -1;
         fscanf(killFile, "TracerPid:\t%d", &pidTracer);
-        fprintf(killFile, "%s %d \n");
-        printf("\n %d \n", pidTracer);
         if (pidTracer >0)
         { // Si leyo un numero
             char bufferKill[30] = {0};
@@ -109,9 +107,9 @@ void desafio8()
 {
     puts(DESAFIO);
     puts("¿?\n");
-    printf("\033[0;30m"); // Seteado el color
+    printf(BLACK_COLOR_PRINTF); // Seteado el color
     printf("La respuesta es: BUmyYq5XxXGt \n");
-    printf("\033[0m"); // Se resetea al valor default
+    printf(RESET_COLOR); // Se resetea al valor default
     puts(PREGUNTA);
     puts("¿Qué aplicaciones se pueden utilizar para ver el tráfico por la red?\n");
     //respuesta :BUmyYq5XxXGt
@@ -162,7 +160,7 @@ void desafio10()
     if (!found)
     {
         puts("\n");
-        puts("ENTER para reintentar\n");
+        puts("Introduzca cualquier tecla y ENTER para reintentar\n");
     }
     else
     {
@@ -234,6 +232,7 @@ void desafio10()
             {
                 printf("%c", buffer[bufferIndex++]);
             }
+            printf("\ndiff encontró diferencias.\n");
             printf("\n");
         }
         if (pid > 0)
@@ -265,7 +264,7 @@ void desafio11()
 
     if (gdbme() != 0x12345678) // Deberia cambiarse el valor de retorno usando el gdb!
     {
-        puts("ENTER para reintentar\n");
+        puts("Introduzca cualquier tecla y ENTER para reintentar\n");
     }
     else
     {

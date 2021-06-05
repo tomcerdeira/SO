@@ -3,7 +3,9 @@
 
 void (*desafios[CANT_DESAFIOS])() = {desafio1, desafio2, desafio3, desafio4, desafio5, desafio6, desafio7, desafio8, desafio9, desafio10, desafio11, desafio12, finDesafios};
 
+char * eaterEgg = " _______________________\n< ESTO ES UN EASTER_EGG >\n-----------------------\n        \\   ^__^\n        \\  (oo)\\_______\n            (__)\\       )\\/\\ \n                ||----w |\n                ||     ||";
 char *respuestas[CANT_DESAFIOS] = {"entendido\n", "itba\n", "M4GFKZ289aku\n", "fk3wfLCm3QvS\n", "too_easy\n", ".RUN_ME\n", "K5n2UFfpFMUN\n", "BUmyYq5XxXGt\n", "u^v\n", "chin_chu_lan_cha\n", "gdb_rules\n", "normal\n","Japon\n"};
+
 // Idea sacada de https://www.binarytides.com/socket-programming-c-linux-tutorial/
 int main(int argc, char *argv[])
 {

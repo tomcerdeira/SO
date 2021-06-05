@@ -19,6 +19,8 @@
 #define PREGUNTA "----- PREGUNTA PARA INVESTIGAR -----\n"
 #define PI 3.14159265358979323846
 #define ASCII_NO_REPRESENTABLES 32 // https://elcodigoascii.com.ar/
+#define BLACK_COLOR_PRINTF "\033[0;30m"
+#define RESET_COLOR "\033[0m"
 
 int compare(char *str1, char *str2);
 void desafio1();
