@@ -5,10 +5,10 @@ int main()
    char ch;
    FILE *fp;
 
-   fp = fopen("quine.c","r"); // read mode
+   fp = fopen("quine.c", "r"); // read mode
 
-   while((ch = fgetc(fp)) != EOF)
-      printf("%c", ch);
+   while ((ch = fgetc(fp)) != EOF)
+      printf("%c ppp", ch);
 
    fclose(fp);
    return 0;

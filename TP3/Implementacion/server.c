@@ -1,64 +1,22 @@
 //https://www.binarytides.com/socket-programming-c-linux-tutorial/
+#include "server.h"
 
-#include <stdio.h>
-#include <string.h> //strlen
-#include <sys/socket.h>
-#include <arpa/inet.h> //inet_addr
-#include <unistd.h>	   //write
-#include <stdlib.h>
-#include <errno.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <math.h>
-
-// #include <windows.h>
-//#include<conio.h> //clear// console
-
-//#include<pthread.h> //for threading , link with lpthread
-
-//void *connection_handler(void *);
-
-#define PORT 8080
-//#define ENTENDIDO "entendido\n"
-#define ENTENDIDO_SIZE 10
-#define CANT_DESAFIOS 13
-#define CANT_CHARACTER_USED 123
-#define DESAFIO "------------- DESAFIO -------------\n"
-#define PREGUNTA "----- PREGUNTA PARA INVESTIGAR -----\n"
-#define PI 3.14159265358979323846
-
-int compare(char *str1, char *str2);
-void desafio1();
-void desafio2();
-void desafio3();
-void desafio4();
-void desafio5();
-void desafio6();
-void desafio7();
-void desafio8();
-void desafio9();
-void desafio10();
-void desafio11();
-void desafio12();
-void finDesafios();
-double gauss(void);
-
-void (*desafios[CANT_DESAFIOS])() = {desafio1,desafio2, desafio3, desafio4, desafio5, desafio6, desafio7, desafio8, desafio9, desafio10, desafio11, desafio12, finDesafios};
+void (*desafios[CANT_DESAFIOS])() = {desafio1, desafio2, desafio3, desafio4, desafio5, desafio6, desafio7, desafio8, desafio9, desafio10, desafio11, desafio12, finDesafios};
 
 char *respuestas[CANT_DESAFIOS] = {"entendido\n", "itba\n", "M4GFKZ289aku\n", "fk3wfLCm3QvS\n", "too_easy\n", ".RUN_ME\n", "K5n2UFfpFMUN\n", "BUmyYq5XxXGt\n", "u^v\\cdot \\left(v'\\cdot \\ln \\left(u\right)+v\\cdot \frac{u'}{u}\right)\\cdot y\n", "chin_chu_lan_cha\n", "gdb_rules\n", "normal\n"};
 
 int main(int argc, char *argv[])
 {
-	int socket_desc, new_socket, c; // *new_sock
-	int read_size;
+	int scoketDesc, newSocket, c; // *new_sock
+	int readSize;
 	struct sockaddr_in server, client;
 	//char *message;
-	char client_message[100] = {0};
-	int numero_desafio = 0;
+	char clientMessage[100] = {0};
+	int numeroDesafio = 0;
 
 	//Create socket
-	socket_desc = socket(AF_INET, SOCK_STREAM, 0);
-	if (socket_desc == -1)
+	scoketDesc = socket(AF_INET, SOCK_STREAM, 0);
+	if (scoketDesc == -1)
 	{
 		printf("Could not create socket");
 	}
@@ -68,47 +26,50 @@ int main(int argc, char *argv[])
 	server.sin_addr.s_addr = INADDR_ANY;
 	server.sin_port = htons(PORT);
 
+	int enable = 1;
+	if (setsockopt(scoketDesc, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
+	{
+		perror("setsockopt(SO_REUSEADDR) failed");
+		return -1;
+	}
+
 	//Bind
-	if (bind(socket_desc, (struct sockaddr *)&server, sizeof(server)) < 0)
+	if (bind(scoketDesc, (struct sockaddr *)&server, sizeof(server)) < 0)
 	{
 		puts("bind failed");
 		perror("ERROR");
-		return 1;
+		return -1;
 	}
 
 	//Listen
-	listen(socket_desc, 3);
+	listen(scoketDesc, 3);
 
 	//Accept and incoming connection
 	c = sizeof(struct sockaddr_in);
 
-	while ((new_socket = accept(socket_desc, (struct sockaddr *)&client, (socklen_t *)&c)))
+	while ((newSocket = accept(scoketDesc, (struct sockaddr *)&client, (socklen_t *)&c)))
 	{
 		system("clear");
-		numero_desafio = 0;
-		(*desafios[numero_desafio])();
-		while ((read_size = read(new_socket, client_message, 2000) > 0))
+		numeroDesafio = 9; ////////////////////////////////////////////////////////////////////////
+		(*desafios[numeroDesafio])();
+		while ((readSize = read(newSocket, clientMessage, 2000) > 0))
 		{
 			//clrscr();
 			system("clear");
-			(*desafios[numero_desafio])();
-			if (strcmp(client_message, respuestas[numero_desafio]) == 0)
-			{	
-				numero_desafio++;
+			(*desafios[numeroDesafio])();
+			if (strcmp(clientMessage, respuestas[numeroDesafio]) == 0)
+			{
+				numeroDesafio++;
 				system("clear");
-				(*desafios[numero_desafio])();
+				(*desafios[numeroDesafio])();
 			}
-			// else if (strcmp(client_message, "\n") == 0) // Para reintentarlo en aquellos que lo requieren
-			// {
-			// 	(*desafios[numero_desafio])();
-			// }
 			else
 			{
 				char buffer[100] = {0};
-				sprintf(buffer, "Respuesta incorrecta: %s", client_message);
+				sprintf(buffer, "Respuesta incorrecta: %s", clientMessage);
 				puts(buffer);
-				char buffer2[100] = {0};
-				sprintf(buffer2, "Respuesta esperada: %s", respuestas[numero_desafio]);
+				char buffer2[150] = {0};
+				sprintf(buffer2, "Respuesta esperada: %s", respuestas[numeroDesafio]);
 				puts(buffer2);
 				int k1 = 0;
 				while (buffer[k1] != 0)
@@ -116,28 +77,30 @@ int main(int argc, char *argv[])
 					buffer[k1++] = 0;
 				}
 			}
-		
+
 			int k = 0;
-			while (client_message[k] != 0)
+			while (clientMessage[k] != 0)
 			{
-				client_message[k++] = 0;
+				clientMessage[k++] = 0;
 			}
 		}
 
-		if (new_socket < 0)
+		if (newSocket < 0)
 		{
 			perror("accept failed");
-			return 1;
+			return -1;
 		}
 	}
 	return 0;
 }
 
-void desafio1(){
+void desafio1()
+{
 	puts(DESAFIO);
 
 	//Reply to the client
 	puts("Bienvenidos al TP3 y felicitaciones, ya resolvieron el primer acertijo.\n\nEn este TP deberán finalizar el juego que ya comenzaron resolviendo los desafíos de cada nivel.\nAdemás tendrán que investigar otras preguntas para responder durante la defensa.\nEl desafío final consiste en crear un programa que se comporte igual que yo, es decir, que provea los mismos desafíos y que sea necesario hacer lo mismo para resolverlos. No basta con esperar la respuesta.\nAdemás, deberán implementar otro programa para comunicarse conmigo.\n\n\n\nDeberán estar atentos a los easter eggs.\n\n\n\nPara verificar que sus respuestas tienen el formato correcto respondan a este desafío con la palabra 'entendido\\n'\n");
+	puts(PREGUNTA);
 	puts("¿Cómo descubrieron el protocolo, la dirección y el puerto para conectarse?");
 }
 
@@ -163,7 +126,7 @@ void desafio4()
 {
 	puts(DESAFIO);
 	puts("EBADF...\nwrite: Bad file descriptor\n");
-	write(13,".................................................................La respuesta es: fk3wfLCm3QvS",strlen(".................................................................La respuesta es: fk3wfLCm3QvS"));
+	write(WRITE_EBADF, ".................................................................La respuesta es: fk3wfLCm3QvS", strlen(".................................................................La respuesta es: fk3wfLCm3QvS"));
 	puts(PREGUNTA);
 	puts("¿Qué útil abstracción es utilizada para comunicarse con sockets? ¿se puede utilizar read(2) y write(2) para operar?\n");
 	//fk3wfLCm3QvS
@@ -200,12 +163,12 @@ void desafio7()
 		randNumber = rand() % 7;
 		if (randNumber == 0)
 		{
-			write(STDOUT_FILENO, toPrint+k++, 1);
+			write(STDOUT_FILENO, toPrint + k++, 1);
 		}
 		else
 		{
-			char toP = (char )(rand() % CANT_CHARACTER_USED+ 32);
-			write(STDERR_FILENO,&toP, 1);
+			char toP = (char)(rand() % CANT_CHARACTER_USED + 32);
+			write(STDERR_FILENO, &toP, 1);
 			// + 33 es por que los primeros 32 ascii no son caracters https://elcodigoascii.com.ar/
 		}
 	}
@@ -249,6 +212,8 @@ void desafio10()
 	system("gcc -Wall -o quine quine.c");
 	// Busco en el PWD si esta el archivo
 	DIR *dp;
+	int pid = -1;
+	int fd[2] = {-1, -1};
 	struct dirent *entry;
 	struct stat statbuf;
 	if ((dp = opendir(".")) == NULL)
@@ -279,22 +244,22 @@ void desafio10()
 	else
 	{
 		// Si el archivo esta, tengo que ver si hace lo que tiene que hacer
-		puts("quine\n¡Genial!, ya lograron meter un programa en quine.c, veamos si hace lo que corresponde.\n");
+		puts("¡Genial!, ya lograron meter un programa en quine.c, veamos si hace lo que corresponde.\n");
 
-		int fd[2];
 		if (pipe(fd) < 0)
 		{
 			perror("ERROR al crear pipe (desafio10)");
 			return;
 		}
-		
-		int pid = -1;
-		if((pid=fork()) == 0){
-			if(dup2(fd[1],STDOUT_FILENO)<0)//redirecciono la salida del STDOUT al pipe (eso intento)
+
+		if ((pid = fork()) == 0)
+		{
+			close(fd[0]);						// el hijo solo escribe
+			if (dup2(fd[1], STDOUT_FILENO) < 0) //redirecciono la salida del STDOUT al pipe (eso intento)
 			{
 				perror("Error al supear la salida");
-			} 
-			char *quine[] = {"./quine", NULL};  //antes del exec hay que forkear si no te pisa la imagen del server
+			}
+			char *quine[] = {"./quine", NULL}; //antes del exec hay que forkear si no te pisa la imagen del server
 			int resExec = execvp(quine[0], quine);
 			if (resExec < 0)
 			{
@@ -302,14 +267,12 @@ void desafio10()
 				return;
 			}
 		}
-	
-		
 
-		char buffer[1024]={0};
-		read(fd[0],buffer,1024);
-	
-		
-		// //Ahora deberia ver si lo que se escribio en el fd es igual al programa en si
+		close(fd[1]); // el padre solo lee
+		char buffer[1024] = {0};
+		read(fd[0], buffer, 1024);
+
+		//Ahora deberia ver si lo que se escribio en el fd es igual al programa en si
 		char chSalida;
 		int bufferIndex = 0;
 		FILE *fp;
@@ -317,30 +280,62 @@ void desafio10()
 		int different = 0;
 
 		fp = fopen("quine.c", "r"); // read mode
-	
-		while ((chSalida= (char)fgetc(fp)) != EOF && (buffer[bufferIndex]) != EOF && bufferIndex<1024)
+
+		while ((chSalida = (char)fgetc(fp)) != EOF && (buffer[bufferIndex]) != EOF && bufferIndex < 1024)
 		{
-			if (chSalida !=buffer[bufferIndex++])
+			if (chSalida != buffer[bufferIndex++])
 			{
-				printf("Leido del file: %c Leido del pipe: %c",chSalida,buffer[bufferIndex-1]);
+				//printf("Leido del file: %c Leido del pipe: %c", chSalida, buffer[bufferIndex - 1]);
 				different = 1;
 			}
 		}
 		fclose(fp);
 
-		if(!different){
-			puts("La respuesta es chin_chu_lan_cha\n");		
+		if (!different)
+		{
+			puts("La respuesta es chin_chu_lan_cha\n");
+		}
+		else
+		{
+			puts("-- Codigo del programa --\n"); //Codigo de quine
+			char chAux;
+			FILE *fpAux;
+			fpAux = fopen("quine.c", "r");
+			while ((chAux = fgetc(fpAux)) != EOF)
+			{
+				printf("%c", chAux);
+			}
+
+			puts("-- Salida del programa --\n"); //Salida de quine
+			bufferIndex = 0;
+			while ((buffer[bufferIndex]) != EOF && bufferIndex < 1024)
+			{
+				printf("%c", buffer[bufferIndex++]);
+			}
+			printf("\n");
+		}
+		if (pid > 0)
+		{
+			waitpid(pid, NULL, 0);
 		}
 
 		//Habria que hacer la logica ahora de si son distinto o no
 	}
 
-	//SI HACE LO QUE TIENE QUE HACER
-
 	puts(PREGUNTA);
 	puts("¿Cuáles son las características del protocolo SCTP?\n");
+	if (fd[0] != -1)
+	{
+		close(fd[0]);
+	}
+
 	// // hacer programa quine.c
 	// //chin_chu_lan_cha
+}
+
+int changeRetValue()
+{
+	return 0;
 }
 
 void desafio11()
@@ -348,21 +343,29 @@ void desafio11()
 	puts(DESAFIO);
 	puts("b gdbme y encontrá el valor mágico\n");
 	// SI FALLA
-	//puts("ENTER para reintentar\n");
+	if (changeRetValue() != 0x12345678)
+	{
+		puts("ENTER para reintentar\n");
+	}
+	else
+	{
+		puts("La respuesta es gdb_rules\n");
+	}
+
 	puts(PREGUNTA);
 	puts("¿Qué es un RFC?\n");
 	//gdb_rules
 }
 
-double drand()   /* uniform distribution, (0..1] */
+double drand() /* uniform distribution, (0..1] */
 {
-  return (rand()+1.0)/(RAND_MAX+1.0);
+	return (rand() + 1.0) / (RAND_MAX + 1.0);
 }
 
-double random_normal() 
- /* normal distribution, centered on 0, std dev 1 */
+double randomNormal()
+/* normal distribution, centered on 0, std dev 1 */
 {
-  return sqrt(-2*log(drand())) * cos(2*PI*drand());
+	return sqrt(-2 * log(drand())) * cos(2 * PI * drand());
 }
 
 void desafio12()
@@ -370,12 +373,13 @@ void desafio12()
 	puts(DESAFIO);
 	puts("Me conoces\n");
 	double rands[1000];
-	int i=0;
-  	for (i=0; i<1000; i++){
-		rands[i] = 1.0 + 0.5*random_normal();
-		printf("%g ",rands[i]);
+	int i = 0;
+	for (i = 0; i < 1000; i++)
+	{
+		rands[i] = 1.0 + 0.5 * randomNormal();
+		printf("%g ", rands[i]);
 	}
- 
+
 	// imprimir valors para una distribucion normal
 	puts("\n");
 	puts(PREGUNTA);
